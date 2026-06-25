@@ -214,33 +214,33 @@ function SubmissionRow({
 
         {/* Teacher actions by status */}
         {canManage && (s.status === "SUBMITTED" || s.status === "IN_REVIEW") && (
-          <div className="flex flex-1 items-center gap-2">
-            <Input
-              className="flex-1"
-              placeholder="Review comment…"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-            />
-            <Button size="sm" disabled={!comment.trim()} onClick={() => onReview(comment)}>
-              Send review
-            </Button>
-          </div>
-        )}
-        {canManage && (s.status === "SUBMITTED" || s.status === "IN_REVIEW") && (
-          <div className="flex items-center gap-2">
-            <Input
-              type="number"
-              min={0}
-              max={100}
-              className="w-20"
-              placeholder="0–100"
-              value={score}
-              onChange={(e) => setScore(e.target.value)}
-            />
-            <Button size="sm" disabled={!score} onClick={() => onGrade(Number(score))}>
-              Grade
-            </Button>
-          </div>
+          <>
+            <div className="flex flex-1 items-center gap-2">
+              <Input
+                className="flex-1"
+                placeholder="Review comment…"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+              />
+              <Button size="sm" disabled={!comment.trim()} onClick={() => onReview(comment)}>
+                Send review
+              </Button>
+            </div>
+            <div className="flex items-center gap-2">
+              <Input
+                type="number"
+                min={0}
+                max={100}
+                className="w-20"
+                placeholder="0–100"
+                value={score}
+                onChange={(e) => setScore(e.target.value)}
+              />
+              <Button size="sm" disabled={!score} onClick={() => onGrade(Number(score))}>
+                Grade
+              </Button>
+            </div>
+          </>
         )}
         {canManage && s.status === "GRADED" && (
           <Button variant="outline" size="sm" onClick={onReturn}>

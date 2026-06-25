@@ -80,18 +80,22 @@ export function TakeAttemptDialog({
   async function onSubmit() {
     if (!attempt || !test) return;
     try {
-      for (const q of test.questions) {
-        const a = answers[q.id];
-        if (!a) continue;
-        await saveAnswer.mutateAsync({
-          attemptId: attempt.id,
-          data: {
-            questionId: q.id,
-            selectedOptionIds: a.selectedOptionIds.length ? a.selectedOptionIds : undefined,
-            text: a.text || undefined,
-          },
-        });
-      }
+      // answers are independent — save them concurrently before the final submit
+      await Promise.all(
+        test.questions
+          .filter((q) => answers[q.id])
+          .map((q) => {
+            const a = answers[q.id];
+            return saveAnswer.mutateAsync({
+              attemptId: attempt.id,
+              data: {
+                questionId: q.id,
+                selectedOptionIds: a.selectedOptionIds.length ? a.selectedOptionIds : undefined,
+                text: a.text || undefined,
+              },
+            });
+          }),
+      );
       const graded = await submit.mutateAsync({ attemptId: attempt.id });
       setAttempt(graded);
       toast.success("Submitted");
