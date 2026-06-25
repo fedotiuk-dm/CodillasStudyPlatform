@@ -79,3 +79,16 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Page transitions (Next View Transitions API) — a quick cross-fade on navigation. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.22s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}

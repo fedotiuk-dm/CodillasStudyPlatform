@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   // React Compiler: auto-memoizes components/hooks (no manual useMemo/useCallback).
   reactCompiler: true,
+  // Smooth page transitions via the View Transitions API (cross-fade on navigation).
+  experimental: {
+    viewTransition: true,
+  },
 };
 
 export default withNextIntl(nextConfig);
