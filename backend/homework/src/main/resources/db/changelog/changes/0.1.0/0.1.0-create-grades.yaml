@@ -1,0 +1,40 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.1.0-create-grades
+      author: codillas
+      comment: Create grades table — one grade per submission (0.1.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: grades
+      changes:
+        - createTable:
+            tableName: grades
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: submission_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: score
+                  type: int
+                  constraints: { nullable: false }
+              - column:
+                  name: graded_by
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz
+        - addUniqueConstraint:
+            tableName: grades
+            columnNames: submission_id
+            constraintName: uq_grades_submission

@@ -1,0 +1,187 @@
+openapi: 3.0.4
+info:
+  title: Codillas Homework schemas
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    AssignmentStatus:
+      type: string
+      enum:
+        - DRAFT
+        - PUBLISHED
+    SubmissionStatus:
+      type: string
+      enum:
+        - DRAFT
+        - SUBMITTED
+        - IN_REVIEW
+        - GRADED
+        - RETURNED
+    CreateAssignmentRequest:
+      type: object
+      required:
+        - groupId
+        - title
+      properties:
+        groupId:
+          type: string
+          format: uuid
+        lessonId:
+          type: string
+          format: uuid
+          description: Optional course lesson this assignment belongs to.
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+        dueAt:
+          type: string
+          format: date-time
+    AssignmentResponse:
+      type: object
+      required:
+        - id
+        - groupId
+        - title
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        groupId:
+          type: string
+          format: uuid
+        lessonId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        dueAt:
+          type: string
+          format: date-time
+        status:
+          $ref: "#/components/schemas/AssignmentStatus"
+        createdAt:
+          type: string
+          format: date-time
+    AssignmentListResponse:
+      allOf:
+        - $ref: "common.yaml#/components/schemas/PageResponse"
+        - type: object
+          required:
+            - content
+          properties:
+            content:
+              type: array
+              items:
+                $ref: "#/components/schemas/AssignmentResponse"
+    CreateSubmissionRequest:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: string
+          minLength: 1
+    UpdateSubmissionRequest:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: string
+          minLength: 1
+    SubmissionResponse:
+      type: object
+      required:
+        - id
+        - assignmentId
+        - studentId
+        - version
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        assignmentId:
+          type: string
+          format: uuid
+        studentId:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 1
+        status:
+          $ref: "#/components/schemas/SubmissionStatus"
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    CreateReviewRequest:
+      type: object
+      required:
+        - comment
+      properties:
+        comment:
+          type: string
+          minLength: 1
+    ReviewResponse:
+      type: object
+      required:
+        - id
+        - submissionId
+        - reviewerId
+        - comment
+      properties:
+        id:
+          type: string
+          format: uuid
+        submissionId:
+          type: string
+          format: uuid
+        reviewerId:
+          type: string
+          format: uuid
+        comment:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    CreateGradeRequest:
+      type: object
+      required:
+        - score
+      properties:
+        score:
+          type: integer
+          minimum: 0
+          maximum: 100
+    GradeResponse:
+      type: object
+      required:
+        - id
+        - submissionId
+        - score
+        - gradedBy
+      properties:
+        id:
+          type: string
+          format: uuid
+        submissionId:
+          type: string
+          format: uuid
+        score:
+          type: integer
+        gradedBy:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time

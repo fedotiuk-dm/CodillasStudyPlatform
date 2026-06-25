@@ -1,2 +1,15 @@
-# Liquibase changelog for the 'homework' module. Add changesets under changes/.
-databaseChangeLog: []
+# Homework module changelog — SemVer 2.0.0: https://semver.org/spec/v2.0.0/
+databaseChangeLog:
+  # 0.1.0 — assignments, versioned submissions, reviews, grades
+  - include:
+      file: changes/0.1.0/0.1.0-create-assignments.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/0.1.0/0.1.0-create-submissions.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/0.1.0/0.1.0-create-reviews.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/0.1.0/0.1.0-create-grades.yaml
+      relativeToChangelogFile: true

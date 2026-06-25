@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.1.0-create-reviews
+      author: codillas
+      comment: Create reviews table (initial development 0.1.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: reviews
+      changes:
+        - createTable:
+            tableName: reviews
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: submission_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: reviewer_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: comment
+                  type: text
+                  constraints: { nullable: false }
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz

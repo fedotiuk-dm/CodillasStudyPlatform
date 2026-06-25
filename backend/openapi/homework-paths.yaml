@@ -1,0 +1,315 @@
+openapi: 3.0.4
+info:
+  title: Codillas Homework API
+  description: Assignments, versioned submissions, teacher review and grading.
+  version: 0.1.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    name: Codillas
+    email: support@codillas.de
+servers:
+  - url: http://localhost:8081
+    description: Local development
+tags:
+  - name: homework
+    description: Assignment + submission lifecycle
+paths:
+  /api/assignments:
+    get:
+      tags:
+        - homework
+      operationId: listAssignments
+      summary: List a group's assignments (paginated)
+      x-spring-paginated: true
+      parameters:
+        - name: groupId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - $ref: "common.yaml#/components/parameters/PageNumber"
+        - $ref: "common.yaml#/components/parameters/PageSize"
+        - $ref: "common.yaml#/components/parameters/Sort"
+      responses:
+        "200":
+          description: Paginated assignments
+          content:
+            application/json:
+              schema:
+                $ref: "homework-schemas.yaml#/components/schemas/AssignmentListResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+    post:
+      tags:
+        - homework
+      operationId: createAssignment
+      summary: Create a draft assignment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "homework-schemas.yaml#/components/schemas/CreateAssignmentRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "homework-schemas.yaml#/components/schemas/AssignmentResponse"
+        "400":
+          $ref: "common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+  /api/assignments/{assignmentId}/publish:
+    post:
+      tags:
+        - homework
+      operationId: publishAssignment
+      summary: Publish a draft assignment to its group
+      parameters:
+        - name: assignmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Published
+          content:
+            application/json:
+              schema:
+                $ref: "homework-schemas.yaml#/components/schemas/AssignmentResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "common.yaml#/components/responses/Conflict"
+  /api/assignments/{assignmentId}/submissions:
+    post:
+      tags:
+        - homework
+      operationId: createSubmission
+      summary: Start a new submission draft (next version) for the current student
+      parameters:
+        - name: assignmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "homework-schemas.yaml#/components/schemas/CreateSubmissionRequest"
+      responses:
+        "201":
+          description: Draft created
+          content:
+            application/json:
+              schema:
+                $ref: "homework-schemas.yaml#/components/schemas/SubmissionResponse"
+        "400":
+          $ref: "common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+    get:
+      tags:
+        - homework
+      operationId: listSubmissions
+      summary: List an assignment's submissions (teacher view)
+      parameters:
+        - name: assignmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Submissions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "homework-schemas.yaml#/components/schemas/SubmissionResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+  /api/submissions/{submissionId}:
+    put:
+      tags:
+        - homework
+      operationId: updateSubmission
+      summary: Update a draft submission's content
+      parameters:
+        - name: submissionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "homework-schemas.yaml#/components/schemas/UpdateSubmissionRequest"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "homework-schemas.yaml#/components/schemas/SubmissionResponse"
+        "400":
+          $ref: "common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "common.yaml#/components/responses/Conflict"
+  /api/submissions/{submissionId}/submit:
+    put:
+      tags:
+        - homework
+      operationId: submitSubmission
+      summary: Submit a draft for review
+      parameters:
+        - name: submissionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Submitted
+          content:
+            application/json:
+              schema:
+                $ref: "homework-schemas.yaml#/components/schemas/SubmissionResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "common.yaml#/components/responses/Conflict"
+  /api/submissions/{submissionId}/review:
+    post:
+      tags:
+        - homework
+      operationId: reviewSubmission
+      summary: Add a teacher review (moves the submission into review)
+      parameters:
+        - name: submissionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "homework-schemas.yaml#/components/schemas/CreateReviewRequest"
+      responses:
+        "201":
+          description: Review added
+          content:
+            application/json:
+              schema:
+                $ref: "homework-schemas.yaml#/components/schemas/ReviewResponse"
+        "400":
+          $ref: "common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "common.yaml#/components/responses/Conflict"
+  /api/submissions/{submissionId}/grade:
+    post:
+      tags:
+        - homework
+      operationId: gradeSubmission
+      summary: Grade a submission (emits SubmissionGraded)
+      parameters:
+        - name: submissionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "homework-schemas.yaml#/components/schemas/CreateGradeRequest"
+      responses:
+        "201":
+          description: Graded
+          content:
+            application/json:
+              schema:
+                $ref: "homework-schemas.yaml#/components/schemas/GradeResponse"
+        "400":
+          $ref: "common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "common.yaml#/components/responses/Conflict"
+  /api/submissions/{submissionId}/return:
+    put:
+      tags:
+        - homework
+      operationId: returnSubmission
+      summary: Return a submission for rework
+      parameters:
+        - name: submissionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Returned
+          content:
+            application/json:
+              schema:
+                $ref: "homework-schemas.yaml#/components/schemas/SubmissionResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "common.yaml#/components/responses/Conflict"

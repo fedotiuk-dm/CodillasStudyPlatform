@@ -1,0 +1,47 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.1.0-create-submissions
+      author: codillas
+      comment: Create submissions table — append-only versions per (assignment, student) (0.1.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: submissions
+      changes:
+        - createTable:
+            tableName: submissions
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: assignment_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: student_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: version
+                  type: int
+                  constraints: { nullable: false }
+              - column:
+                  name: status
+                  type: varchar(20)
+                  constraints: { nullable: false }
+              - column:
+                  name: content
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz
+        - addUniqueConstraint:
+            tableName: submissions
+            columnNames: assignment_id, student_id, version
+            constraintName: uq_submissions_assignment_student_version

@@ -11,6 +11,14 @@
   </parent>
   <artifactId>codillas-homework</artifactId>
   <name>Codillas Homework</name>
+
+  <properties>
+    <openapi.skip>false</openapi.skip>
+    <openapi.spec>homework-paths.yaml</openapi.spec>
+    <openapi.api-package>de.codillas.homework.api</openapi.api-package>
+    <openapi.model-package>de.codillas.homework.api.dto</openapi.model-package>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>de.codillas</groupId>
