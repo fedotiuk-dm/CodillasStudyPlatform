@@ -1,2 +1,9 @@
-# Liquibase changelog for the 'notification' module. Add changesets under changes/.
-databaseChangeLog: []
+# Notification module changelog — SemVer 2.0.0: https://semver.org/spec/v2.0.0/
+databaseChangeLog:
+  # 0.1.0 — notifications + group roster
+  - include:
+      file: changes/0.1.0/0.1.0-create-notifications.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/0.1.0/0.1.0-create-notification-memberships.yaml
+      relativeToChangelogFile: true

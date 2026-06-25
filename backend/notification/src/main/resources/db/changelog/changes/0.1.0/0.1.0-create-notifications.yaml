@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.1.0-create-notifications
+      author: codillas
+      comment: Create notifications table (initial development 0.1.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: notifications
+      changes:
+        - createTable:
+            tableName: notifications
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: recipient_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: type
+                  type: varchar(30)
+                  constraints: { nullable: false }
+              - column:
+                  name: title
+                  type: varchar(200)
+                  constraints: { nullable: false }
+              - column:
+                  name: body
+                  type: text
+              - column:
+                  name: reference_id
+                  type: uuid
+              - column:
+                  name: read
+                  type: boolean
+                  constraints: { nullable: false }
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz

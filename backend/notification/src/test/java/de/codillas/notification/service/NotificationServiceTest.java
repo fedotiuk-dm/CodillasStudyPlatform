@@ -1,0 +1,121 @@
+package de.codillas.notification.service;
+
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import de.codillas.notification.domain.model.Notification;
+import de.codillas.notification.domain.model.NotificationMembership;
+import de.codillas.notification.domain.model.NotificationType;
+import de.codillas.notification.domain.repository.NotificationMembershipRepository;
+import de.codillas.notification.domain.repository.NotificationRepository;
+import de.codillas.notification.mapper.NotificationMapper;
+import de.codillas.shared.event.AssignmentPublished;
+import de.codillas.shared.event.SubmissionGraded;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
+@DisplayName("NotificationService")
+class NotificationServiceTest {
+
+  @Mock private NotificationRepository repository;
+  @Mock private NotificationMembershipRepository membershipRepository;
+  @Mock private NotificationMapper mapper;
+  @Mock private EmailNotifier emailNotifier;
+  @InjectMocks private NotificationServiceImpl service;
+
+  @Test
+  @DisplayName("onSubmissionGraded notifies the student in-app and by email")
+  void onSubmissionGraded_notifiesStudent() {
+    UUID submissionId = UUID.randomUUID();
+    UUID studentId = UUID.randomUUID();
+    SubmissionGraded event = new SubmissionGraded(submissionId, UUID.randomUUID(), studentId, 80);
+    when(mapper.toNotification(
+            eq(studentId),
+            eq(NotificationType.SUBMISSION_GRADED),
+            anyString(),
+            anyString(),
+            eq(submissionId)))
+        .thenReturn(new Notification());
+
+    service.onSubmissionGraded(event);
+
+    verify(repository).save(any(Notification.class));
+    verify(emailNotifier)
+        .send(eq(studentId), eq("Homework graded"), eq("Homework graded"), anyString());
+  }
+
+  @Test
+  @DisplayName("onAssignmentPublished fans out to every group member")
+  void onAssignmentPublished_fansOut() {
+    UUID groupId = UUID.randomUUID();
+    UUID assignmentId = UUID.randomUUID();
+    AssignmentPublished event = new AssignmentPublished(assignmentId, groupId);
+    when(membershipRepository.findByGroupId(groupId))
+        .thenReturn(List.of(member(UUID.randomUUID()), member(UUID.randomUUID())));
+    when(mapper.toNotification(any(), any(), anyString(), anyString(), any()))
+        .thenReturn(new Notification());
+
+    service.onAssignmentPublished(event);
+
+    verify(repository, times(2)).save(any(Notification.class));
+    verify(emailNotifier, times(2)).send(any(), anyString(), anyString(), anyString());
+  }
+
+  @Test
+  @DisplayName("markRead flags the recipient's notification as read")
+  void markRead_flagsRead() {
+    UUID userId = UUID.randomUUID();
+    UUID notificationId = UUID.randomUUID();
+    Notification notification = new Notification();
+    when(repository.findByIdAndRecipientId(notificationId, userId))
+        .thenReturn(Optional.of(notification));
+
+    service.markRead(userId, notificationId);
+
+    verify(repository).save(notification);
+    org.assertj.core.api.Assertions.assertThat(notification.isRead()).isTrue();
+  }
+
+  @Test
+  @DisplayName("markRead on someone else's (or missing) notification is a 404")
+  void markRead_notFound() {
+    UUID userId = UUID.randomUUID();
+    UUID notificationId = UUID.randomUUID();
+    when(repository.findByIdAndRecipientId(notificationId, userId)).thenReturn(Optional.empty());
+    assertThatExceptionOfType(de.codillas.shared.exception.NotFoundException.class)
+        .isThrownBy(() -> service.markRead(userId, notificationId));
+  }
+
+  @Test
+  @DisplayName("onStudentEnrolled is idempotent for an existing roster entry")
+  void onStudentEnrolled_idempotent() {
+    de.codillas.shared.event.StudentEnrolled event =
+        new de.codillas.shared.event.StudentEnrolled(UUID.randomUUID(), UUID.randomUUID());
+    when(membershipRepository.existsByGroupIdAndStudentId(event.groupId(), event.userId()))
+        .thenReturn(true);
+
+    service.onStudentEnrolled(event);
+
+    verify(membershipRepository, never()).save(any());
+  }
+
+  private static NotificationMembership member(UUID studentId) {
+    return NotificationMembership.builder().studentId(studentId).build();
+  }
+}

@@ -1,0 +1,56 @@
+openapi: 3.0.4
+info:
+  title: Codillas Notification API
+  description: In-app notifications (also delivered by email), fed by domain events.
+  version: 0.1.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    name: Codillas
+    email: support@codillas.de
+servers:
+  - url: http://localhost:8081
+    description: Local development
+tags:
+  - name: notification
+    description: In-app notification inbox
+paths:
+  /api/notifications:
+    get:
+      tags: [notification]
+      operationId: listMyNotifications
+      summary: The current user's notifications (paginated, with unread count)
+      x-spring-paginated: true
+      parameters:
+        - $ref: "common.yaml#/components/parameters/PageNumber"
+        - $ref: "common.yaml#/components/parameters/PageSize"
+        - $ref: "common.yaml#/components/parameters/Sort"
+      responses:
+        "200":
+          description: Notifications
+          content:
+            application/json:
+              schema:
+                $ref: "notification-schemas.yaml#/components/schemas/NotificationListResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+  /api/notifications/{notificationId}/read:
+    post:
+      tags: [notification]
+      operationId: markRead
+      summary: Mark a notification as read
+      parameters:
+        - name: notificationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Marked read
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"

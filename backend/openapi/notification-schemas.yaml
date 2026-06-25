@@ -1,0 +1,54 @@
+openapi: 3.0.4
+info:
+  title: Codillas Notification schemas
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    NotificationType:
+      type: string
+      enum:
+        - ASSIGNMENT_PUBLISHED
+        - SUBMISSION_GRADED
+        - ATTEMPT_COMPLETED
+    NotificationResponse:
+      type: object
+      required:
+        - id
+        - type
+        - title
+        - read
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          $ref: "#/components/schemas/NotificationType"
+        title:
+          type: string
+        body:
+          type: string
+        referenceId:
+          type: string
+          format: uuid
+        read:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+    NotificationListResponse:
+      allOf:
+        - $ref: "common.yaml#/components/schemas/PageResponse"
+        - type: object
+          required:
+            - content
+            - unread
+          properties:
+            content:
+              type: array
+              items:
+                $ref: "#/components/schemas/NotificationResponse"
+            unread:
+              type: integer
+              format: int64
+              description: Total unread count for the current user.
