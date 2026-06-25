@@ -1,0 +1,91 @@
+# Codillas — local dev stack. Self-contained, env-based (no Vault).
+#   docker compose -f docker-compose.dev.yml up -d
+# Backend + frontend run on the host (mvn spring-boot:run / pnpm dev).
+# Vars have inline defaults, so it works with zero config; override via docker/.env.
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: codillas-postgres
+    restart: unless-stopped
+    ports: ["5432:5432"]
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-codillas}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-codillas}
+      POSTGRES_DB: ${POSTGRES_DB:-codillas}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-codillas} -d ${POSTGRES_DB:-codillas}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.6.3
+    container_name: codillas-keycloak
+    restart: unless-stopped
+    ports: ["8080:8080"]
+    command: start-dev --import-realm
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: ${POSTGRES_USER:-codillas}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-codillas}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      KC_HOSTNAME_STRICT: "false"
+      KC_HTTP_ENABLED: "true"
+      KC_HEALTH_ENABLED: "true"
+      # Outgoing Keycloak mail (verify/reset) → mailpit sink
+      KC_SPI_EMAIL_TEMPLATE_PROVIDER: freemarker
+    volumes:
+      - ./../backend/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
+    depends_on:
+      postgres: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8080"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+
+  minio:
+    image: minio/minio:latest
+    container_name: codillas-minio
+    restart: unless-stopped
+    ports: ["9000:9000", "9001:9001"]
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-codillas}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-codillas123}
+    volumes:
+      - minio_data:/data
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: codillas-minio-init
+    restart: "no"
+    depends_on: { minio: { condition: service_started } }
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-codillas}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-codillas123}
+      MINIO_BUCKET: ${MINIO_BUCKET:-codillas}
+    entrypoint: >
+      sh -c "until mc alias set local http://minio:9000 $$MINIO_ROOT_USER $$MINIO_ROOT_PASSWORD; do echo 'waiting for minio'; sleep 2; done &&
+             mc mb --ignore-existing local/$$MINIO_BUCKET &&
+             mc anonymous set download local/$$MINIO_BUCKET"
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: codillas-mailpit
+    restart: unless-stopped
+    ports: ["1025:1025", "8025:8025"]
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: "true"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "true"
+
+volumes:
+  postgres_data:
+  minio_data:

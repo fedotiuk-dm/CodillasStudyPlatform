@@ -1,0 +1,11 @@
+# Dev profile: run with SPRING_PROFILES_ACTIVE=dev against the docker stack.
+spring:
+  mail:
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}        # mailpit SMTP sink (UI on http://localhost:8025)
+  jpa:
+    show-sql: true
+
+logging:
+  level:
+    de.codillas: WARN

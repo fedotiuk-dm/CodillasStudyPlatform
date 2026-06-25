@@ -1,0 +1,117 @@
+{
+  "realm": "codillas",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "defaultRole": {
+    "name": "default-roles-codillas",
+    "description": "Default roles for the codillas realm",
+    "composite": true,
+    "clientRole": false,
+    "containerId": "codillas"
+  },
+  "roles": {
+    "realm": [
+      { "name": "ADMIN", "description": "Platform administrator" },
+      { "name": "TEACHER", "description": "Teacher / instructor" },
+      { "name": "STUDENT", "description": "Student" },
+      {
+        "name": "default-roles-codillas",
+        "description": "Default roles for the codillas realm",
+        "composite": true,
+        "composites": {
+          "realm": ["STUDENT"]
+        },
+        "clientRole": false,
+        "containerId": "codillas"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "codillas-frontend",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "redirectUris": ["http://localhost:3000/*"],
+      "webOrigins": ["http://localhost:3000"],
+      "attributes": { "post.logout.redirect.uris": "http://localhost:3000/*" },
+      "protocolMappers": [
+        {
+          "name": "realm-roles-flat",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "claim.name": "roles",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "userinfo.token.claim": "false"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "codillas-backend",
+      "enabled": true,
+      "publicClient": false,
+      "secret": "codillas-backend-secret",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "protocolMappers": [
+        {
+          "name": "realm-roles-flat",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "claim.name": "roles",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "userinfo.token.claim": "false"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "enabled": true,
+      "email": "admin@codillas.dev",
+      "emailVerified": true,
+      "firstName": "Ada",
+      "lastName": "Admin",
+      "credentials": [{ "type": "password", "value": "password", "temporary": false }],
+      "realmRoles": ["ADMIN"]
+    },
+    {
+      "username": "teacher",
+      "enabled": true,
+      "email": "teacher@codillas.dev",
+      "emailVerified": true,
+      "firstName": "Tom",
+      "lastName": "Teacher",
+      "credentials": [{ "type": "password", "value": "password", "temporary": false }],
+      "realmRoles": ["TEACHER"]
+    },
+    {
+      "username": "student",
+      "enabled": true,
+      "email": "student@codillas.dev",
+      "emailVerified": true,
+      "firstName": "Sam",
+      "lastName": "Student",
+      "credentials": [{ "type": "password", "value": "password", "temporary": false }],
+      "realmRoles": ["STUDENT"]
+    }
+  ]
+}

@@ -184,10 +184,17 @@ a notification or a gradebook update.
 
 ## 9. Security
 
-- **Keycloak** realm with roles Admin / Teacher / Student (config reused from
-  boosting).
-- Resource server validates JWT; method-level authorization at module API
-  boundaries.
+- Dedicated **Keycloak** realm `codillas` with realm roles `ADMIN` / `TEACHER` /
+  `STUDENT` (`backend/keycloak/realm-export.json`).
+- **No self-registration** (`registrationAllowed: false`) — admin/teacher create
+  accounts. In prod via the platform's admin screen → backend `user` module →
+  `keycloak-admin-client`; in dev, three seed users (admin/teacher/student,
+  password `password`).
+- **Default role is `STUDENT`**, assigned at user creation; promotion to
+  `TEACHER` / `ADMIN` is explicit.
+- Roles reach the app as a flat `roles` claim (realm "realm-roles-flat" mapper);
+  Spring maps it to `ROLE_*` via config. The resource server validates the JWT;
+  method-level `@PreAuthorize` guards endpoints at module API boundaries.
 
 ## 10. Tech stack
 
@@ -233,10 +240,11 @@ Each phase gets its own spec + implementation plan.
 | Gradebook      | Separate event-driven read model      | Clean for dashboards; decoupled from source modules                          |
 | Video          | Stay on Google Meet                   | Don't reinvent WebRTC                                                        |
 | Stack          | Next.js + Orval + Postgres            | Matches author's other production projects                                   |
+| Admin UI       | Single Next.js, role-gated `/admin/*` | One stack/pipeline; no second SPA or Vaadin in the Modulith backend          |
+| Dev infra      | Lean self-contained docker (no Vault) | Zero-config local + friendlier for OSS; Vault/Traefik/monitoring at deploy   |
 
 ## 13. Open questions
 
 - Question types for the test builder beyond single/multiple/text/code?
 - Does a control test need anti-cheat (tab-switch detection, question shuffling)?
 - Attendance: manual by teacher, or derived from Meet/login?
-- One Keycloak realm shared with other projects, or a dedicated realm?
