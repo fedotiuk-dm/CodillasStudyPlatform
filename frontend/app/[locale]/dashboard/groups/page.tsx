@@ -1,5 +1,5 @@
-import { ComingSoon } from "@/components/shared/coming-soon";
+import { GroupsView } from "@/views/groups/groups-view";
 
 export default function GroupsPage() {
-  return <ComingSoon title="Groups" />;
+  return <GroupsView />;
 }
