@@ -1,5 +1,5 @@
-import { ComingSoon } from "@/components/shared/coming-soon";
+import { HomeworkView } from "@/views/homework/homework-view";
 
 export default function HomeworkPage() {
-  return <ComingSoon title="Homework" />;
+  return <HomeworkView />;
 }
