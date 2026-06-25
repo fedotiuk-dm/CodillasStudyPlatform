@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { UserPicker, useProfileNames } from "@/components/shared/user-picker";
+import { UserPicker } from "@/components/shared/user-picker";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -23,6 +23,7 @@ import {
   useScheduleLesson,
 } from "@/lib/api/enrollment/enrollment/enrollment";
 import type { ScheduledLessonResponse } from "@/lib/api/enrollment/model";
+import { useProfileNames } from "@/lib/hooks/use-profile-names";
 
 export function GroupDetailDialog({
   groupId,

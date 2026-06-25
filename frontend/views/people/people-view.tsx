@@ -5,7 +5,6 @@ import { useState } from "react";
 
 import { DataState } from "@/components/shared/data-state";
 import { PageHeader } from "@/components/shared/page-header";
-import { useDebounced } from "@/components/shared/user-picker";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -17,6 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useListProfiles } from "@/lib/api/user/user/user";
+import { useDebounced } from "@/lib/hooks/use-debounced";
 
 export function PeopleView() {
   const [query, setQuery] = useState("");

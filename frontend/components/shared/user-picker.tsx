@@ -1,30 +1,13 @@
 "use client";
 
 import { Check, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import type { UserProfile } from "@/lib/api/user/model";
 import { useListProfiles } from "@/lib/api/user/user/user";
-
-/** Debounce any fast-changing value (no extra dependency). */
-export function useDebounced<T>(value: T, ms = 300): T {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const id = setTimeout(() => setDebounced(value), ms);
-    return () => clearTimeout(id);
-  }, [value, ms]);
-  return debounced;
-}
-
-/** Resolve userId → display name for showing names instead of UUIDs in lists. */
-// ponytail: loads up to 100 profiles; fine for a school-sized dev instance.
-export function useProfileNames() {
-  const { data } = useListProfiles({ size: 100 });
-  const map = new Map((data?.content ?? []).map((p) => [p.userId, p.displayName]));
-  return (userId: string) => map.get(userId) ?? userId;
-}
+import { useDebounced } from "@/lib/hooks/use-debounced";
 
 function useProfileSearch(query: string) {
   const q = useDebounced(query.trim());
