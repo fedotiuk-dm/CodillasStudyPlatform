@@ -58,6 +58,12 @@
       <artifactId>spring-security-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- MinIO container for the files end-to-end test. -->
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-minio</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

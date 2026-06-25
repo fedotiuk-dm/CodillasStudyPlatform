@@ -1,2 +1,6 @@
-# Liquibase changelog for the 'files' module. Add changesets under changes/.
-databaseChangeLog: []
+# Files module changelog — SemVer 2.0.0: https://semver.org/spec/v2.0.0/
+databaseChangeLog:
+  # 0.1.0 — stored file metadata
+  - include:
+      file: changes/0.1.0/0.1.0-create-stored-files.yaml
+      relativeToChangelogFile: true

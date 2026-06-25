@@ -1,0 +1,118 @@
+openapi: 3.0.4
+info:
+  title: Codillas Files API
+  description: File storage (S3/minio) for homework / materials / chat attachments.
+  version: 0.1.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    name: Codillas
+    email: support@codillas.de
+servers:
+  - url: http://localhost:8081
+    description: Local development
+tags:
+  - name: files
+    description: Upload / download / metadata
+paths:
+  /api/files:
+    post:
+      tags: [files]
+      operationId: uploadFile
+      summary: Upload a file
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                referenceType:
+                  $ref: "files-schemas.yaml#/components/schemas/FileReferenceType"
+                referenceId:
+                  type: string
+                  format: uuid
+      responses:
+        "201":
+          description: Stored
+          content:
+            application/json:
+              schema:
+                $ref: "files-schemas.yaml#/components/schemas/StoredFileResponse"
+        "400":
+          $ref: "common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+  /api/files/{fileId}:
+    get:
+      tags: [files]
+      operationId: downloadFile
+      summary: Download a file's content
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: File content
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+    delete:
+      tags: [files]
+      operationId: deleteFile
+      summary: Delete a file
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Deleted
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+  /api/files/{fileId}/metadata:
+    get:
+      tags: [files]
+      operationId: getFileMetadata
+      summary: A file's metadata
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Metadata
+          content:
+            application/json:
+              schema:
+                $ref: "files-schemas.yaml#/components/schemas/StoredFileResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"

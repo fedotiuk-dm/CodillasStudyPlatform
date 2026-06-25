@@ -36,6 +36,7 @@
     <java.version>25</java.version>
     <!-- Versions not managed by the Spring Boot BOM -->
     <spring-modulith.version>2.1.0</spring-modulith.version>
+    <awssdk.version>2.46.17</awssdk.version>
     <mapstruct.version>1.6.3</mapstruct.version>
     <springdoc.version>3.0.3</springdoc.version>
     <keycloak.version>26.0.9</keycloak.version>
@@ -63,6 +64,13 @@
         <groupId>org.testcontainers</groupId>
         <artifactId>testcontainers-bom</artifactId>
         <version>${testcontainers.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>bom</artifactId>
+        <version>${awssdk.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>

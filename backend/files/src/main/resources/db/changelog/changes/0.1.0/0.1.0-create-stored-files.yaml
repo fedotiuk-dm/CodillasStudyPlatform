@@ -1,0 +1,50 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.1.0-create-stored-files
+      author: codillas
+      comment: Create stored_files metadata table (initial development 0.1.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: stored_files
+      changes:
+        - createTable:
+            tableName: stored_files
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: storage_key
+                  type: varchar(200)
+                  constraints: { nullable: false, unique: true }
+              - column:
+                  name: original_filename
+                  type: varchar(255)
+                  constraints: { nullable: false }
+              - column:
+                  name: content_type
+                  type: varchar(100)
+                  constraints: { nullable: false }
+              - column:
+                  name: file_size
+                  type: bigint
+                  constraints: { nullable: false }
+              - column:
+                  name: uploaded_by
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: reference_type
+                  type: varchar(20)
+              - column:
+                  name: reference_id
+                  type: uuid
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz

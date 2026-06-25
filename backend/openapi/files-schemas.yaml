@@ -1,0 +1,44 @@
+openapi: 3.0.4
+info:
+  title: Codillas Files schemas
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    FileReferenceType:
+      type: string
+      description: What the file is attached to.
+      enum:
+        - HOMEWORK
+        - CHAT
+        - MATERIAL
+    StoredFileResponse:
+      type: object
+      required:
+        - id
+        - originalFilename
+        - contentType
+        - fileSize
+        - uploadedBy
+      properties:
+        id:
+          type: string
+          format: uuid
+        originalFilename:
+          type: string
+        contentType:
+          type: string
+        fileSize:
+          type: integer
+          format: int64
+        uploadedBy:
+          type: string
+          format: uuid
+        referenceType:
+          $ref: "#/components/schemas/FileReferenceType"
+        referenceId:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time

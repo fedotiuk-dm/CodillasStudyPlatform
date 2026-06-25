@@ -29,6 +29,16 @@ spring:
           authorities-claim-name: roles     # flat claim added by the realm's "realm-roles-flat" mapper
           authorities-prefix: ROLE_
 
+codillas:
+  files:
+    # S3/minio object storage. The client is lazy — these defaults let it build in every profile;
+    # a connection is only made on an actual upload/download.
+    bucket: ${FILES_BUCKET:codillas}
+    endpoint: ${FILES_ENDPOINT:http://localhost:9000}
+    region: ${FILES_REGION:us-east-1}
+    access-key: ${FILES_ACCESS_KEY:minioadmin}
+    secret-key: ${FILES_SECRET_KEY:minioadmin}
+
 server:
   port: ${SERVER_PORT:8081}
 
