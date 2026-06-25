@@ -2,6 +2,10 @@ spring:
   application:
     name: codillas-study-platform
 
+  mvc:
+    problemdetails:
+      enabled: true            # RFC 9457 ProblemDetail for framework exceptions
+
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/codillas}
     username: ${DB_USER:codillas}

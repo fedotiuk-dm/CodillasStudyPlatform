@@ -1,9 +1,10 @@
 package de.codillas.course.service;
 
+import org.springframework.data.domain.Pageable;
+
 import de.codillas.course.api.dto.CourseListResponse;
 import de.codillas.course.api.dto.CourseResponse;
 import de.codillas.course.api.dto.CreateCourseRequest;
-import org.springframework.data.domain.Pageable;
 
 public interface CourseService {
 

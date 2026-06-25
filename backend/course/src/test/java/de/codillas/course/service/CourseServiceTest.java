@@ -5,23 +5,26 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import de.codillas.course.api.dto.CourseListResponse;
 import de.codillas.course.api.dto.CourseResponse;
 import de.codillas.course.api.dto.CreateCourseRequest;
 import de.codillas.course.domain.model.Course;
 import de.codillas.course.domain.repository.CourseRepository;
 import de.codillas.course.mapper.CourseMapper;
-import java.util.List;
-import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class CourseServiceTest {

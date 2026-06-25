@@ -1,14 +1,16 @@
 package de.codillas.course.service;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import de.codillas.course.api.dto.CourseListResponse;
 import de.codillas.course.api.dto.CourseResponse;
 import de.codillas.course.api.dto.CreateCourseRequest;
 import de.codillas.course.domain.repository.CourseRepository;
 import de.codillas.course.mapper.CourseMapper;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor

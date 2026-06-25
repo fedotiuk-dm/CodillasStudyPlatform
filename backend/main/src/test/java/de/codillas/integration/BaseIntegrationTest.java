@@ -1,9 +1,10 @@
 package de.codillas.integration;
 
-import de.codillas.CodillasStudyPlatformApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.context.ActiveProfiles;
+
+import de.codillas.CodillasStudyPlatformApplication;
 
 /**
  * Base for integration tests. Boots the real application against a Testcontainers Postgres with the

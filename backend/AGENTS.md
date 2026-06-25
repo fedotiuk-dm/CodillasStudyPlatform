@@ -33,14 +33,18 @@ config/                      module-local @ConfigurationProperties
 
 ## API-first (OpenAPI → generated Spring interfaces)
 
-- Specs live in `backend/openapi/`: `common.yaml` (shared: `PageResponse`, page params, `ErrorResponse`),
-  `<module>-paths.yaml`, `<module>-schemas.yaml`.
+- Specs live in `backend/openapi/`: `common.yaml` (shared `PageResponse`, page params,
+  `ProblemDetail`, reusable error `responses`), `<module>-paths.yaml`, `<module>-schemas.yaml`.
+  Each `-paths.yaml` carries a full header (info + license + `servers` + `tags`).
 - The module pom adds an `openapi-generator` `<execution>` (config inherited from the parent) +
   `build-helper` to add generated sources. `apiPackage = de.codillas.<module>.api`,
   `modelPackage = de.codillas.<module>.api.dto`.
-- **Pagination = `x-spring-paginated: true`** on the operation → generates a Spring `Pageable`
-  param. Do NOT also add manual `page`/`size` params on the same operation. List responses are
-  `allOf [PageResponse, { content: [...] }]`.
+- **Pagination**: set BOTH `x-spring-paginated: true` (backend → `Pageable`) AND the explicit
+  `$ref` page/size/sort params from `common.yaml` (Orval and other clients don't understand the
+  vendor extension; the Spring generator ignores the params, so no duplication). List responses are
+  `allOf [PageResponse, { content }]`.
+- **Errors**: `$ref common.yaml#/components/responses/{BadRequest,Unauthorized,Forbidden,NotFound,Conflict}`
+  instead of re-declaring error bodies. The backend emits matching RFC 9457 `ProblemDetail`.
 - Times are `Instant` (generator maps OffsetDateTime/LocalDateTime → Instant). Nullable is jspecify.
 - Generated code is **read-only** — change the spec, regenerate. Orval consumes the same specs.
 
@@ -48,12 +52,14 @@ config/                      module-local @ConfigurationProperties
 
 1. **Controller** (`web/`) — `@RestController @RequiredArgsConstructor implements <Module>Api`.
    Thin delegator: no business logic, delegates to the service, returns `ResponseEntity<Dto>`
-   with status codes (201 create, 200 read/update, 204 delete). Authorize per method with
-   `@PreAuthorize` (`ROLE_ADMIN`/`ROLE_TEACHER`/`ROLE_STUDENT`).
+   with status codes (201 create, 200 read/update, 204 delete). Authorize per method with the
+   `shared.security` annotations — `@RequiresAdmin` / `@RequiresTeacher` / `@RequiresStudent` /
+   `@RequiresAuthenticated` — never raw `@PreAuthorize` strings in controllers.
 2. **Service** — `<X>Service` interface + `<X>ServiceImpl` (`@Service @RequiredArgsConstructor
    @Slf4j @Transactional(readOnly = true)`; `@Transactional` on writers). Holds business logic;
-   maps via the mapper; throws `NotFoundException`/`ConflictException` (in `shared`). Pattern:
-   private `findByIdOrThrow(id)`.
+   maps via the mapper; throws `shared.exception` `NotFoundException` / `ConflictException` /
+   `BadRequestException` (RFC 9457 ProblemDetail, rendered by Spring + `GlobalExceptionHandler`).
+   Pattern: private `findByIdOrThrow(id)`.
 3. **Repository** — `@Repository public interface … extends JpaRepository<Entity, UUID>` + derived finders.
 4. **Domain entity** — `@Entity @Getter @Setter @NoArgsConstructor @SuperBuilder`, extends the
    shared auditable base. `@Builder.Default` for collections/defaults.

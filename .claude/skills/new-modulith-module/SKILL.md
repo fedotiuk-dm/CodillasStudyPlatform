@@ -39,14 +39,18 @@ backend/openapi/<module>-paths.yaml, <module>-schemas.yaml      (specs live at b
   get:
     tags: [foo]
     operationId: listFoos
-    x-spring-paginated: true            # → Spring Pageable param; do NOT add page/size params too
+    x-spring-paginated: true            # backend → Pageable (generator ignores the params below)
     parameters:
       - { name: search, in: query, required: false, schema: { type: string } }
+      - $ref: "common.yaml#/components/parameters/PageNumber"   # explicit params so Orval gets pagination
+      - $ref: "common.yaml#/components/parameters/PageSize"
+      - $ref: "common.yaml#/components/parameters/Sort"
     responses:
       "200":
         content:
           application/json:
             schema: { $ref: "foo-schemas.yaml#/components/schemas/FooListResponse" }
+      "401": { $ref: "common.yaml#/components/responses/Unauthorized" }
   post:
     tags: [foo]
     operationId: createFoo
@@ -159,12 +163,12 @@ public class FooServiceImpl implements FooService {
 public class FooController implements FooApi {
   private final FooService service;
 
-  @Override @PreAuthorize("hasRole('STUDENT')")
+  @Override @RequiresAuthenticated
   public ResponseEntity<FooListResponse> listFoos(String search, Pageable pageable) {
     return ResponseEntity.ok(service.listFoos(pageable));
   }
 
-  @Override @PreAuthorize("hasRole('ADMIN')")
+  @Override @RequiresAdmin
   public ResponseEntity<Foo> createFoo(CreateFooRequest request) {
     return ResponseEntity.status(HttpStatus.CREATED).body(service.createFoo(request));
   }

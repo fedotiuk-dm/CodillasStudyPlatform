@@ -1,7 +1,20 @@
 openapi: 3.0.4
 info:
   title: Codillas Course API
+  description: Course catalog — admin-authored course templates (structure & content).
   version: 1.0.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    name: Codillas
+    email: support@codillas.de
+servers:
+  - url: http://localhost:8081
+    description: Local development
+tags:
+  - name: course
+    description: Course catalog operations
 paths:
   /api/courses:
     get:
@@ -9,12 +22,17 @@ paths:
       operationId: listCourses
       summary: List courses (paginated)
       x-spring-paginated: true
+      parameters:
+        - $ref: "common.yaml#/components/parameters/PageNumber"
+        - $ref: "common.yaml#/components/parameters/PageSize"
+        - $ref: "common.yaml#/components/parameters/Sort"
       responses:
         "200":
           description: Paginated courses
           content:
             application/json:
               schema: { $ref: "course-schemas.yaml#/components/schemas/CourseListResponse" }
+        "401": { $ref: "common.yaml#/components/responses/Unauthorized" }
     post:
       tags: [course]
       operationId: createCourse
@@ -30,3 +48,6 @@ paths:
           content:
             application/json:
               schema: { $ref: "course-schemas.yaml#/components/schemas/CourseResponse" }
+        "400": { $ref: "common.yaml#/components/responses/BadRequest" }
+        "401": { $ref: "common.yaml#/components/responses/Unauthorized" }
+        "403": { $ref: "common.yaml#/components/responses/Forbidden" }

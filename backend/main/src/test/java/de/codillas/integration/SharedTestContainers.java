@@ -1,6 +1,7 @@
 package de.codillas.integration;
 
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
 /**
