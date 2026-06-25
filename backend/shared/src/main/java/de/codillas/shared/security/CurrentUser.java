@@ -7,4 +7,9 @@ public interface CurrentUser {
 
   /** The Keycloak subject (user id) of the authenticated request. */
   UUID id();
+
+  /**
+   * A human display name from the token ({@code name} / {@code preferred_username}), else the id.
+   */
+  String displayName();
 }

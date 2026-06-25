@@ -23,7 +23,7 @@ POSTGRES_DB=codillas
 KEYCLOAK_ADMIN=admin
 KEYCLOAK_ADMIN_PASSWORD=admin
 
-# minio (S3 for the files module) — console http://localhost:9001.
+# minio (S3 for the files module) — console http://localhost:9101.
 MINIO_ROOT_USER=codillas
 MINIO_ROOT_PASSWORD=codillas123
 MINIO_BUCKET=codillas
@@ -38,7 +38,7 @@ cat <<'EOF'
 Stack is starting:
   Postgres   localhost:5432            (codillas / codillas)  + a `keycloak` DB
   Keycloak   http://localhost:8080     console admin/admin · realm: codillas
-  minio      http://localhost:9001     (codillas / codillas123)  bucket: codillas
+  minio      http://localhost:9101     (codillas / codillas123)  bucket: codillas
   mailpit    http://localhost:8025
 
 App logins (realm users):  admin/admin · teacher/teacher · student/student

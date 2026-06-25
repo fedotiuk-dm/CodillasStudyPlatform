@@ -1,14 +1,13 @@
 package de.codillas.user.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 import java.util.UUID;
 
-import de.codillas.shared.exception.NotFoundException;
 import de.codillas.shared.security.CurrentUser;
 import de.codillas.user.api.dto.UpdateProfileRequest;
 import de.codillas.user.api.dto.UserProfile;
@@ -46,13 +45,22 @@ class UserServiceTest {
   }
 
   @Test
-  @DisplayName("getMyProfile throws NotFound when the profile does not exist")
-  void getMyProfile_whenMissing_throwsNotFound() {
+  @DisplayName("getMyProfile provisions a profile from the token on first access")
+  void getMyProfile_whenMissing_provisionsFromToken() {
     UUID userId = UUID.randomUUID();
+    UserProfile dto = new UserProfile(userId, "Ada Admin");
     when(currentUser.id()).thenReturn(userId);
+    when(currentUser.displayName()).thenReturn("Ada Admin");
     when(repository.findByUserId(userId)).thenReturn(Optional.empty());
+    when(repository.save(any(Profile.class))).thenAnswer(i -> i.getArgument(0));
+    when(mapper.toResponse(any(Profile.class))).thenReturn(dto);
 
-    assertThatThrownBy(service::getMyProfile).isInstanceOf(NotFoundException.class);
+    assertThat(service.getMyProfile()).isSameAs(dto);
+
+    org.mockito.ArgumentCaptor<Profile> saved = org.mockito.ArgumentCaptor.forClass(Profile.class);
+    verify(repository).save(saved.capture());
+    assertThat(saved.getValue().getUserId()).isEqualTo(userId);
+    assertThat(saved.getValue().getDisplayName()).isEqualTo("Ada Admin");
   }
 
   @Test

@@ -34,7 +34,7 @@ codillas:
     # S3/minio object storage. The client is lazy — these defaults let it build in every profile;
     # a connection is only made on an actual upload/download.
     bucket: ${FILES_BUCKET:codillas}
-    endpoint: ${FILES_ENDPOINT:http://localhost:9000}
+    endpoint: ${FILES_ENDPOINT:http://localhost:9100}   # dev minio (host port; 9000 avoids Portainer)
     region: ${FILES_REGION:us-east-1}
     access-key: ${FILES_ACCESS_KEY:minioadmin}
     secret-key: ${FILES_SECRET_KEY:minioadmin}

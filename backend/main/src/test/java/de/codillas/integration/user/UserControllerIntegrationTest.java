@@ -62,10 +62,14 @@ class UserControllerIntegrationTest extends BaseIntegrationTest {
   }
 
   @Test
-  @DisplayName("GET /api/users/me returns 404 when the user has no profile yet")
-  void getMyProfile_whenNoProfile_returns404() throws Exception {
+  @DisplayName("GET /api/users/me provisions a profile on first access (no 404)")
+  void getMyProfile_whenNoProfile_provisions() throws Exception {
+    UUID userId = UUID.randomUUID();
     mockMvc
-        .perform(get("/api/users/me").with(asUser(UUID.randomUUID())))
-        .andExpect(status().isNotFound());
+        .perform(get("/api/users/me").with(asUser(userId)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.userId").value(userId.toString()))
+        // No name claim on the test token → display name falls back to the subject.
+        .andExpect(jsonPath("$.displayName").value(userId.toString()));
   }
 }

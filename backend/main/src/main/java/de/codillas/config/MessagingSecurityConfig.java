@@ -12,7 +12,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 /**
  * JWT authentication for STOMP, in its own config so it does not sit on the WebSocketConfig →
  * StompAuthInterceptor → AuthenticationManager cycle. Reuses the resource server's auto-configured
- * decoder + converter, so the {@code roles}→{@code ROLE_*} mapping stays in {@code application.yml}.
+ * decoder + converter, so the {@code roles}→{@code ROLE_*} mapping stays in {@code
+ * application.yml}.
  */
 @Configuration
 @Profile("!integration-test")

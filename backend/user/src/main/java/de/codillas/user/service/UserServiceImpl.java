@@ -5,7 +5,6 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import de.codillas.shared.exception.NotFoundException;
 import de.codillas.shared.security.CurrentUser;
 import de.codillas.user.api.dto.UpdateProfileRequest;
 import de.codillas.user.api.dto.UserProfile;
@@ -24,11 +23,24 @@ public class UserServiceImpl implements UserService {
   private final ProfileMapper mapper;
   private final CurrentUser currentUser;
 
+  /**
+   * Returns the caller's profile, provisioning one on first access (i.e. right after a Keycloak
+   * login) from the token's display name — so a freshly-created Keycloak user always has a profile.
+   */
   @Override
+  @Transactional
   public UserProfile getMyProfile() {
     UUID userId = currentUser.id();
     Profile profile =
-        repository.findByUserId(userId).orElseThrow(() -> new NotFoundException("Profile", userId));
+        repository
+            .findByUserId(userId)
+            .orElseGet(
+                () ->
+                    repository.save(
+                        Profile.builder()
+                            .userId(userId)
+                            .displayName(currentUser.displayName())
+                            .build()));
     return mapper.toResponse(profile);
   }
 

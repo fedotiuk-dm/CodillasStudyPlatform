@@ -57,7 +57,8 @@ services:
     image: minio/minio:latest
     container_name: codillas-minio
     restart: unless-stopped
-    ports: ["9000:9000", "9001:9001"]
+    # Host ports 9100/9101 (9000 is commonly taken — e.g. Portainer). In-container stays 9000/9001.
+    ports: ["9100:9000", "9101:9001"]
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-codillas}
