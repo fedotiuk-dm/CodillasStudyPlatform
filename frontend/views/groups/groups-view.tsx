@@ -16,13 +16,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useListCourses } from "@/lib/api/course/course/course";
-import {
-  getListGroupsQueryKey,
-  useListGroups,
-} from "@/lib/api/enrollment/enrollment/enrollment";
+import { getListGroupsQueryKey, useListGroups } from "@/lib/api/enrollment/enrollment/enrollment";
 import { useHasAnyRole } from "@/lib/auth";
 import { Role } from "@/lib/constants";
 import { CreateGroupDialog } from "./create-group-dialog";
+import { GroupDetailDialog } from "./group-detail-dialog";
 
 export function GroupsView() {
   const { data, isLoading, isError } = useListGroups();
@@ -30,10 +28,10 @@ export function GroupsView() {
   const queryClient = useQueryClient();
   const canManage = useHasAnyRole([Role.ADMIN, Role.TEACHER]);
   const [open, setOpen] = useState(false);
+  const [detail, setDetail] = useState<{ id: string; name: string } | null>(null);
 
   const groups = data?.content ?? [];
-  const courseName = (id: string) =>
-    coursesData?.content?.find((c) => c.id === id)?.name ?? "—";
+  const courseName = (id: string) => coursesData?.content?.find((c) => c.id === id)?.name ?? "—";
 
   return (
     <>
@@ -52,14 +50,28 @@ export function GroupsView() {
                   <TableHead>Name</TableHead>
                   <TableHead>Course</TableHead>
                   <TableHead>Start date</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {groups.map((g) => (
                   <TableRow key={g.id}>
                     <TableCell className="font-medium">{g.name}</TableCell>
-                    <TableCell className="text-muted-foreground">{courseName(g.courseId)}</TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {courseName(g.courseId)}
+                    </TableCell>
                     <TableCell className="text-muted-foreground">{g.startDate ?? "—"}</TableCell>
+                    <TableCell className="text-right">
+                      {canManage && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setDetail({ id: g.id, name: g.name })}
+                        >
+                          Manage
+                        </Button>
+                      )}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -73,6 +85,15 @@ export function GroupsView() {
         onOpenChange={setOpen}
         onCreated={() => queryClient.invalidateQueries({ queryKey: getListGroupsQueryKey() })}
       />
+
+      {detail && (
+        <GroupDetailDialog
+          groupId={detail.id}
+          groupName={detail.name}
+          open={!!detail}
+          onOpenChange={(o) => !o && setDetail(null)}
+        />
+      )}
     </>
   );
 }

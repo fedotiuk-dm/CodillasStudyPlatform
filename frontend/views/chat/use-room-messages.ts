@@ -33,7 +33,9 @@ export function useRoomMessages(roomId: string) {
   const history = data?.content ?? [];
   const byId = new Map<string, ChatMessageResponse>();
   for (const m of [...history, ...live]) byId.set(m.id, m);
-  const messages = [...byId.values()].sort((a, b) => (a.sentAt ?? "").localeCompare(b.sentAt ?? ""));
+  const messages = [...byId.values()].sort((a, b) =>
+    (a.sentAt ?? "").localeCompare(b.sentAt ?? ""),
+  );
 
   function send(content: string) {
     getChatSocket().publish(`/app/chat/${roomId}/send`, { content });

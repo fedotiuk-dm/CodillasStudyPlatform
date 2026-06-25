@@ -33,6 +33,7 @@ import {
 import { useHasAnyRole } from "@/lib/auth";
 import { Role } from "@/lib/constants";
 import { CreateAssignmentDialog } from "./create-assignment-dialog";
+import { SubmissionsDialog } from "./submissions-dialog";
 
 export function HomeworkView() {
   const { data: groupsData } = useListGroups();
@@ -41,6 +42,7 @@ export function HomeworkView() {
   const queryClient = useQueryClient();
   const canManage = useHasAnyRole([Role.ADMIN, Role.TEACHER]);
   const [open, setOpen] = useState(false);
+  const [subsFor, setSubsFor] = useState<{ id: string; title: string } | null>(null);
 
   const { data, isLoading, isError } = useListAssignments(
     { groupId },
@@ -117,7 +119,14 @@ export function HomeworkView() {
                       <TableCell className="text-muted-foreground">
                         {a.dueAt ? new Date(a.dueAt).toLocaleString() : "—"}
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="space-x-2 text-right">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSubsFor({ id: a.id, title: a.title })}
+                        >
+                          Submissions
+                        </Button>
                         {canManage && a.status === "DRAFT" && (
                           <Button
                             variant="outline"
@@ -144,6 +153,16 @@ export function HomeworkView() {
           open={open}
           onOpenChange={setOpen}
           onCreated={invalidate}
+        />
+      )}
+
+      {subsFor && (
+        <SubmissionsDialog
+          assignmentId={subsFor.id}
+          assignmentTitle={subsFor.title}
+          canManage={canManage}
+          open={!!subsFor}
+          onOpenChange={(o) => !o && setSubsFor(null)}
         />
       )}
     </>

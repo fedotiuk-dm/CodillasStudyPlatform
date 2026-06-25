@@ -26,6 +26,7 @@ import { useHasAnyRole } from "@/lib/auth";
 import { Role } from "@/lib/constants";
 import { CreateTestDialog } from "./create-test-dialog";
 import { ManageQuestionsDialog } from "./manage-questions-dialog";
+import { TakeAttemptDialog } from "./take-attempt-dialog";
 
 export function AssessmentView() {
   const { data, isLoading, isError } = useListTests();
@@ -33,11 +34,11 @@ export function AssessmentView() {
   const canManage = useHasAnyRole([Role.ADMIN, Role.TEACHER]);
   const [createOpen, setCreateOpen] = useState(false);
   const [manageTestId, setManageTestId] = useState<string | null>(null);
+  const [takeTest, setTakeTest] = useState<{ id: string; title: string } | null>(null);
   const publish = usePublishTest();
 
   const tests = data?.content ?? [];
-  const invalidate = () =>
-    queryClient.invalidateQueries({ queryKey: getListTestsQueryKey() });
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: getListTestsQueryKey() });
 
   function onPublish(testId: string) {
     publish.mutate(
@@ -57,7 +58,9 @@ export function AssessmentView() {
       <PageHeader
         title="Tests"
         description="Auto-graded tests and controls."
-        action={canManage ? <Button onClick={() => setCreateOpen(true)}>New test</Button> : undefined}
+        action={
+          canManage ? <Button onClick={() => setCreateOpen(true)}>New test</Button> : undefined
+        }
       />
 
       <Card>
@@ -96,6 +99,11 @@ export function AssessmentView() {
                           </Button>
                         </>
                       )}
+                      {t.status === "PUBLISHED" && (
+                        <Button size="sm" onClick={() => setTakeTest({ id: t.id, title: t.title })}>
+                          Take
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -112,6 +120,16 @@ export function AssessmentView() {
           testId={manageTestId}
           open={!!manageTestId}
           onOpenChange={(o) => !o && setManageTestId(null)}
+        />
+      )}
+
+      {takeTest && (
+        <TakeAttemptDialog
+          testId={takeTest.id}
+          testTitle={takeTest.title}
+          canManage={canManage}
+          open={!!takeTest}
+          onOpenChange={(o) => !o && setTakeTest(null)}
         />
       )}
     </>

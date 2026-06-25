@@ -25,8 +25,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { downloadFile, useDeleteFile, useUploadFile } from "@/lib/api/files/files/files";
-import { FileReferenceType } from "@/lib/api/files/model";
 import type { StoredFileResponse } from "@/lib/api/files/model";
+import { FileReferenceType } from "@/lib/api/files/model";
 
 function humanSize(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;

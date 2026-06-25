@@ -121,7 +121,9 @@ export function CreateRoomDialog({
                   <FormControl>
                     <Input placeholder="uuid, uuid, …" {...field} />
                   </FormControl>
-                  <p className="text-muted-foreground text-sm">Comma-separated Keycloak user ids.</p>
+                  <p className="text-muted-foreground text-sm">
+                    Comma-separated Keycloak user ids.
+                  </p>
                   <FormMessage />
                 </FormItem>
               )}

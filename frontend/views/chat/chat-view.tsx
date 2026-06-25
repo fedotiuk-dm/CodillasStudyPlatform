@@ -81,9 +81,7 @@ export function ChatView() {
 
       <Card className="grid h-[70vh] grid-cols-[16rem_1fr] overflow-hidden p-0">
         <div className="overflow-y-auto border-r">
-          {rooms.length === 0 && (
-            <p className="p-4 text-muted-foreground text-sm">No rooms yet.</p>
-          )}
+          {rooms.length === 0 && <p className="p-4 text-muted-foreground text-sm">No rooms yet.</p>}
           {rooms.map((r) => (
             <button
               type="button"
