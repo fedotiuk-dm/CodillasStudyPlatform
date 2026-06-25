@@ -54,7 +54,7 @@ config/                      module-local @ConfigurationProperties
    @Slf4j @Transactional(readOnly = true)`; `@Transactional` on writers). Holds business logic;
    maps via the mapper; throws `NotFoundException`/`ConflictException` (in `shared`). Pattern:
    private `findByIdOrThrow(id)`.
-3. **Repository** — `extends JpaRepository<Entity, UUID>` + derived finders.
+3. **Repository** — `@Repository public interface … extends JpaRepository<Entity, UUID>` + derived finders.
 4. **Domain entity** — `@Entity @Getter @Setter @NoArgsConstructor @SuperBuilder`, extends the
    shared auditable base. `@Builder.Default` for collections/defaults.
 
@@ -104,14 +104,21 @@ Per-feature order (double loop):
 4. Wire the thin controller → acceptance goes GREEN. Refactor.
 5. `ApplicationModules.of(...).verify()` guards boundaries.
 
+**Where tests live** (this is what makes autowiring resolve with no `@SuppressWarnings`):
+- **Per-module → pure unit tests** (`@ExtendWith(MockitoExtension.class)`, mock the
+  repository/mapper; no Spring, no DB). Most tests live here. Library modules have no
+  `@SpringBootApplication`, so **never put `@SpringBootTest` in a module** — the IDE can't model its
+  beans and false-flags `@Autowired`.
+- **`main` → integration tests** that need the DB or full context. Extend `BaseIntegrationTest`
+  (boots the real app against a Testcontainers **Postgres** via `@ServiceConnection`, runs the
+  production master Liquibase changelog, `ddl-auto: validate`). Field `@Autowired` resolves cleanly
+  because `main` has the `@SpringBootApplication`. Never H2; never `@Container` + `@DynamicPropertySource`.
+
 Test layers:
-- **Domain logic** — pure JUnit, no Spring/DB (status machines, scoring). Fastest.
-- **Repository / Hibernate mapping** — `@SpringBootTest(webEnvironment = NONE)` against a
-  Testcontainers **Postgres** wired by Spring Boot `@ServiceConnection` (extend a
-  `PostgresTestContainer` base with a `static final PostgreSQLContainer` field — never `@Container`
-  + `@DynamicPropertySource`, never H2). The module's Liquibase changelog runs the real schema.
-- **Service** — happy path + `NotFound` / `Conflict`.
-- **Controller** — slice/integration: status codes, role security, pagination.
+- **Domain logic** — pure JUnit in the module (status machines, scoring). Fastest.
+- **Service** — module unit test, mocked repository/mapper; happy path + `NotFound` / `Conflict`.
+- **Repository / persistence** — integration test in `main` (`BaseIntegrationTest`): real schema + mapping.
+- **Controller** — integration test in `main` (`@AutoConfigureMockMvc` + mock `jwt()`): status, roles, pagination.
 
 ## Verify
 

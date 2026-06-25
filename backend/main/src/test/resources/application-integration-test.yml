@@ -1,0 +1,14 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate          # entities must match the real Liquibase schema
+  liquibase:
+    change-log: classpath:db/changelog/codillas-changelog.yaml
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Both set so the decoder is built lazily from jwk-set-uri (no eager OIDC fetch at
+          # startup). Never actually hit — integration tests authenticate via mock jwt() processors.
+          issuer-uri: http://localhost:8180/realms/test
+          jwk-set-uri: http://localhost:8180/realms/test/protocol/openid-connect/certs

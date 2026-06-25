@@ -105,6 +105,7 @@ public class Foo extends BaseAuditableEntity {
   @Column(nullable = false) private String name;
 }
 
+@Repository
 public interface FooRepository extends JpaRepository<Foo, UUID> {}
 ```
 
