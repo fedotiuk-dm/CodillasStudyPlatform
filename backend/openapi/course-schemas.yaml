@@ -5,7 +5,7 @@ info:
 paths: {}
 components:
   schemas:
-    Course:
+    CourseResponse:
       type: object
       required: [id, name]
       properties:
@@ -27,4 +27,4 @@ components:
           properties:
             content:
               type: array
-              items: { $ref: "#/components/schemas/Course" }
+              items: { $ref: "#/components/schemas/CourseResponse" }
