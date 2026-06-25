@@ -33,15 +33,22 @@ backend/openapi/<module>-paths.yaml, <module>-schemas.yaml      (specs live at b
 - `package-info.java`: `@ApplicationModule` over `package de.codillas.foo;`.
 
 ### 2. Write the OpenAPI spec (API-first)
-`backend/openapi/foo-paths.yaml` + `foo-schemas.yaml`. Paginated list operation:
+`backend/openapi/foo-paths.yaml` + `foo-schemas.yaml`. Use **block YAML** (expanded), not flow
+`{}`. Each `-paths.yaml` opens with a full header (`info` + `license` + `servers` + `tags`).
+Paginated list operation:
 ```yaml
 /api/foos:
   get:
-    tags: [foo]
+    tags:
+      - foo
     operationId: listFoos
     x-spring-paginated: true            # backend → Pageable (generator ignores the params below)
     parameters:
-      - { name: search, in: query, required: false, schema: { type: string } }
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
       - $ref: "common.yaml#/components/parameters/PageNumber"   # explicit params so Orval gets pagination
       - $ref: "common.yaml#/components/parameters/PageSize"
       - $ref: "common.yaml#/components/parameters/Sort"
@@ -49,16 +56,28 @@ backend/openapi/<module>-paths.yaml, <module>-schemas.yaml      (specs live at b
       "200":
         content:
           application/json:
-            schema: { $ref: "foo-schemas.yaml#/components/schemas/FooListResponse" }
-      "401": { $ref: "common.yaml#/components/responses/Unauthorized" }
+            schema:
+              $ref: "foo-schemas.yaml#/components/schemas/FooListResponse"
+      "401":
+        $ref: "common.yaml#/components/responses/Unauthorized"
   post:
-    tags: [foo]
+    tags:
+      - foo
     operationId: createFoo
     requestBody:
       required: true
-      content: { application/json: { schema: { $ref: "foo-schemas.yaml#/components/schemas/CreateFooRequest" } } }
+      content:
+        application/json:
+          schema:
+            $ref: "foo-schemas.yaml#/components/schemas/CreateFooRequest"
     responses:
-      "201": { content: { application/json: { schema: { $ref: "foo-schemas.yaml#/components/schemas/Foo" } } } }
+      "201":
+        content:
+          application/json:
+            schema:
+              $ref: "foo-schemas.yaml#/components/schemas/Foo"
+      "400":
+        $ref: "common.yaml#/components/responses/BadRequest"
 ```
 ```yaml
 # foo-schemas.yaml
@@ -66,8 +85,13 @@ FooListResponse:
   allOf:
     - $ref: "common.yaml#/components/schemas/PageResponse"
     - type: object
-      required: [content]
-      properties: { content: { type: array, items: { $ref: "#/components/schemas/Foo" } } }
+      required:
+        - content
+      properties:
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/Foo"
 ```
 
 ### 3. Wire the generator (foo/pom.xml `<build><plugins>`)

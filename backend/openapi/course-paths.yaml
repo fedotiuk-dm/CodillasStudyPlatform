@@ -18,7 +18,8 @@ tags:
 paths:
   /api/courses:
     get:
-      tags: [course]
+      tags:
+        - course
       operationId: listCourses
       summary: List courses (paginated)
       x-spring-paginated: true
@@ -31,23 +32,31 @@ paths:
           description: Paginated courses
           content:
             application/json:
-              schema: { $ref: "course-schemas.yaml#/components/schemas/CourseListResponse" }
-        "401": { $ref: "common.yaml#/components/responses/Unauthorized" }
+              schema:
+                $ref: "course-schemas.yaml#/components/schemas/CourseListResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
     post:
-      tags: [course]
+      tags:
+        - course
       operationId: createCourse
       summary: Create a course
       requestBody:
         required: true
         content:
           application/json:
-            schema: { $ref: "course-schemas.yaml#/components/schemas/CreateCourseRequest" }
+            schema:
+              $ref: "course-schemas.yaml#/components/schemas/CreateCourseRequest"
       responses:
         "201":
           description: Created
           content:
             application/json:
-              schema: { $ref: "course-schemas.yaml#/components/schemas/CourseResponse" }
-        "400": { $ref: "common.yaml#/components/responses/BadRequest" }
-        "401": { $ref: "common.yaml#/components/responses/Unauthorized" }
-        "403": { $ref: "common.yaml#/components/responses/Forbidden" }
+              schema:
+                $ref: "course-schemas.yaml#/components/schemas/CourseResponse"
+        "400":
+          $ref: "common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"

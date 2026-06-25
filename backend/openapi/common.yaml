@@ -18,13 +18,20 @@ components:
       in: query
       required: false
       description: Zero-based page index.
-      schema: { type: integer, minimum: 0, default: 0 }
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
     PageSize:
       name: size
       in: query
       required: false
       description: Number of items per page.
-      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
     Sort:
       name: sort
       in: query
@@ -32,7 +39,8 @@ components:
       description: "Sort criteria: property,(asc|desc). Repeatable."
       schema:
         type: array
-        items: { type: string }
+        items:
+          type: string
   schemas:
     # Base page envelope. A concrete list response is:
     #   MyListResponse:
@@ -40,43 +48,87 @@ components:
     #       - $ref: "common.yaml#/components/schemas/PageResponse"
     #       - type: object
     #         required: [content]
-    #         properties: { content: { type: array, items: { $ref: "...MyItem" } } }
+    #         properties:
+    #           content:
+    #             type: array
+    #             items:
+    #               $ref: "...MyItem"
     PageResponse:
       type: object
-      required: [totalElements, totalPages, size, number]
+      required:
+        - totalElements
+        - totalPages
+        - size
+        - number
       properties:
-        totalElements: { type: integer, format: int64, minimum: 0 }
-        totalPages: { type: integer, minimum: 0 }
-        size: { type: integer, minimum: 1 }
-        number: { type: integer, minimum: 0 }
-        numberOfElements: { type: integer, minimum: 0 }
-        first: { type: boolean }
-        last: { type: boolean }
-        empty: { type: boolean }
+        totalElements:
+          type: integer
+          format: int64
+          minimum: 0
+        totalPages:
+          type: integer
+          minimum: 0
+        size:
+          type: integer
+          minimum: 1
+        number:
+          type: integer
+          minimum: 0
+        numberOfElements:
+          type: integer
+          minimum: 0
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
     # RFC 9457 error body — matches what the backend emits (Spring ProblemDetail).
     ProblemDetail:
       type: object
       properties:
-        type: { type: string, format: uri }
-        title: { type: string }
-        status: { type: integer }
-        detail: { type: string }
-        instance: { type: string, format: uri }
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+          format: uri
       additionalProperties: true
   # Reusable error responses — reference these instead of re-declaring error bodies per operation.
   responses:
     BadRequest:
       description: Invalid request.
-      content: { application/json: { schema: { $ref: "#/components/schemas/ProblemDetail" } } }
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
     Unauthorized:
       description: Missing or invalid authentication.
-      content: { application/json: { schema: { $ref: "#/components/schemas/ProblemDetail" } } }
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
     Forbidden:
       description: Authenticated but not allowed.
-      content: { application/json: { schema: { $ref: "#/components/schemas/ProblemDetail" } } }
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
     NotFound:
       description: Resource not found.
-      content: { application/json: { schema: { $ref: "#/components/schemas/ProblemDetail" } } }
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
     Conflict:
       description: Conflicts with current state.
-      content: { application/json: { schema: { $ref: "#/components/schemas/ProblemDetail" } } }
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetail"
