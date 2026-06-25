@@ -5,6 +5,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import type { ReactNode } from "react";
 
+import { ProfileInit } from "@/components/auth/profile-init";
 import { Toaster } from "@/components/ui/sonner";
 import { KeycloakProvider } from "@/lib/auth";
 import { createQueryClient } from "@/lib/query/create-query-client";
@@ -20,6 +21,7 @@ export function RootProviders({ children }: Readonly<{ children: ReactNode }>) {
       <NuqsAdapter>
         <QueryClientProvider client={queryClient}>
           <KeycloakProvider>
+            <ProfileInit />
             {children}
             <Toaster richColors position="top-right" />
             {process.env.NODE_ENV === "development" && <ReactQueryDevtools initialIsOpen={false} />}
