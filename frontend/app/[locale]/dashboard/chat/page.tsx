@@ -1,5 +1,5 @@
-import { ComingSoon } from "@/components/shared/coming-soon";
+import { ChatView } from "@/views/chat/chat-view";
 
 export default function ChatPage() {
-  return <ComingSoon title="Chat" />;
+  return <ChatView />;
 }
