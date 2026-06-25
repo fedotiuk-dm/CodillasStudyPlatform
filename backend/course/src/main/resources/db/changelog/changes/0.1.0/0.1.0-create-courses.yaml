@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.1.0-create-courses
+      author: codillas
+      comment: Create courses table (initial development 0.1.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: courses
+      changes:
+        - createTable:
+            tableName: courses
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: name
+                  type: varchar(200)
+                  constraints: { nullable: false }
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz

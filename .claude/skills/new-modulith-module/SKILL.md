@@ -200,8 +200,10 @@ public class FooController implements FooApi {
 ```
 
 ### 8. Liquibase
-`db/changelog/foo-changelog.yaml` changeset for the `foos` table; add an `include` line to
-`backend/main/src/main/resources/db/changelog/codillas-changelog.yaml`.
+Changeset under `db/changelog/changes/<semver>/<semver>-create-foos.yaml` (`id: <semver>-create-foos`,
+`author`, `comment`, and a `not tableExists` precondition with `onFail: MARK_RAN`). `include` it (in
+version order) from `db/changelog/foo-changelog.yaml`. The module changelog is already `include`d by
+`main`'s master `codillas-changelog.yaml` — no edit there.
 
 ### 9. Events (if the module signals other modules)
 Record in `event/`; publish via `ApplicationEventPublisher`; consumers use `@ApplicationModuleListener`.

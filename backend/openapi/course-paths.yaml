@@ -2,7 +2,7 @@ openapi: 3.0.4
 info:
   title: Codillas Course API
   description: Course catalog — admin-authored course templates (structure & content).
-  version: 1.0.0
+  version: 0.1.0
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT

@@ -1,26 +1,7 @@
-# Liquibase changelog for the 'course' module.
+# Course module changelog — SemVer 2.0.0: https://semver.org/spec/v2.0.0/
+# Includes versioned changesets in order. Each lives under changes/<version>/.
 databaseChangeLog:
-  - changeSet:
-      id: 0001-create-courses
-      author: codillas
-      changes:
-        - createTable:
-            tableName: courses
-            columns:
-              - column:
-                  name: id
-                  type: uuid
-                  constraints: { primaryKey: true, nullable: false }
-              - column:
-                  name: name
-                  type: varchar(200)
-                  constraints: { nullable: false }
-              - column:
-                  name: description
-                  type: text
-              - column:
-                  name: created_at
-                  type: timestamptz
-              - column:
-                  name: updated_at
-                  type: timestamptz
+  # 0.1.0 — initial course catalog
+  - include:
+      file: changes/0.1.0/0.1.0-create-courses.yaml
+      relativeToChangelogFile: true

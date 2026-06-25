@@ -2,7 +2,7 @@ openapi: 3.0.4
 info:
   title: Codillas common OpenAPI components
   description: Shared parameters, schemas and responses reused across every module spec.
-  version: 1.0.0
+  version: 0.1.0
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT

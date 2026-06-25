@@ -86,9 +86,15 @@ config/                      module-local @ConfigurationProperties
 
 ## Persistence
 
-- Liquibase per module: `src/main/resources/db/changelog/<module>-changelog.yaml`, included by the
-  master changelog in `main`. Each module owns its tables. `gradebook` is an event-fed read model.
+- Liquibase per module: `<module>-changelog.yaml` (included by the `main` master changelog) →
+  explicit `include` (in version order, **not** `includeAll`) of versioned changesets under
+  `db/changelog/changes/<semver>/<semver>-<desc>.yaml`. Changeset `id: <semver>-<desc>` with a
+  `not tableExists` precondition (`onFail: MARK_RAN`) for idempotency. SemVer 2.0.0. Each module
+  owns its tables; `gradebook` is an event-fed read model.
 - `spring.jpa.hibernate.ddl-auto = validate` — Liquibase owns the schema.
+- **Versioning** (SemVer 2.0.0): the project is in initial development → Maven version
+  `0.x.y-SNAPSHOT` and OpenAPI `info.version` `0.x.y`. Bump minor per feature batch; reach `1.0.0`
+  only at the first stable public API.
 
 ## Style
 
