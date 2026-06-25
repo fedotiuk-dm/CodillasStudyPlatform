@@ -1,10 +1,11 @@
 "use client";
 
 import { Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { DataState } from "@/components/shared/data-state";
 import { PageHeader } from "@/components/shared/page-header";
+import { useDebounced } from "@/components/shared/user-picker";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,12 +20,7 @@ import { useListProfiles } from "@/lib/api/user/user/user";
 
 export function PeopleView() {
   const [query, setQuery] = useState("");
-  const [debounced, setDebounced] = useState("");
-
-  useEffect(() => {
-    const id = setTimeout(() => setDebounced(query.trim()), 300);
-    return () => clearTimeout(id);
-  }, [query]);
+  const debounced = useDebounced(query.trim());
 
   const { data, isLoading, isError } = useListProfiles({ q: debounced || undefined, size: 50 });
   const people = data?.content ?? [];

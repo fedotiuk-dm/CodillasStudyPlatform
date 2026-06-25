@@ -2,20 +2,10 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import type { z } from "zod";
 
-import { Button } from "@/components/ui/button";
+import { FormDialog } from "@/components/shared/form-dialog";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Form,
   FormControl,
   FormField,
   FormItem,
@@ -44,68 +34,44 @@ export function CreateCourseDialog({
   });
   const createCourse = useCreateCourse();
 
-  function onSubmit(values: FormValues) {
-    createCourse.mutate(
-      { data: values },
-      {
-        onSuccess: () => {
-          toast.success("Course created");
-          onCreated();
-          onOpenChange(false);
-          form.reset();
-        },
-        onError: () => toast.error("Could not create the course"),
-      },
-    );
-  }
-
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>New course</DialogTitle>
-          <DialogDescription>Add a course to the catalogue.</DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. Java Fundamentals" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="What the course covers…"
-                      {...field}
-                      value={field.value ?? ""}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <DialogFooter>
-              <Button type="submit" disabled={createCourse.isPending}>
-                {createCourse.isPending ? "Creating…" : "Create"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+    <FormDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title="New course"
+      description="Add a course to the catalogue."
+      form={form}
+      onCreated={onCreated}
+      success="Course created"
+      error="Could not create the course"
+      onSubmit={(values) => createCourse.mutateAsync({ data: values })}
+    >
+      <FormField
+        control={form.control}
+        name="name"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Name</FormLabel>
+            <FormControl>
+              <Input placeholder="e.g. Java Fundamentals" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="description"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Description</FormLabel>
+            <FormControl>
+              <Textarea placeholder="What the course covers…" {...field} value={field.value ?? ""} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </FormDialog>
   );
 }

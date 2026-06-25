@@ -8,6 +8,7 @@ import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,8 @@ public class EmailNotifier {
   private final TemplateEngine templateEngine;
   private final RecipientEmailResolver emailResolver;
 
+  // Off the caller's thread so blocking SMTP never holds the event-listener's DB transaction open.
+  @Async
   public void send(UUID recipientId, String subject, String title, String body) {
     JavaMailSender mailSender = mailSenderProvider.getIfAvailable();
     if (mailSender == null) {

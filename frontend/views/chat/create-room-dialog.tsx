@@ -2,26 +2,10 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 
+import { FormDialog } from "@/components/shared/form-dialog";
 import { UserMultiPicker } from "@/components/shared/user-picker";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -50,86 +34,67 @@ export function CreateRoomDialog({
   const createRoom = useCreateRoom();
   const [members, setMembers] = useState<{ userId: string; displayName: string }[]>([]);
 
-  function onSubmit(values: FormValues) {
-    if (members.length === 0) return;
-    createRoom.mutate(
-      {
-        data: {
-          type: values.type,
-          name: values.name || undefined,
-          memberIds: members.map((m) => m.userId),
-        },
-      },
-      {
-        onSuccess: () => {
-          toast.success("Room created");
-          onCreated();
-          onOpenChange(false);
-          form.reset();
-          setMembers([]);
-        },
-        onError: () => toast.error("Could not create the room"),
-      },
-    );
-  }
-
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>New room</DialogTitle>
-          <DialogDescription>Start a conversation with one or more members.</DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
-            <FormField
-              control={form.control}
-              name="type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Type</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {Object.values(ChatRoomType).map((t) => (
-                        <SelectItem key={t} value={t}>
-                          {t}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Optional room name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="grid gap-2">
-              <FormLabel>Members</FormLabel>
-              <UserMultiPicker value={members} onChange={setMembers} placeholder="Search people…" />
-            </div>
-            <DialogFooter>
-              <Button type="submit" disabled={createRoom.isPending || members.length === 0}>
-                {createRoom.isPending ? "Creating…" : "Create"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+    <FormDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title="New room"
+      description="Start a conversation with one or more members."
+      form={form}
+      onCreated={onCreated}
+      onReset={() => setMembers([])}
+      submitDisabled={members.length === 0}
+      success="Room created"
+      error="Could not create the room"
+      onSubmit={(values) =>
+        createRoom.mutateAsync({
+          data: {
+            type: values.type,
+            name: values.name || undefined,
+            memberIds: members.map((m) => m.userId),
+          },
+        })
+      }
+    >
+      <FormField
+        control={form.control}
+        name="type"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Type</FormLabel>
+            <Select onValueChange={field.onChange} value={field.value}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {Object.values(ChatRoomType).map((t) => (
+                  <SelectItem key={t} value={t}>
+                    {t}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="name"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Name</FormLabel>
+            <FormControl>
+              <Input placeholder="Optional room name" {...field} />
+            </FormControl>
+          </FormItem>
+        )}
+      />
+      <div className="grid gap-2">
+        <FormLabel>Members</FormLabel>
+        <UserMultiPicker value={members} onChange={setMembers} placeholder="Search people…" />
+      </div>
+    </FormDialog>
   );
 }

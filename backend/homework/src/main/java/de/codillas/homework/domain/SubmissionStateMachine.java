@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import de.codillas.homework.domain.model.Submission;
 import de.codillas.homework.domain.model.SubmissionStatus;
+import de.codillas.shared.domain.StateMachines;
 import de.codillas.shared.exception.ConflictException;
 
 /**
@@ -28,13 +29,8 @@ public class SubmissionStateMachine {
               EnumSet.of(SubmissionStatus.GRADED, SubmissionStatus.RETURNED));
 
   public void transitionTo(Submission submission, SubmissionStatus target) {
-    Set<SubmissionStatus> allowed =
-        ALLOWED.getOrDefault(submission.getStatus(), EnumSet.noneOf(SubmissionStatus.class));
-    if (!allowed.contains(target)) {
-      throw new ConflictException(
-          "Cannot move submission from " + submission.getStatus() + " to " + target);
-    }
-    submission.setStatus(target);
+    StateMachines.transition(
+        "submission", submission.getStatus(), target, ALLOWED, submission::setStatus);
   }
 
   /** A submission's content is editable only while it is still a draft. */

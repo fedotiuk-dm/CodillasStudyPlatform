@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import de.codillas.assessment.domain.model.Attempt;
 import de.codillas.assessment.domain.model.AttemptStatus;
+import de.codillas.shared.domain.StateMachines;
 import de.codillas.shared.exception.ConflictException;
 
 /** Declarative state machine for {@link Attempt}: IN_PROGRESS → SUBMITTED → GRADED. */
@@ -20,13 +21,7 @@ public class AttemptStateMachine {
           AttemptStatus.SUBMITTED, EnumSet.of(AttemptStatus.GRADED));
 
   public void transitionTo(Attempt attempt, AttemptStatus target) {
-    Set<AttemptStatus> allowed =
-        ALLOWED.getOrDefault(attempt.getStatus(), EnumSet.noneOf(AttemptStatus.class));
-    if (!allowed.contains(target)) {
-      throw new ConflictException(
-          "Cannot move attempt from " + attempt.getStatus() + " to " + target);
-    }
-    attempt.setStatus(target);
+    StateMachines.transition("attempt", attempt.getStatus(), target, ALLOWED, attempt::setStatus);
   }
 
   /** An attempt can only be answered while it is still in progress. */

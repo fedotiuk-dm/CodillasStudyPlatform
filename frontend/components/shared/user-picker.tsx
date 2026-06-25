@@ -9,7 +9,7 @@ import type { UserProfile } from "@/lib/api/user/model";
 import { useListProfiles } from "@/lib/api/user/user/user";
 
 /** Debounce any fast-changing value (no extra dependency). */
-function useDebounced<T>(value: T, ms = 300): T {
+export function useDebounced<T>(value: T, ms = 300): T {
   const [debounced, setDebounced] = useState(value);
   useEffect(() => {
     const id = setTimeout(() => setDebounced(value), ms);

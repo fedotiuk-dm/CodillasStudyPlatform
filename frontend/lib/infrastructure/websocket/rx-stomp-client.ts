@@ -33,10 +33,9 @@ export class RxStompClient {
 
     this.rxStomp.configure({
       brokerURL: config.url ?? "",
-      connectHeaders: config.connectHeaders ?? {},
-      reconnectDelay: config.reconnectDelay ?? 3000,
-      heartbeatIncoming: config.heartbeatIncoming ?? 10000,
-      heartbeatOutgoing: config.heartbeatOutgoing ?? 10000,
+      reconnectDelay: 3000,
+      heartbeatIncoming: 10000,
+      heartbeatOutgoing: 10000,
       debug: () => {},
       // Refresh auth headers before each (re)connect so the CONNECT frame always has a fresh JWT.
       beforeConnect: headersProvider

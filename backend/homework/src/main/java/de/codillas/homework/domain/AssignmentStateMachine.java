@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import de.codillas.homework.domain.model.Assignment;
 import de.codillas.homework.domain.model.AssignmentStatus;
-import de.codillas.shared.exception.ConflictException;
+import de.codillas.shared.domain.StateMachines;
 
 /**
  * Declarative state machine for {@link Assignment}. Entities stay anemic — this bean owns the
@@ -21,12 +21,7 @@ public class AssignmentStateMachine {
       Map.of(AssignmentStatus.DRAFT, EnumSet.of(AssignmentStatus.PUBLISHED));
 
   public void transitionTo(Assignment assignment, AssignmentStatus target) {
-    Set<AssignmentStatus> allowed =
-        ALLOWED.getOrDefault(assignment.getStatus(), EnumSet.noneOf(AssignmentStatus.class));
-    if (!allowed.contains(target)) {
-      throw new ConflictException(
-          "Cannot move assignment from " + assignment.getStatus() + " to " + target);
-    }
-    assignment.setStatus(target);
+    StateMachines.transition(
+        "assignment", assignment.getStatus(), target, ALLOWED, assignment::setStatus);
   }
 }

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import de.codillas.assessment.domain.model.Test;
 import de.codillas.assessment.domain.model.TestStatus;
-import de.codillas.shared.exception.ConflictException;
+import de.codillas.shared.domain.StateMachines;
 
 /** Declarative state machine for {@link Test}: DRAFT → PUBLISHED. */
 @Component
@@ -18,11 +18,6 @@ public class TestStateMachine {
       Map.of(TestStatus.DRAFT, EnumSet.of(TestStatus.PUBLISHED));
 
   public void transitionTo(Test test, TestStatus target) {
-    Set<TestStatus> allowed =
-        ALLOWED.getOrDefault(test.getStatus(), EnumSet.noneOf(TestStatus.class));
-    if (!allowed.contains(target)) {
-      throw new ConflictException("Cannot move test from " + test.getStatus() + " to " + target);
-    }
-    test.setStatus(target);
+    StateMachines.transition("test", test.getStatus(), target, ALLOWED, test::setStatus);
   }
 }
