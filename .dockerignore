@@ -1,0 +1,9 @@
+# Repo-root build context (frontend image). Keep heavy / generated dirs out.
+**/node_modules
+**/.next
+**/target
+frontend/lib/api
+.git
+.idea
+**/*.iml
+docker/.env

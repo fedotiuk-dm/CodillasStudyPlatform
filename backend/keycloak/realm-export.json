@@ -38,7 +38,10 @@
       "directAccessGrantsEnabled": true,
       "redirectUris": ["http://localhost:3000/*"],
       "webOrigins": ["http://localhost:3000"],
-      "attributes": { "post.logout.redirect.uris": "http://localhost:3000/*" },
+      "attributes": {
+        "post.logout.redirect.uris": "http://localhost:3000/*",
+        "pkce.code.challenge.method": "S256"
+      },
       "protocolMappers": [
         {
           "name": "realm-roles-flat",
@@ -90,7 +93,7 @@
       "emailVerified": true,
       "firstName": "Ada",
       "lastName": "Admin",
-      "credentials": [{ "type": "password", "value": "password", "temporary": false }],
+      "credentials": [{ "type": "password", "value": "admin", "temporary": false }],
       "realmRoles": ["ADMIN"]
     },
     {
@@ -100,7 +103,7 @@
       "emailVerified": true,
       "firstName": "Tom",
       "lastName": "Teacher",
-      "credentials": [{ "type": "password", "value": "password", "temporary": false }],
+      "credentials": [{ "type": "password", "value": "teacher", "temporary": false }],
       "realmRoles": ["TEACHER"]
     },
     {
@@ -110,7 +113,7 @@
       "emailVerified": true,
       "firstName": "Sam",
       "lastName": "Student",
-      "credentials": [{ "type": "password", "value": "password", "temporary": false }],
+      "credentials": [{ "type": "password", "value": "student", "temporary": false }],
       "realmRoles": ["STUDENT"]
     }
   ]

@@ -29,7 +29,7 @@ messages/<locale>.json  Translations.   proxy.ts  next-intl middleware (Next 16 
 
 ## Conventions
 
-- **API-first.** `pnpm api` regenerates `lib/api/**` from `backend/openapi/*-paths.yaml`. Orval
+- **API-first.** `pnpm generate:api` regenerates `lib/api/**` from `backend/openapi/*-paths.yaml`. Orval
   resolves the cross-file `$ref`s directly — **no bundling step**. Generated code is read-only;
   change the backend spec, regenerate. Every request goes through the axios mutator (one place for
   auth + serialization). Use the generated `useXxx` query/mutation hooks.
@@ -50,7 +50,7 @@ messages/<locale>.json  Translations.   proxy.ts  next-intl middleware (Next 16 
 ## Commands
 
 ```bash
-pnpm dev          # dev server          pnpm api      # regenerate API client (orval)
+pnpm dev          # dev server          pnpm generate:api    # regenerate API client (orval)
 pnpm build        # production build     pnpm lint     # biome check
 pnpm typecheck    # tsc --noEmit         pnpm format   # biome format --write
 ```

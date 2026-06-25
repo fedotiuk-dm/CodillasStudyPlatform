@@ -9,7 +9,6 @@ const nextConfig: NextConfig = {
   output: isDev ? undefined : "standalone",
   reactStrictMode: true,
   poweredByHeader: false,
-  typedRoutes: true,
   // React Compiler: auto-memoizes components/hooks (no manual useMemo/useCallback).
   reactCompiler: true,
 };
