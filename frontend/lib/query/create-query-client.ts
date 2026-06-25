@@ -1,4 +1,6 @@
 import { MutationCache, QueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { extractErrorMessage } from "@/lib/api-error";
 
 /** One QueryClient for the whole app so the cache survives navigation between route groups. */
 export function createQueryClient(): QueryClient {
@@ -8,6 +10,11 @@ export function createQueryClient(): QueryClient {
   // rules map (see Boosting's invalidation-rules.ts) only if refetch traffic ever becomes a problem.
   const mutationCache = new MutationCache({
     onSuccess: () => client.invalidateQueries(),
+    // Global error toast for every mutation. Opt out per-mutation with meta.skipGlobalErrorToast.
+    onError: (error, _vars, _ctx, mutation) => {
+      if (mutation.meta?.skipGlobalErrorToast) return;
+      toast.error(extractErrorMessage(error));
+    },
   });
   client = new QueryClient({
     mutationCache,

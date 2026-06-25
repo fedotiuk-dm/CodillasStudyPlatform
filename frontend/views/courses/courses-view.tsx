@@ -1,6 +1,5 @@
 "use client";
 
-import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { DataState } from "@/components/shared/data-state";
@@ -15,14 +14,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getListCoursesQueryKey, useListCourses } from "@/lib/api/course/course/course";
+import { useListCourses } from "@/lib/api/course/course/course";
 import { useHasRole } from "@/lib/auth";
 import { Role } from "@/lib/constants";
 import { CreateCourseDialog } from "./create-course-dialog";
 
 export function CoursesView() {
   const { data, isLoading, isError } = useListCourses();
-  const queryClient = useQueryClient();
   const canManage = useHasRole(Role.ADMIN);
   const [open, setOpen] = useState(false);
 
@@ -61,11 +59,7 @@ export function CoursesView() {
         </CardContent>
       </Card>
 
-      <CreateCourseDialog
-        open={open}
-        onOpenChange={setOpen}
-        onCreated={() => queryClient.invalidateQueries({ queryKey: getListCoursesQueryKey() })}
-      />
+      <CreateCourseDialog open={open} onOpenChange={setOpen} />
     </>
   );
 }

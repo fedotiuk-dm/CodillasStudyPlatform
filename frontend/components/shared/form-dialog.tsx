@@ -29,7 +29,6 @@ export function FormDialog<T extends FieldValues>({
   form,
   onSubmit,
   success,
-  error,
   onCreated,
   onReset,
   submitDisabled,
@@ -44,7 +43,6 @@ export function FormDialog<T extends FieldValues>({
   form: UseFormReturn<T>;
   onSubmit: (values: T) => Promise<unknown>;
   success: string;
-  error: string;
   onCreated?: () => void;
   onReset?: () => void;
   submitDisabled?: boolean;
@@ -63,7 +61,7 @@ export function FormDialog<T extends FieldValues>({
       form.reset();
       onReset?.();
     } catch {
-      toast.error(error);
+      /* global MutationCache surfaces the error toast */
     }
   }
 

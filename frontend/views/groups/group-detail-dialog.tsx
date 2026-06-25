@@ -1,6 +1,5 @@
 "use client";
 
-import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -17,8 +16,6 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  getListGroupMembersQueryKey,
-  getListScheduledLessonsQueryKey,
   useEnrollStudent,
   useListGroupMembers,
   useListScheduledLessons,
@@ -63,7 +60,6 @@ export function GroupDetailDialog({
 }
 
 function MembersTab({ groupId, open }: { groupId: string; open: boolean }) {
-  const queryClient = useQueryClient();
   const { data } = useListGroupMembers(groupId, { query: { enabled: open } });
   const members = data ?? [];
   const enroll = useEnrollStudent();
@@ -78,9 +74,7 @@ function MembersTab({ groupId, open }: { groupId: string; open: boolean }) {
         onSuccess: () => {
           toast.success("Student enrolled");
           setPicked(undefined);
-          queryClient.invalidateQueries({ queryKey: getListGroupMembersQueryKey(groupId) });
         },
-        onError: () => toast.error("Could not enroll"),
       },
     );
   }
@@ -114,16 +108,12 @@ function MembersTab({ groupId, open }: { groupId: string; open: boolean }) {
 }
 
 function LessonsTab({ groupId, open }: { groupId: string; open: boolean }) {
-  const queryClient = useQueryClient();
   const { data } = useListScheduledLessons(groupId, { query: { enabled: open } });
   const lessons = data ?? [];
   const schedule = useScheduleLesson();
   const [title, setTitle] = useState("");
   const [scheduledAt, setScheduledAt] = useState("");
   const [meetLink, setMeetLink] = useState("");
-
-  const invalidate = () =>
-    queryClient.invalidateQueries({ queryKey: getListScheduledLessonsQueryKey(groupId) });
 
   function onSchedule() {
     if (!title.trim() || !scheduledAt) return;
@@ -142,9 +132,7 @@ function LessonsTab({ groupId, open }: { groupId: string; open: boolean }) {
           setTitle("");
           setScheduledAt("");
           setMeetLink("");
-          invalidate();
         },
-        onError: () => toast.error("Could not schedule"),
       },
     );
   }
@@ -198,7 +186,6 @@ function LessonRow({ groupId, lesson }: { groupId: string; lesson: ScheduledLess
           toast.success(present ? "Marked present" : "Marked absent");
           setPicked(undefined);
         },
-        onError: () => toast.error("Could not mark attendance"),
       },
     );
   }

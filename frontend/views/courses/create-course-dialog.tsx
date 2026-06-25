@@ -5,13 +5,7 @@ import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
 import { FormDialog } from "@/components/shared/form-dialog";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreateCourse } from "@/lib/api/course/course/course";
@@ -26,7 +20,7 @@ export function CreateCourseDialog({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreated: () => void;
+  onCreated?: () => void;
 }) {
   const form = useForm<FormValues>({
     resolver: zodResolver(CreateCourseBody),
@@ -43,7 +37,6 @@ export function CreateCourseDialog({
       form={form}
       onCreated={onCreated}
       success="Course created"
-      error="Could not create the course"
       onSubmit={(values) => createCourse.mutateAsync({ data: values })}
     >
       <FormField
@@ -66,7 +59,11 @@ export function CreateCourseDialog({
           <FormItem>
             <FormLabel>Description</FormLabel>
             <FormControl>
-              <Textarea placeholder="What the course covers…" {...field} value={field.value ?? ""} />
+              <Textarea
+                placeholder="What the course covers…"
+                {...field}
+                value={field.value ?? ""}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>

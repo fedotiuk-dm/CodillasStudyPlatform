@@ -16,7 +16,7 @@ export function CreateTestDialog({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreated: () => void;
+  onCreated?: () => void;
 }) {
   const form = useForm<FormValues>({ defaultValues: { title: "" } });
   const createTest = useCreateTest();
@@ -30,7 +30,6 @@ export function CreateTestDialog({
       form={form}
       onCreated={onCreated}
       success="Test created (draft)"
-      error="Could not create the test"
       onSubmit={(values) => createTest.mutateAsync({ data: { title: values.title } })}
     >
       <FormField

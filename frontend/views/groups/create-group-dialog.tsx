@@ -29,7 +29,7 @@ export function CreateGroupDialog({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreated: () => void;
+  onCreated?: () => void;
 }) {
   const { data: coursesData } = useListCourses();
   const courses = coursesData?.content ?? [];
@@ -51,7 +51,6 @@ export function CreateGroupDialog({
       onCreated={onCreated}
       onReset={() => setTeacherName(undefined)}
       success="Group created"
-      error="Could not create the group"
       onSubmit={(values) =>
         createGroup.mutateAsync({ data: { ...values, startDate: values.startDate || undefined } })
       }

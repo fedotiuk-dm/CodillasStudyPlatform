@@ -1,29 +1,21 @@
 "use client";
 
-import { useQueryClient } from "@tanstack/react-query";
-
 import { DataState } from "@/components/shared/data-state";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  getListMyNotificationsQueryKey,
   useListMyNotifications,
   useMarkRead,
 } from "@/lib/api/notification/notification/notification";
 
 export function NotificationsView() {
   const { data, isLoading, isError } = useListMyNotifications();
-  const queryClient = useQueryClient();
   const markRead = useMarkRead();
 
   const items = data?.content ?? [];
   const unread = data?.unread ?? 0;
-
-  function invalidate() {
-    queryClient.invalidateQueries({ queryKey: getListMyNotificationsQueryKey() });
-  }
 
   return (
     <>
@@ -48,9 +40,7 @@ export function NotificationsView() {
                     variant="outline"
                     size="sm"
                     disabled={markRead.isPending}
-                    onClick={() =>
-                      markRead.mutate({ notificationId: n.id }, { onSuccess: invalidate })
-                    }
+                    onClick={() => markRead.mutate({ notificationId: n.id })}
                   >
                     Mark read
                   </Button>

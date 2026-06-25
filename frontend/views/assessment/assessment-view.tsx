@@ -1,6 +1,5 @@
 "use client";
 
-import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -17,11 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  getListTestsQueryKey,
-  useListTests,
-  usePublishTest,
-} from "@/lib/api/assessment/assessment/assessment";
+import { useListTests, usePublishTest } from "@/lib/api/assessment/assessment/assessment";
 import { useHasAnyRole } from "@/lib/auth";
 import { Role } from "@/lib/constants";
 import { CreateTestDialog } from "./create-test-dialog";
@@ -30,7 +25,6 @@ import { TakeAttemptDialog } from "./take-attempt-dialog";
 
 export function AssessmentView() {
   const { data, isLoading, isError } = useListTests();
-  const queryClient = useQueryClient();
   const canManage = useHasAnyRole([Role.ADMIN, Role.TEACHER]);
   const [createOpen, setCreateOpen] = useState(false);
   const [manageTestId, setManageTestId] = useState<string | null>(null);
@@ -38,7 +32,6 @@ export function AssessmentView() {
   const publish = usePublishTest();
 
   const tests = data?.content ?? [];
-  const invalidate = () => queryClient.invalidateQueries({ queryKey: getListTestsQueryKey() });
 
   function onPublish(testId: string) {
     publish.mutate(
@@ -46,9 +39,7 @@ export function AssessmentView() {
       {
         onSuccess: () => {
           toast.success("Test published");
-          invalidate();
         },
-        onError: () => toast.error("Could not publish — does it have questions?"),
       },
     );
   }
@@ -113,7 +104,7 @@ export function AssessmentView() {
         </CardContent>
       </Card>
 
-      <CreateTestDialog open={createOpen} onOpenChange={setCreateOpen} onCreated={invalidate} />
+      <CreateTestDialog open={createOpen} onOpenChange={setCreateOpen} />
 
       {manageTestId && (
         <ManageQuestionsDialog

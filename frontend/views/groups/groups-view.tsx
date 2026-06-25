@@ -1,6 +1,5 @@
 "use client";
 
-import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { DataState } from "@/components/shared/data-state";
@@ -16,7 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useListCourses } from "@/lib/api/course/course/course";
-import { getListGroupsQueryKey, useListGroups } from "@/lib/api/enrollment/enrollment/enrollment";
+import { useListGroups } from "@/lib/api/enrollment/enrollment/enrollment";
 import { useHasAnyRole } from "@/lib/auth";
 import { Role } from "@/lib/constants";
 import { CreateGroupDialog } from "./create-group-dialog";
@@ -25,7 +24,6 @@ import { GroupDetailDialog } from "./group-detail-dialog";
 export function GroupsView() {
   const { data, isLoading, isError } = useListGroups();
   const { data: coursesData } = useListCourses();
-  const queryClient = useQueryClient();
   const canManage = useHasAnyRole([Role.ADMIN, Role.TEACHER]);
   const [open, setOpen] = useState(false);
   const [detail, setDetail] = useState<{ id: string; name: string } | null>(null);
@@ -80,11 +78,7 @@ export function GroupsView() {
         </CardContent>
       </Card>
 
-      <CreateGroupDialog
-        open={open}
-        onOpenChange={setOpen}
-        onCreated={() => queryClient.invalidateQueries({ queryKey: getListGroupsQueryKey() })}
-      />
+      <CreateGroupDialog open={open} onOpenChange={setOpen} />
 
       {detail && (
         <GroupDetailDialog

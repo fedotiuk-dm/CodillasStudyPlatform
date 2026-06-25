@@ -1,6 +1,5 @@
 "use client";
 
-import { useQueryClient } from "@tanstack/react-query";
 import { Send } from "lucide-react";
 import { useState } from "react";
 
@@ -8,7 +7,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { getListMyRoomsQueryKey, useListMyRooms } from "@/lib/api/chat/chat/chat";
+import { useListMyRooms } from "@/lib/api/chat/chat/chat";
 import { useKeycloak } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { CreateRoomDialog } from "./create-room-dialog";
@@ -66,7 +65,6 @@ function RoomPanel({ roomId, selfId }: { roomId: string; selfId?: string }) {
 export function ChatView() {
   const { userId } = useKeycloak();
   const { data } = useListMyRooms();
-  const queryClient = useQueryClient();
   const rooms = data ?? [];
   const [activeRoom, setActiveRoom] = useState<string | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
@@ -105,11 +103,7 @@ export function ChatView() {
         )}
       </Card>
 
-      <CreateRoomDialog
-        open={createOpen}
-        onOpenChange={setCreateOpen}
-        onCreated={() => queryClient.invalidateQueries({ queryKey: getListMyRoomsQueryKey() })}
-      />
+      <CreateRoomDialog open={createOpen} onOpenChange={setCreateOpen} />
     </>
   );
 }

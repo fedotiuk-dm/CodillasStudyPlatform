@@ -52,7 +52,6 @@ export function FilesView() {
           setFiles((prev) => [stored, ...prev]);
           toast.success(`Uploaded ${stored.originalFilename}`);
         },
-        onError: () => toast.error("Upload failed"),
       },
     );
     if (inputRef.current) inputRef.current.value = "";
@@ -68,7 +67,7 @@ export function FilesView() {
       a.click();
       URL.revokeObjectURL(url);
     } catch {
-      toast.error("Download failed");
+      /* global toast */
     }
   }
 
@@ -80,7 +79,6 @@ export function FilesView() {
           setFiles((prev) => prev.filter((x) => x.id !== f.id));
           toast.success("Deleted");
         },
-        onError: () => toast.error("Could not delete"),
       },
     );
   }

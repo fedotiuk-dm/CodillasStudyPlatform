@@ -63,7 +63,6 @@ export function TakeAttemptDialog({
       {
         onSuccess: (a) => setAttempt(a),
         onError: () => {
-          toast.error("Could not start attempt");
           startedRef.current = false;
         },
       },
@@ -100,7 +99,7 @@ export function TakeAttemptDialog({
       setAttempt(graded);
       toast.success("Submitted");
     } catch {
-      toast.error("Submit failed");
+      /* global toast */
     }
   }
 

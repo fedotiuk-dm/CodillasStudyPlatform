@@ -1,6 +1,5 @@
 "use client";
 
-import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -17,7 +16,6 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  getListSubmissionsQueryKey,
   useCreateSubmission,
   useGradeSubmission,
   useListSubmissions,
@@ -49,7 +47,6 @@ export function SubmissionsDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  const queryClient = useQueryClient();
   const { data } = useListSubmissions(assignmentId, { query: { enabled: open } });
   const submissions = data ?? [];
 
@@ -62,11 +59,8 @@ export function SubmissionsDialog({
 
   const [draft, setDraft] = useState("");
 
-  const invalidate = () =>
-    queryClient.invalidateQueries({ queryKey: getListSubmissionsQueryKey(assignmentId) });
   const done = (msg: string) => () => {
     toast.success(msg);
-    invalidate();
   };
 
   function onCreate() {
@@ -77,9 +71,7 @@ export function SubmissionsDialog({
         onSuccess: () => {
           toast.success("Draft saved");
           setDraft("");
-          invalidate();
         },
-        onError: () => toast.error("Could not create submission"),
       },
     );
   }

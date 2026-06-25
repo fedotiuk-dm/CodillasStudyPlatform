@@ -1,6 +1,5 @@
 "use client";
 
-import { useQueryClient } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -32,11 +31,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import {
-  getGetTestQueryKey,
-  useAddQuestion,
-  useGetTest,
-} from "@/lib/api/assessment/assessment/assessment";
+import { useAddQuestion, useGetTest } from "@/lib/api/assessment/assessment/assessment";
 import { QuestionType } from "@/lib/api/assessment/model";
 
 type FormValues = {
@@ -61,7 +56,6 @@ export function ManageQuestionsDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  const queryClient = useQueryClient();
   const { data: test } = useGetTest(testId, { query: { enabled: open } });
   const addQuestion = useAddQuestion();
 
@@ -96,10 +90,8 @@ export function ManageQuestionsDialog({
       {
         onSuccess: () => {
           toast.success("Question added");
-          queryClient.invalidateQueries({ queryKey: getGetTestQueryKey(testId) });
           form.reset();
         },
-        onError: () => toast.error("Could not add the question"),
       },
     );
   }

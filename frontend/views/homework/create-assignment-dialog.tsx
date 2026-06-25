@@ -19,7 +19,7 @@ export function CreateAssignmentDialog({
   groupId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreated: () => void;
+  onCreated?: () => void;
 }) {
   const form = useForm<FormValues>({ defaultValues: { title: "", description: "", dueAt: "" } });
   const createAssignment = useCreateAssignment();
@@ -33,7 +33,6 @@ export function CreateAssignmentDialog({
       form={form}
       onCreated={onCreated}
       success="Assignment created (draft)"
-      error="Could not create the assignment"
       onSubmit={(values) =>
         createAssignment.mutateAsync({
           data: {

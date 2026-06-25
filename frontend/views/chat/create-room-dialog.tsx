@@ -26,7 +26,7 @@ export function CreateRoomDialog({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreated: () => void;
+  onCreated?: () => void;
 }) {
   const form = useForm<FormValues>({
     defaultValues: { type: ChatRoomType.GROUP, name: "" },
@@ -45,7 +45,6 @@ export function CreateRoomDialog({
       onReset={() => setMembers([])}
       submitDisabled={members.length === 0}
       success="Room created"
-      error="Could not create the room"
       onSubmit={(values) =>
         createRoom.mutateAsync({
           data: {

@@ -1,6 +1,5 @@
 "use client";
 
-import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -25,11 +24,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useListGroups } from "@/lib/api/enrollment/enrollment/enrollment";
-import {
-  getListAssignmentsQueryKey,
-  useListAssignments,
-  usePublishAssignment,
-} from "@/lib/api/homework/homework/homework";
+import { useListAssignments, usePublishAssignment } from "@/lib/api/homework/homework/homework";
 import { useHasAnyRole } from "@/lib/auth";
 import { Role } from "@/lib/constants";
 import { CreateAssignmentDialog } from "./create-assignment-dialog";
@@ -39,7 +34,6 @@ export function HomeworkView() {
   const { data: groupsData } = useListGroups();
   const groups = groupsData?.content ?? [];
   const [groupId, setGroupId] = useState("");
-  const queryClient = useQueryClient();
   const canManage = useHasAnyRole([Role.ADMIN, Role.TEACHER]);
   const [open, setOpen] = useState(false);
   const [subsFor, setSubsFor] = useState<{ id: string; title: string } | null>(null);
@@ -51,18 +45,13 @@ export function HomeworkView() {
   const publish = usePublishAssignment();
   const assignments = data?.content ?? [];
 
-  const invalidate = () =>
-    queryClient.invalidateQueries({ queryKey: getListAssignmentsQueryKey({ groupId }) });
-
   function onPublish(assignmentId: string) {
     publish.mutate(
       { assignmentId },
       {
         onSuccess: () => {
           toast.success("Assignment published");
-          invalidate();
         },
-        onError: () => toast.error("Could not publish"),
       },
     );
   }
@@ -147,14 +136,7 @@ export function HomeworkView() {
         </Card>
       )}
 
-      {groupId && (
-        <CreateAssignmentDialog
-          groupId={groupId}
-          open={open}
-          onOpenChange={setOpen}
-          onCreated={invalidate}
-        />
-      )}
+      {groupId && <CreateAssignmentDialog groupId={groupId} open={open} onOpenChange={setOpen} />}
 
       {subsFor && (
         <SubmissionsDialog
