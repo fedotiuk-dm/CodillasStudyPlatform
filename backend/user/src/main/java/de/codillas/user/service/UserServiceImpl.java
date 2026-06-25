@@ -15,9 +15,11 @@ import de.codillas.user.domain.repository.ProfileRepository;
 import de.codillas.user.mapper.ProfileMapper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
@@ -34,16 +36,17 @@ public class UserServiceImpl implements UserService {
   public UserProfile getMyProfile() {
     UUID userId = currentUser.id();
     Profile profile =
-        repository
-            .findByUserId(userId)
-            .orElseGet(
-                () ->
-                    repository.save(
-                        Profile.builder()
-                            .userId(userId)
-                            .displayName(currentUser.displayName())
-                            .build()));
+        repository.findByUserId(userId).orElseGet(() -> provisionFromToken(userId));
     return mapper.toResponse(profile);
+  }
+
+  /** Creates and persists a profile on first login, seeding the display name from the JWT. */
+  private Profile provisionFromToken(UUID userId) {
+    Profile profile =
+        repository.save(
+            Profile.builder().userId(userId).displayName(currentUser.displayName()).build());
+    log.info("Auto-created profile for user {} on first access", userId);
+    return profile;
   }
 
   /** Lists local profiles, optionally filtered by a case-insensitive display-name substring. */
