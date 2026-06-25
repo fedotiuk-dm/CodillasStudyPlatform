@@ -42,6 +42,11 @@
     <openapi-generator.version>7.23.0</openapi-generator.version>
     <spotless.version>3.7.0</spotless.version>
     <google-java-format.version>1.35.0</google-java-format.version>
+    <!-- API-first generation: a module with a spec overrides these four; others inherit skip=true. -->
+    <openapi.skip>true</openapi.skip>
+    <openapi.spec/>
+    <openapi.api-package/>
+    <openapi.model-package/>
   </properties>
 
   <dependencyManagement>
@@ -254,6 +259,41 @@
           <!-- Load Mockito as a static javaagent (no dynamic self-attach); -Xshare:off silences CDS. -->
           <argLine>-javaagent:${org.mockito:mockito-core:jar} -Xshare:off</argLine>
         </configuration>
+      </plugin>
+      <!-- API-first generation, configured once. A module opts in via the openapi.* properties;
+           modules without a spec inherit openapi.skip=true and generate nothing. -->
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-api</id>
+            <goals><goal>generate</goal></goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <skip>${openapi.skip}</skip>
+              <inputSpec>${project.parent.basedir}/openapi/${openapi.spec}</inputSpec>
+              <apiPackage>${openapi.api-package}</apiPackage>
+              <modelPackage>${openapi.model-package}</modelPackage>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-generated-source</id>
+            <goals><goal>add-source</goal></goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-sources/openapi/src/main/java</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

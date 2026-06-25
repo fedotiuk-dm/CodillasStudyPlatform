@@ -11,6 +11,14 @@
   </parent>
   <artifactId>codillas-enrollment</artifactId>
   <name>Codillas Enrollment</name>
+
+  <properties>
+    <openapi.skip>false</openapi.skip>
+    <openapi.spec>enrollment-paths.yaml</openapi.spec>
+    <openapi.api-package>de.codillas.enrollment.api</openapi.api-package>
+    <openapi.model-package>de.codillas.enrollment.api.dto</openapi.model-package>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>de.codillas</groupId>

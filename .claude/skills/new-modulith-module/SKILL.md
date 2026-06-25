@@ -94,35 +94,16 @@ FooListResponse:
             $ref: "#/components/schemas/Foo"
 ```
 
-### 3. Wire the generator (foo/pom.xml `<build><plugins>`)
-Config is inherited from the parent pluginManagement — only the execution + build-helper here:
+### 3. Wire the generator (foo/pom.xml `<properties>` — no `<build>` section)
+Generation and the generated-sources wiring are configured **once** in the parent. A module opts in
+by setting four properties; modules without a spec inherit `openapi.skip=true` and generate nothing:
 ```xml
-<plugin>
-  <groupId>org.openapitools</groupId>
-  <artifactId>openapi-generator-maven-plugin</artifactId>
-  <executions><execution>
-    <id>generate-foo-api</id>
-    <goals><goal>generate</goal></goals>
-    <phase>generate-sources</phase>
-    <configuration>
-      <inputSpec>${project.parent.basedir}/openapi/foo-paths.yaml</inputSpec>
-      <apiPackage>de.codillas.foo.api</apiPackage>
-      <modelPackage>de.codillas.foo.api.dto</modelPackage>
-    </configuration>
-  </execution></executions>
-</plugin>
-<plugin>
-  <groupId>org.codehaus.mojo</groupId>
-  <artifactId>build-helper-maven-plugin</artifactId>
-  <executions><execution>
-    <id>add-generated-source</id>
-    <goals><goal>add-source</goal></goals>
-    <phase>generate-sources</phase>
-    <configuration><sources>
-      <source>${project.build.directory}/generated-sources/openapi/src/main/java</source>
-    </sources></configuration>
-  </execution></executions>
-</plugin>
+<properties>
+  <openapi.skip>false</openapi.skip>
+  <openapi.spec>foo-paths.yaml</openapi.spec>
+  <openapi.api-package>de.codillas.foo.api</openapi.api-package>
+  <openapi.model-package>de.codillas.foo.api.dto</openapi.model-package>
+</properties>
 ```
 
 ### 4. Domain + repository
