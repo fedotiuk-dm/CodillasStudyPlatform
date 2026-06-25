@@ -1,5 +1,5 @@
-import { ComingSoon } from "@/components/shared/coming-soon";
+import { FilesView } from "@/views/files/files-view";
 
 export default function FilesPage() {
-  return <ComingSoon title="Files" />;
+  return <FilesView />;
 }
