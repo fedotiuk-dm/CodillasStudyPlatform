@@ -1,2 +1,30 @@
-# Liquibase changelog for the 'user' module. Add changesets under changes/.
-databaseChangeLog: []
+# Liquibase changelog for the 'user' module.
+databaseChangeLog:
+  - changeSet:
+      id: 0001-create-user-profiles
+      author: codillas
+      changes:
+        - createTable:
+            tableName: user_profiles
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints: { nullable: false, unique: true }
+              - column:
+                  name: display_name
+                  type: varchar(100)
+                  constraints: { nullable: false }
+              - column:
+                  name: bio
+                  type: varchar(500)
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz

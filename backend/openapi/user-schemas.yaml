@@ -1,0 +1,35 @@
+openapi: 3.0.4
+info:
+  title: Codillas User schemas
+  version: 1.0.0
+paths: {}
+components:
+  schemas:
+    UserProfile:
+      type: object
+      required:
+        - userId
+        - displayName
+      properties:
+        userId:
+          type: string
+          format: uuid
+        displayName:
+          type: string
+        bio:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    UpdateProfileRequest:
+      type: object
+      required:
+        - displayName
+      properties:
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 100
+        bio:
+          type: string
+          maxLength: 500

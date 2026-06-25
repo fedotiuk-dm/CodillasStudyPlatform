@@ -1,0 +1,55 @@
+openapi: 3.0.4
+info:
+  title: Codillas User API
+  description: User profiles and identity.
+  version: 1.0.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    name: Codillas
+    email: support@codillas.de
+servers:
+  - url: http://localhost:8081
+    description: Local development
+tags:
+  - name: user
+    description: User profile operations
+paths:
+  /api/users/me:
+    get:
+      tags:
+        - user
+      operationId: getMyProfile
+      summary: Get the current user's profile
+      responses:
+        "200":
+          description: My profile
+          content:
+            application/json:
+              schema:
+                $ref: "user-schemas.yaml#/components/schemas/UserProfile"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+    put:
+      tags:
+        - user
+      operationId: updateMyProfile
+      summary: Update the current user's profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "user-schemas.yaml#/components/schemas/UpdateProfileRequest"
+      responses:
+        "200":
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: "user-schemas.yaml#/components/schemas/UserProfile"
+        "400":
+          $ref: "common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
