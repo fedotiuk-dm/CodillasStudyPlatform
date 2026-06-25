@@ -1,0 +1,44 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.1.0-create-questions
+      author: codillas
+      comment: Create questions table (initial development 0.1.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: questions
+      changes:
+        - createTable:
+            tableName: questions
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: test_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: type
+                  type: varchar(20)
+                  constraints: { nullable: false }
+              - column:
+                  name: prompt
+                  type: text
+                  constraints: { nullable: false }
+              - column:
+                  name: points
+                  type: int
+                  constraints: { nullable: false }
+              - column:
+                  name: sort_order
+                  type: int
+                  constraints: { nullable: false }
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz

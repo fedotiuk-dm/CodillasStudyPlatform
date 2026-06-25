@@ -1,0 +1,239 @@
+openapi: 3.0.4
+info:
+  title: Codillas Assessment schemas
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    TestStatus:
+      type: string
+      enum:
+        - DRAFT
+        - PUBLISHED
+    QuestionType:
+      type: string
+      description: Discriminator for the question shape — choice types carry options.
+      enum:
+        - SINGLE_CHOICE
+        - MULTIPLE_CHOICE
+        - TRUE_FALSE
+        - SHORT_TEXT
+    AttemptStatus:
+      type: string
+      enum:
+        - IN_PROGRESS
+        - SUBMITTED
+        - GRADED
+    CreateTestRequest:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        lessonId:
+          type: string
+          format: uuid
+          description: Optional course lesson this test belongs to.
+    TestSummary:
+      type: object
+      required:
+        - id
+        - title
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        lessonId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        status:
+          $ref: "#/components/schemas/TestStatus"
+        createdAt:
+          type: string
+          format: date-time
+    TestResponse:
+      type: object
+      required:
+        - id
+        - title
+        - status
+        - questions
+      properties:
+        id:
+          type: string
+          format: uuid
+        lessonId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        status:
+          $ref: "#/components/schemas/TestStatus"
+        questions:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuestionResponse"
+        createdAt:
+          type: string
+          format: date-time
+    TestListResponse:
+      allOf:
+        - $ref: "common.yaml#/components/schemas/PageResponse"
+        - type: object
+          required:
+            - content
+          properties:
+            content:
+              type: array
+              items:
+                $ref: "#/components/schemas/TestSummary"
+    CreateOptionRequest:
+      type: object
+      required:
+        - text
+        - correct
+      properties:
+        text:
+          type: string
+          minLength: 1
+        correct:
+          type: boolean
+    CreateQuestionRequest:
+      type: object
+      required:
+        - type
+        - prompt
+        - points
+      properties:
+        type:
+          $ref: "#/components/schemas/QuestionType"
+        prompt:
+          type: string
+          minLength: 1
+        points:
+          type: integer
+          minimum: 1
+        options:
+          type: array
+          description: Required for choice/true-false types; omit for SHORT_TEXT.
+          items:
+            $ref: "#/components/schemas/CreateOptionRequest"
+    OptionResponse:
+      type: object
+      required:
+        - id
+        - text
+      properties:
+        id:
+          type: string
+          format: uuid
+        text:
+          type: string
+    QuestionResponse:
+      type: object
+      required:
+        - id
+        - type
+        - prompt
+        - points
+        - sortOrder
+        - options
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          $ref: "#/components/schemas/QuestionType"
+        prompt:
+          type: string
+        points:
+          type: integer
+        sortOrder:
+          type: integer
+        options:
+          type: array
+          description: Empty for SHORT_TEXT. Correctness is never exposed.
+          items:
+            $ref: "#/components/schemas/OptionResponse"
+    SaveAnswerRequest:
+      type: object
+      required:
+        - questionId
+      properties:
+        questionId:
+          type: string
+          format: uuid
+        selectedOptionIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        text:
+          type: string
+    AnswerResponse:
+      type: object
+      required:
+        - id
+        - questionId
+        - selectedOptionIds
+      properties:
+        id:
+          type: string
+          format: uuid
+        questionId:
+          type: string
+          format: uuid
+        selectedOptionIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        text:
+          type: string
+        awardedPoints:
+          type: integer
+          description: Null until graded (always pending for SHORT_TEXT before manual grading).
+    GradeAnswerRequest:
+      type: object
+      required:
+        - awardedPoints
+      properties:
+        awardedPoints:
+          type: integer
+          minimum: 0
+    AttemptResponse:
+      type: object
+      required:
+        - id
+        - testId
+        - studentId
+        - status
+        - score
+        - answers
+      properties:
+        id:
+          type: string
+          format: uuid
+        testId:
+          type: string
+          format: uuid
+        studentId:
+          type: string
+          format: uuid
+        status:
+          $ref: "#/components/schemas/AttemptStatus"
+        score:
+          type: integer
+        answers:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnswerResponse"
+        createdAt:
+          type: string
+          format: date-time

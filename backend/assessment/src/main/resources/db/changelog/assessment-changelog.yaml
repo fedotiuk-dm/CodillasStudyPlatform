@@ -1,2 +1,18 @@
-# Liquibase changelog for the 'assessment' module. Add changesets under changes/.
-databaseChangeLog: []
+# Assessment module changelog — SemVer 2.0.0: https://semver.org/spec/v2.0.0/
+databaseChangeLog:
+  # 0.1.0 — tests, questions, options, attempts, answers
+  - include:
+      file: changes/0.1.0/0.1.0-create-tests.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/0.1.0/0.1.0-create-questions.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/0.1.0/0.1.0-create-options.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/0.1.0/0.1.0-create-attempts.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/0.1.0/0.1.0-create-answers.yaml
+      relativeToChangelogFile: true

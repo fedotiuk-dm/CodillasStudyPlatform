@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.1.0-create-tests
+      author: codillas
+      comment: Create tests table (initial development 0.1.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: tests
+      changes:
+        - createTable:
+            tableName: tests
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: lesson_id
+                  type: uuid
+              - column:
+                  name: title
+                  type: varchar(200)
+                  constraints: { nullable: false }
+              - column:
+                  name: status
+                  type: varchar(20)
+                  constraints: { nullable: false }
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz

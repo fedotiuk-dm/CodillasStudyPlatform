@@ -1,0 +1,300 @@
+openapi: 3.0.4
+info:
+  title: Codillas Assessment API
+  description: Interactive test/control builder with auto-grading.
+  version: 0.1.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    name: Codillas
+    email: support@codillas.de
+servers:
+  - url: http://localhost:8081
+    description: Local development
+tags:
+  - name: assessment
+    description: Test builder + attempts
+paths:
+  /api/tests:
+    get:
+      tags: [assessment]
+      operationId: listTests
+      summary: List tests (paginated)
+      x-spring-paginated: true
+      parameters:
+        - name: lessonId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - $ref: "common.yaml#/components/parameters/PageNumber"
+        - $ref: "common.yaml#/components/parameters/PageSize"
+        - $ref: "common.yaml#/components/parameters/Sort"
+      responses:
+        "200":
+          description: Paginated tests
+          content:
+            application/json:
+              schema:
+                $ref: "assessment-schemas.yaml#/components/schemas/TestListResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+    post:
+      tags: [assessment]
+      operationId: createTest
+      summary: Create a draft test
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "assessment-schemas.yaml#/components/schemas/CreateTestRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "assessment-schemas.yaml#/components/schemas/TestResponse"
+        "400":
+          $ref: "common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+  /api/tests/{testId}:
+    get:
+      tags: [assessment]
+      operationId: getTest
+      summary: Get a test with its questions
+      parameters:
+        - name: testId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Test
+          content:
+            application/json:
+              schema:
+                $ref: "assessment-schemas.yaml#/components/schemas/TestResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+  /api/tests/{testId}/publish:
+    post:
+      tags: [assessment]
+      operationId: publishTest
+      summary: Publish a draft test
+      parameters:
+        - name: testId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Published
+          content:
+            application/json:
+              schema:
+                $ref: "assessment-schemas.yaml#/components/schemas/TestResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "common.yaml#/components/responses/Conflict"
+  /api/tests/{testId}/questions:
+    post:
+      tags: [assessment]
+      operationId: addQuestion
+      summary: Add a question (with its options) to a test
+      parameters:
+        - name: testId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "assessment-schemas.yaml#/components/schemas/CreateQuestionRequest"
+      responses:
+        "201":
+          description: Added
+          content:
+            application/json:
+              schema:
+                $ref: "assessment-schemas.yaml#/components/schemas/QuestionResponse"
+        "400":
+          $ref: "common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "common.yaml#/components/responses/Conflict"
+  /api/tests/{testId}/attempts:
+    post:
+      tags: [assessment]
+      operationId: startAttempt
+      summary: Start the current student's attempt at a test
+      parameters:
+        - name: testId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "201":
+          description: Started
+          content:
+            application/json:
+              schema:
+                $ref: "assessment-schemas.yaml#/components/schemas/AttemptResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "common.yaml#/components/responses/Conflict"
+  /api/attempts/{attemptId}:
+    get:
+      tags: [assessment]
+      operationId: getAttempt
+      summary: Get an attempt with its answers and score
+      parameters:
+        - name: attemptId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Attempt
+          content:
+            application/json:
+              schema:
+                $ref: "assessment-schemas.yaml#/components/schemas/AttemptResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+  /api/attempts/{attemptId}/answers:
+    put:
+      tags: [assessment]
+      operationId: saveAnswer
+      summary: Save (upsert) the student's answer to a question
+      parameters:
+        - name: attemptId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "assessment-schemas.yaml#/components/schemas/SaveAnswerRequest"
+      responses:
+        "200":
+          description: Saved
+          content:
+            application/json:
+              schema:
+                $ref: "assessment-schemas.yaml#/components/schemas/AnswerResponse"
+        "400":
+          $ref: "common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "common.yaml#/components/responses/Conflict"
+  /api/attempts/{attemptId}/submit:
+    post:
+      tags: [assessment]
+      operationId: submitAttempt
+      summary: Submit the attempt — auto-grades choice answers and emits AttemptCompleted
+      parameters:
+        - name: attemptId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Submitted
+          content:
+            application/json:
+              schema:
+                $ref: "assessment-schemas.yaml#/components/schemas/AttemptResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "common.yaml#/components/responses/Conflict"
+  /api/attempts/{attemptId}/answers/{answerId}/grade:
+    post:
+      tags: [assessment]
+      operationId: gradeAnswer
+      summary: Award points to a (text) answer; completes the attempt when all are graded
+      parameters:
+        - name: attemptId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: answerId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "assessment-schemas.yaml#/components/schemas/GradeAnswerRequest"
+      responses:
+        "200":
+          description: Graded
+          content:
+            application/json:
+              schema:
+                $ref: "assessment-schemas.yaml#/components/schemas/AnswerResponse"
+        "400":
+          $ref: "common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "common.yaml#/components/responses/Conflict"

@@ -1,0 +1,53 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.1.0-create-answers
+      author: codillas
+      comment: Create answers + answer_selected_options tables (0.1.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: answers
+      changes:
+        - createTable:
+            tableName: answers
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: attempt_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: question_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: text
+                  type: text
+              - column:
+                  name: awarded_points
+                  type: int
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz
+        - addUniqueConstraint:
+            tableName: answers
+            columnNames: attempt_id, question_id
+            constraintName: uq_answers_attempt_question
+        - createTable:
+            tableName: answer_selected_options
+            columns:
+              - column:
+                  name: answer_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: option_id
+                  type: uuid
+                  constraints: { nullable: false }

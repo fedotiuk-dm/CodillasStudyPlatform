@@ -1,0 +1,40 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.1.0-create-options
+      author: codillas
+      comment: Create options table (initial development 0.1.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: options
+      changes:
+        - createTable:
+            tableName: options
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: question_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: text
+                  type: text
+                  constraints: { nullable: false }
+              - column:
+                  name: correct
+                  type: boolean
+                  constraints: { nullable: false }
+              - column:
+                  name: position
+                  type: int
+                  constraints: { nullable: false }
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz

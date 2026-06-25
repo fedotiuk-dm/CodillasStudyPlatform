@@ -1,0 +1,44 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.1.0-create-attempts
+      author: codillas
+      comment: Create attempts table — one attempt per (test, student) (0.1.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: attempts
+      changes:
+        - createTable:
+            tableName: attempts
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: test_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: student_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: status
+                  type: varchar(20)
+                  constraints: { nullable: false }
+              - column:
+                  name: score
+                  type: int
+                  constraints: { nullable: false }
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz
+        - addUniqueConstraint:
+            tableName: attempts
+            columnNames: test_id, student_id
+            constraintName: uq_attempts_test_student

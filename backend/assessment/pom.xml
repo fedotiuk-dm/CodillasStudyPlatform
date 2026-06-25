@@ -11,6 +11,14 @@
   </parent>
   <artifactId>codillas-assessment</artifactId>
   <name>Codillas Assessment</name>
+
+  <properties>
+    <openapi.skip>false</openapi.skip>
+    <openapi.spec>assessment-paths.yaml</openapi.spec>
+    <openapi.api-package>de.codillas.assessment.api</openapi.api-package>
+    <openapi.model-package>de.codillas.assessment.api.dto</openapi.model-package>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>de.codillas</groupId>
