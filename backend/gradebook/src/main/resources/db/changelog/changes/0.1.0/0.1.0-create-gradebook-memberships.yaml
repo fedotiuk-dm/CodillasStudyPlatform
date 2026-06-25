@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.1.0-create-gradebook-memberships
+      author: codillas
+      comment: Create gradebook_memberships read model — unique per (group, student) (0.1.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: gradebook_memberships
+      changes:
+        - createTable:
+            tableName: gradebook_memberships
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: group_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: student_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz
+        - addUniqueConstraint:
+            tableName: gradebook_memberships
+            columnNames: group_id, student_id
+            constraintName: uq_gradebook_memberships_group_student

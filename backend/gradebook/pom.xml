@@ -11,11 +11,24 @@
   </parent>
   <artifactId>codillas-gradebook</artifactId>
   <name>Codillas Gradebook</name>
+
+  <properties>
+    <openapi.skip>false</openapi.skip>
+    <openapi.spec>gradebook-paths.yaml</openapi.spec>
+    <openapi.api-package>de.codillas.gradebook.api</openapi.api-package>
+    <openapi.model-package>de.codillas.gradebook.api.dto</openapi.model-package>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>de.codillas</groupId>
       <artifactId>codillas-shared</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <!-- @ApplicationModuleListener for consuming domain events into the read model. -->
+    <dependency>
+      <groupId>org.springframework.modulith</groupId>
+      <artifactId>spring-modulith-events-api</artifactId>
     </dependency>
   </dependencies>
 </project>

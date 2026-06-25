@@ -1,0 +1,66 @@
+openapi: 3.0.4
+info:
+  title: Codillas Gradebook schemas
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    GradeSource:
+      type: string
+      description: What produced the grade.
+      enum:
+        - HOMEWORK
+        - TEST
+    ProgressEntryResponse:
+      type: object
+      required:
+        - id
+        - source
+        - sourceId
+        - referenceId
+        - score
+      properties:
+        id:
+          type: string
+          format: uuid
+        source:
+          $ref: "#/components/schemas/GradeSource"
+        sourceId:
+          type: string
+          format: uuid
+          description: The graded artefact (submission or attempt).
+        referenceId:
+          type: string
+          format: uuid
+          description: The assignment or test the artefact belongs to.
+        score:
+          type: integer
+        recordedAt:
+          type: string
+          format: date-time
+    StudentGradebookResponse:
+      type: object
+      required:
+        - studentId
+        - entries
+      properties:
+        studentId:
+          type: string
+          format: uuid
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProgressEntryResponse"
+    GroupGradebookResponse:
+      type: object
+      required:
+        - groupId
+        - students
+      properties:
+        groupId:
+          type: string
+          format: uuid
+        students:
+          type: array
+          items:
+            $ref: "#/components/schemas/StudentGradebookResponse"

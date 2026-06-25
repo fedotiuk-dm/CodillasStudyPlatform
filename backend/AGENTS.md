@@ -91,8 +91,14 @@ config/                      module-local @ConfigurationProperties
 ## Events (Modulith)
 
 - Define event records in the module's `event/` package, or in `shared` if 2+ modules consume them.
-- Publish with `ApplicationEventPublisher`; consume with `@ApplicationModuleListener`. See the event
-  map in `docs/architecture/overview.md`.
+- Publish with `ApplicationEventPublisher` (inside the writer's transaction); consume with
+  `@ApplicationModuleListener`. See the event map in `docs/architecture/overview.md`.
+- **Durable delivery**: the app (`main`) wires the **Spring Modulith JDBC event publication
+  registry** (`spring-modulith-starter-jdbc`) + `@EnableAsync`; the `event_publication` table is a
+  Liquibase changeset in the master changelog. Consumers (e.g. `gradebook`) get reliable, retried,
+  async delivery — they depend on `spring-modulith-events-api` for the annotation. Event-fed read
+  models own their derived tables and never join into other modules. Integration-test the flow with
+  Awaitility (delivery is asynchronous).
 
 ## Persistence
 

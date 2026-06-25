@@ -1,6 +1,10 @@
 # Master changelog. Includes each module's changelog (which owns its own tables).
 # Order matters only if modules share FKs — we reference by id, so order is loose.
 databaseChangeLog:
+  # App-level infrastructure (not owned by a domain module).
+  - include:
+      file: changes/0.1.0/0.1.0-create-event-publication.yaml
+      relativeToChangelogFile: true
   - include: { file: db/changelog/user-changelog.yaml, relativeToChangelogFile: false }
   - include: { file: db/changelog/course-changelog.yaml, relativeToChangelogFile: false }
   - include: { file: db/changelog/enrollment-changelog.yaml, relativeToChangelogFile: false }

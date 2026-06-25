@@ -1,0 +1,62 @@
+openapi: 3.0.4
+info:
+  title: Codillas Gradebook API
+  description: Read-only progress journal, fed by domain events.
+  version: 0.1.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    name: Codillas
+    email: support@codillas.de
+servers:
+  - url: http://localhost:8081
+    description: Local development
+tags:
+  - name: gradebook
+    description: Progress journal queries
+paths:
+  /api/gradebook/students/{studentId}:
+    get:
+      tags: [gradebook]
+      operationId: getStudentGradebook
+      summary: A student's progress journal
+      parameters:
+        - name: studentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Student gradebook
+          content:
+            application/json:
+              schema:
+                $ref: "gradebook-schemas.yaml#/components/schemas/StudentGradebookResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+  /api/gradebook/groups/{groupId}:
+    get:
+      tags: [gradebook]
+      operationId: getGroupGradebook
+      summary: A group's gradebook — every member's progress
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Group gradebook
+          content:
+            application/json:
+              schema:
+                $ref: "gradebook-schemas.yaml#/components/schemas/GroupGradebookResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"

@@ -1,0 +1,48 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.1.0-create-progress-entries
+      author: codillas
+      comment: Create progress_entries read model — unique per (source, source_id) (0.1.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: progress_entries
+      changes:
+        - createTable:
+            tableName: progress_entries
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: student_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: source
+                  type: varchar(20)
+                  constraints: { nullable: false }
+              - column:
+                  name: source_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: reference_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: score
+                  type: int
+                  constraints: { nullable: false }
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz
+        - addUniqueConstraint:
+            tableName: progress_entries
+            columnNames: source, source_id
+            constraintName: uq_progress_entries_source
