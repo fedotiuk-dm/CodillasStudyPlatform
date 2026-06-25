@@ -1,0 +1,12 @@
+# Master changelog. Includes each module's changelog (which owns its own tables).
+# Order matters only if modules share FKs — we reference by id, so order is loose.
+databaseChangeLog:
+  - include: { file: db/changelog/user-changelog.yaml, relativeToChangelogFile: false }
+  - include: { file: db/changelog/course-changelog.yaml, relativeToChangelogFile: false }
+  - include: { file: db/changelog/enrollment-changelog.yaml, relativeToChangelogFile: false }
+  - include: { file: db/changelog/homework-changelog.yaml, relativeToChangelogFile: false }
+  - include: { file: db/changelog/assessment-changelog.yaml, relativeToChangelogFile: false }
+  - include: { file: db/changelog/gradebook-changelog.yaml, relativeToChangelogFile: false }
+  - include: { file: db/changelog/chat-changelog.yaml, relativeToChangelogFile: false }
+  - include: { file: db/changelog/notification-changelog.yaml, relativeToChangelogFile: false }
+  - include: { file: db/changelog/files-changelog.yaml, relativeToChangelogFile: false }

@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: codillas-study-platform
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/codillas}
+    username: ${DB_USER:codillas}
+    password: ${DB_PASSWORD:codillas}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate        # Liquibase owns the schema; JPA only validates
+    open-in-view: false
+    properties:
+      hibernate.format_sql: true
+
+  liquibase:
+    change-log: classpath:db/changelog/codillas-changelog.yaml
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8080/realms/codillas}
+
+server:
+  port: ${SERVER_PORT:8081}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info

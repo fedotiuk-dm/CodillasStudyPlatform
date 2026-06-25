@@ -1,0 +1,2 @@
+# Liquibase changelog for the 'enrollment' module. Add changesets under changes/.
+databaseChangeLog: []

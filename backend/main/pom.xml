@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>de.codillas</groupId>
+    <artifactId>codillas-study-platform</artifactId>
+    <version>1.0.0</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+  <artifactId>codillas-main</artifactId>
+  <name>Codillas Main</name>
+  <description>Assembles all modules into the runnable application</description>
+
+  <dependencies>
+    <!-- All application modules -->
+    <dependency><groupId>de.codillas</groupId><artifactId>codillas-shared</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>de.codillas</groupId><artifactId>codillas-user</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>de.codillas</groupId><artifactId>codillas-course</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>de.codillas</groupId><artifactId>codillas-enrollment</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>de.codillas</groupId><artifactId>codillas-homework</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>de.codillas</groupId><artifactId>codillas-assessment</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>de.codillas</groupId><artifactId>codillas-gradebook</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>de.codillas</groupId><artifactId>codillas-chat</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>de.codillas</groupId><artifactId>codillas-notification</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>de.codillas</groupId><artifactId>codillas-files</artifactId><version>${project.version}</version></dependency>
+
+    <!-- App-level concerns -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+      <version>${springdoc.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>codillas-study-platform</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+</project>
