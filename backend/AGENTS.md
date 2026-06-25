@@ -91,6 +91,26 @@ config/                      module-local @ConfigurationProperties
 - One top-level type per file. Constructor injection only (no field `@Autowired`).
 - No magic strings for roles — use `de.codillas.user.Role`.
 
+## Testing (TDD)
+
+Write the test first, watch it fail, then the minimal code. The OpenAPI spec is **design** (not
+code under test) — write it first; it generates the interface + DTOs. TDD everything below it.
+
+Per-feature order (double loop):
+1. OpenAPI spec → generate `<Module>Api` + DTOs.
+2. Acceptance test (RED) — `@ApplicationModuleTest` / `@SpringBootTest`: status, body, role
+   (`@PreAuthorize`), pagination.
+3. Inner loop (inside-out): entity domain logic → repository → service, each RED→GREEN.
+4. Wire the thin controller → acceptance goes GREEN. Refactor.
+5. `ApplicationModules.of(...).verify()` guards boundaries.
+
+Test layers:
+- **Domain logic** — pure JUnit, no Spring/DB (status machines, scoring). Fastest.
+- **Repository / Hibernate mapping** — `@DataJpaTest` against **Testcontainers Postgres** (never
+  H2; we use Liquibase + Postgres types). Run the real Liquibase schema in the test.
+- **Service** — happy path + `NotFound` / `Conflict`.
+- **Controller** — slice/integration: status codes, role security, pagination.
+
 ## Verify
 
 ```bash

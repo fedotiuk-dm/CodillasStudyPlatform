@@ -11,6 +11,7 @@
   </parent>
   <artifactId>codillas-course</artifactId>
   <name>Codillas Course</name>
+
   <dependencies>
     <dependency>
       <groupId>de.codillas</groupId>
@@ -18,4 +19,42 @@
       <version>${project.version}</version>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <!-- Generate the Course API interface + DTOs from the OpenAPI spec. -->
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-course-api</id>
+            <goals><goal>generate</goal></goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <inputSpec>${project.parent.basedir}/openapi/course-paths.yaml</inputSpec>
+              <apiPackage>de.codillas.course.api</apiPackage>
+              <modelPackage>de.codillas.course.api.dto</modelPackage>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-generated-source</id>
+            <goals><goal>add-source</goal></goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-sources/openapi/src/main/java</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

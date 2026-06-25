@@ -1,0 +1,32 @@
+openapi: 3.0.4
+info:
+  title: Codillas Course API
+  version: 1.0.0
+paths:
+  /api/courses:
+    get:
+      tags: [course]
+      operationId: listCourses
+      summary: List courses (paginated)
+      x-spring-paginated: true
+      responses:
+        "200":
+          description: Paginated courses
+          content:
+            application/json:
+              schema: { $ref: "course-schemas.yaml#/components/schemas/CourseListResponse" }
+    post:
+      tags: [course]
+      operationId: createCourse
+      summary: Create a course
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "course-schemas.yaml#/components/schemas/CreateCourseRequest" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "course-schemas.yaml#/components/schemas/Course" }
