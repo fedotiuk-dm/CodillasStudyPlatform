@@ -6,7 +6,9 @@ WORKDIR /app/frontend
 
 # Install deps first (cached layer).
 COPY frontend/package.json frontend/pnpm-lock.yaml frontend/pnpm-workspace.yaml ./
-RUN pnpm install --frozen-lockfile
+# --ignore-scripts: skip native postinstalls (esbuild/sharp/swc ship prebuilt musl binaries via
+# platform optional deps), which also avoids pnpm's non-interactive "ignored builds" hard error.
+RUN pnpm install --frozen-lockfile --ignore-scripts
 
 # Sources + the OpenAPI specs the client is generated from.
 COPY frontend ./

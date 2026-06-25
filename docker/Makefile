@@ -1,15 +1,17 @@
 COMPOSE = docker compose -f docker-compose.dev.yml
+FULL    = $(COMPOSE) --profile full
 
-# Infra only (Postgres + Keycloak + minio + mailpit); run backend/frontend on the host.
+# `up` brings up EVERYTHING (infra + backend + frontend containers).
 init:      ; ./init.sh
-up:        ; $(COMPOSE) up -d
-down:      ; $(COMPOSE) down
-logs:      ; $(COMPOSE) logs -f
-ps:        ; $(COMPOSE) ps
-clean:     ; $(COMPOSE) down -v
+up:        ; $(FULL) up -d --build
+build:     ; $(FULL) build
+down:      ; $(FULL) down
+logs:      ; $(FULL) logs -f
+ps:        ; $(FULL) ps
+clean:     ; $(FULL) down -v
 
-# Full stack — also build + run the backend and frontend containers (compose profile `full`).
-up-full:   ; $(COMPOSE) --profile full up -d --build
-down-full: ; $(COMPOSE) --profile full down
+# Infra only (Postgres + Keycloak + minio + mailpit) — run backend/frontend on the host.
+up-infra:  ; $(COMPOSE) up -d
+down-infra:; $(COMPOSE) down
 
-.PHONY: init up down logs ps clean up-full down-full
+.PHONY: init up build down logs ps clean up-infra down-infra

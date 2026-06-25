@@ -31,7 +31,7 @@ EOF
   echo "Wrote docker/.env"
 fi
 
-docker compose -f docker-compose.dev.yml up -d
+docker compose -f docker-compose.dev.yml --profile full up -d --build
 
 cat <<'EOF'
 
