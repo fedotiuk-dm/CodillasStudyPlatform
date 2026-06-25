@@ -1,0 +1,28 @@
+{
+  "app": {
+    "name": "Codillas Study Platform",
+    "tagline": "Навчальна платформа IT-школи Codillas"
+  },
+  "common": {
+    "loading": "Завантаження…",
+    "save": "Зберегти",
+    "cancel": "Скасувати",
+    "delete": "Видалити",
+    "signIn": "Увійти",
+    "signOut": "Вийти"
+  },
+  "auth": {
+    "sessionExpired": "Сесія завершилася",
+    "sessionExpiredHint": "Будь ласка, увійдіть знову."
+  },
+  "nav": {
+    "courses": "Курси",
+    "groups": "Групи",
+    "homework": "Домашні завдання",
+    "tests": "Тести",
+    "gradebook": "Журнал",
+    "chat": "Чат",
+    "notifications": "Сповіщення",
+    "files": "Файли"
+  }
+}

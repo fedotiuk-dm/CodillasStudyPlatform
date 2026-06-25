@@ -1,0 +1,28 @@
+{
+  "app": {
+    "name": "Codillas Study Platform",
+    "tagline": "Lernplattform der Codillas IT-Schule"
+  },
+  "common": {
+    "loading": "Wird geladen…",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "signIn": "Anmelden",
+    "signOut": "Abmelden"
+  },
+  "auth": {
+    "sessionExpired": "Sitzung abgelaufen",
+    "sessionExpiredHint": "Bitte melden Sie sich erneut an."
+  },
+  "nav": {
+    "courses": "Kurse",
+    "groups": "Gruppen",
+    "homework": "Hausaufgaben",
+    "tests": "Tests",
+    "gradebook": "Notenbuch",
+    "chat": "Chat",
+    "notifications": "Benachrichtigungen",
+    "files": "Dateien"
+  }
+}

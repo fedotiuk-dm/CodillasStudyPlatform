@@ -1,0 +1,25 @@
+# dependencies
+/node_modules
+.pnpm-store/
+
+# next.js
+/.next/
+/out/
+next-env.d.ts
+*.tsbuildinfo
+
+# generated API client (orval) — regenerate with `pnpm api`
+/lib/api/
+
+# production
+/build
+
+# env
+.env*.local
+
+# debug / misc
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+/coverage

@@ -1,0 +1,28 @@
+{
+  "app": {
+    "name": "Codillas Study Platform",
+    "tagline": "Learning platform for the Codillas IT school"
+  },
+  "common": {
+    "loading": "Loading…",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "signIn": "Sign in",
+    "signOut": "Sign out"
+  },
+  "auth": {
+    "sessionExpired": "Session expired",
+    "sessionExpiredHint": "Please log in again to continue."
+  },
+  "nav": {
+    "courses": "Courses",
+    "groups": "Groups",
+    "homework": "Homework",
+    "tests": "Tests",
+    "gradebook": "Gradebook",
+    "chat": "Chat",
+    "notifications": "Notifications",
+    "files": "Files"
+  }
+}
