@@ -25,14 +25,14 @@ export interface NavItem {
 // Single source of truth for the app sidebar. Hrefs are locale-relative (the i18n <Link> adds the
 // /{locale} prefix). Labels live in messages/*.json under `nav.<key>`.
 export const NAV_ITEMS: readonly NavItem[] = [
-  { key: "courses", href: "/courses", icon: BookOpen, roles: [] },
-  { key: "groups", href: "/groups", icon: Users, roles: [Role.ADMIN, Role.TEACHER] },
-  { key: "homework", href: "/homework", icon: ClipboardList, roles: [] },
-  { key: "tests", href: "/tests", icon: FileText, roles: [] },
-  { key: "gradebook", href: "/gradebook", icon: GraduationCap, roles: [] },
-  { key: "chat", href: "/chat", icon: MessageSquare, roles: [] },
-  { key: "notifications", href: "/notifications", icon: NotificationIcon, roles: [] },
-  { key: "files", href: "/files", icon: FolderOpen, roles: [] },
+  { key: "courses", href: "/dashboard/courses", icon: BookOpen, roles: [] },
+  { key: "groups", href: "/dashboard/groups", icon: Users, roles: [Role.ADMIN, Role.TEACHER] },
+  { key: "homework", href: "/dashboard/homework", icon: ClipboardList, roles: [] },
+  { key: "tests", href: "/dashboard/tests", icon: FileText, roles: [] },
+  { key: "gradebook", href: "/dashboard/gradebook", icon: GraduationCap, roles: [] },
+  { key: "chat", href: "/dashboard/chat", icon: MessageSquare, roles: [] },
+  { key: "notifications", href: "/dashboard/notifications", icon: NotificationIcon, roles: [] },
+  { key: "files", href: "/dashboard/files", icon: FolderOpen, roles: [] },
 ] as const;
 
 /** The nav items the current user may see, filtered by their realm roles. */
