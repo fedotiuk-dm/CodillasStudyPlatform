@@ -9,9 +9,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import de.codillas.homework.domain.model.Submission;
+import de.codillas.homework.domain.model.Submission_;
 
 @Repository
 public interface SubmissionRepository extends JpaRepository<Submission, UUID> {
+
+  /** Newest version first — find a student's latest attempt. */
+  Sort LATEST_VERSION = Sort.by(Sort.Order.desc(Submission_.VERSION));
+
+  /** Grouped by student, then version — the teacher's review list. */
+  Sort BY_STUDENT_THEN_VERSION = Sort.by(Submission_.STUDENT_ID, Submission_.VERSION);
 
   List<Submission> findByAssignmentId(UUID assignmentId, Sort sort);
 

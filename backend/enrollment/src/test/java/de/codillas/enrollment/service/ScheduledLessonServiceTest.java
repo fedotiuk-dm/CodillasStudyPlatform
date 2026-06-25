@@ -8,8 +8,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.data.domain.Sort;
-
 import de.codillas.enrollment.api.dto.ScheduleLessonRequest;
 import de.codillas.enrollment.api.dto.ScheduledLessonResponse;
 import de.codillas.enrollment.domain.model.ScheduledLesson;
@@ -53,7 +51,7 @@ class ScheduledLessonServiceTest {
     UUID groupId = UUID.randomUUID();
     List<ScheduledLesson> lessons = List.of(ScheduledLesson.builder().groupId(groupId).build());
     List<ScheduledLessonResponse> dtos = List.of(mock(ScheduledLessonResponse.class));
-    when(repository.findByGroupId(groupId, Sort.by("scheduledAt"))).thenReturn(lessons);
+    when(repository.findByGroupId(groupId, ScheduledLessonRepository.BY_TIME)).thenReturn(lessons);
     when(mapper.toResponseList(lessons)).thenReturn(dtos);
 
     assertThat(service.listScheduledLessons(groupId)).isSameAs(dtos);

@@ -56,7 +56,7 @@ class SubmissionServiceTest {
   @Mock private ApplicationEventPublisher events;
   @InjectMocks private SubmissionServiceImpl service;
 
-  private static final Sort VERSION_DESC = Sort.by(Sort.Direction.DESC, "version");
+  private static final Sort VERSION_DESC = SubmissionRepository.LATEST_VERSION;
 
   @Test
   @DisplayName("createSubmission starts at version 1 when the student has no prior submission")

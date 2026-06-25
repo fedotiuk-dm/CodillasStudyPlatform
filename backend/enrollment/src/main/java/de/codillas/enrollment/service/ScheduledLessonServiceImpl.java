@@ -3,7 +3,6 @@ package de.codillas.enrollment.service;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +29,7 @@ public class ScheduledLessonServiceImpl implements ScheduledLessonService {
 
   @Override
   public List<ScheduledLessonResponse> listScheduledLessons(UUID groupId) {
-    return mapper.toResponseList(repository.findByGroupId(groupId, Sort.by("scheduledAt")));
+    return mapper.toResponseList(
+        repository.findByGroupId(groupId, ScheduledLessonRepository.BY_TIME));
   }
 }

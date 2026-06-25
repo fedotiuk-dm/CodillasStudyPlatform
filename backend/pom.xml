@@ -223,6 +223,12 @@
               <artifactId>mapstruct-processor</artifactId>
               <version>${mapstruct.version}</version>
             </path>
+            <!-- Hibernate static metamodel (Entity_): type-safe field names for Sort/queries. -->
+            <path>
+              <groupId>org.hibernate.orm</groupId>
+              <artifactId>hibernate-processor</artifactId>
+              <version>${hibernate.version}</version>
+            </path>
           </annotationProcessorPaths>
         </configuration>
       </plugin>

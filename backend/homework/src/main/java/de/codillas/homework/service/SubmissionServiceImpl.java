@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,7 +53,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     int nextVersion =
         repository
                 .findFirstByAssignmentIdAndStudentId(
-                    assignmentId, studentId, Sort.by(Sort.Direction.DESC, "version"))
+                    assignmentId, studentId, SubmissionRepository.LATEST_VERSION)
                 .map(Submission::getVersion)
                 .orElse(0)
             + 1;
@@ -83,7 +82,7 @@ public class SubmissionServiceImpl implements SubmissionService {
   @Override
   public List<SubmissionResponse> listSubmissions(UUID assignmentId) {
     return mapper.toResponseList(
-        repository.findByAssignmentId(assignmentId, Sort.by("studentId", "version")));
+        repository.findByAssignmentId(assignmentId, SubmissionRepository.BY_STUDENT_THEN_VERSION));
   }
 
   @Override
