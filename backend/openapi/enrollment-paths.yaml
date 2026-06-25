@@ -115,3 +115,96 @@ paths:
                   $ref: "enrollment-schemas.yaml#/components/schemas/MembershipResponse"
         "401":
           $ref: "common.yaml#/components/responses/Unauthorized"
+  /api/groups/{groupId}/lessons:
+    post:
+      tags:
+        - enrollment
+      operationId: scheduleLesson
+      summary: Schedule a lesson session for a group
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "enrollment-schemas.yaml#/components/schemas/ScheduleLessonRequest"
+      responses:
+        "201":
+          description: Scheduled
+          content:
+            application/json:
+              schema:
+                $ref: "enrollment-schemas.yaml#/components/schemas/ScheduledLessonResponse"
+        "400":
+          $ref: "common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+    get:
+      tags:
+        - enrollment
+      operationId: listScheduledLessons
+      summary: List a group's scheduled lessons
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Scheduled lessons
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "enrollment-schemas.yaml#/components/schemas/ScheduledLessonResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+  /api/groups/{groupId}/lessons/{scheduledLessonId}/attendance:
+    put:
+      tags:
+        - enrollment
+      operationId: markAttendance
+      summary: Mark a student's attendance for a scheduled lesson
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: scheduledLessonId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "enrollment-schemas.yaml#/components/schemas/MarkAttendanceRequest"
+      responses:
+        "200":
+          description: Attendance recorded
+          content:
+            application/json:
+              schema:
+                $ref: "enrollment-schemas.yaml#/components/schemas/AttendanceResponse"
+        "400":
+          $ref: "common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"

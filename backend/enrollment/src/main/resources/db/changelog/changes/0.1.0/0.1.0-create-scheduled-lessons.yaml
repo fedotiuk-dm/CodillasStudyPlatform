@@ -1,0 +1,42 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.1.0-create-scheduled-lessons
+      author: codillas
+      comment: Create scheduled_lessons table (initial development 0.1.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: scheduled_lessons
+      changes:
+        - createTable:
+            tableName: scheduled_lessons
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: group_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: title
+                  type: varchar(200)
+                  constraints: { nullable: false }
+              - column:
+                  name: scheduled_at
+                  type: timestamptz
+                  constraints: { nullable: false }
+              - column:
+                  name: meet_link
+                  type: text
+              - column:
+                  name: recording_url
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz

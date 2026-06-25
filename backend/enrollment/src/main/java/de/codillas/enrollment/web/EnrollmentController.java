@@ -9,13 +9,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.codillas.enrollment.api.EnrollmentApi;
+import de.codillas.enrollment.api.dto.AttendanceResponse;
 import de.codillas.enrollment.api.dto.CreateGroupRequest;
 import de.codillas.enrollment.api.dto.EnrollStudentRequest;
 import de.codillas.enrollment.api.dto.GroupListResponse;
 import de.codillas.enrollment.api.dto.GroupResponse;
+import de.codillas.enrollment.api.dto.MarkAttendanceRequest;
 import de.codillas.enrollment.api.dto.MembershipResponse;
+import de.codillas.enrollment.api.dto.ScheduleLessonRequest;
+import de.codillas.enrollment.api.dto.ScheduledLessonResponse;
+import de.codillas.enrollment.service.AttendanceService;
 import de.codillas.enrollment.service.GroupService;
 import de.codillas.enrollment.service.MembershipService;
+import de.codillas.enrollment.service.ScheduledLessonService;
 import de.codillas.shared.security.RequiresAdmin;
 import de.codillas.shared.security.RequiresAuthenticated;
 
@@ -28,6 +34,8 @@ public class EnrollmentController implements EnrollmentApi {
 
   private final GroupService groupService;
   private final MembershipService membershipService;
+  private final ScheduledLessonService scheduledLessonService;
+  private final AttendanceService attendanceService;
 
   @Override
   @RequiresAdmin
@@ -54,5 +62,27 @@ public class EnrollmentController implements EnrollmentApi {
   @RequiresAuthenticated
   public ResponseEntity<List<MembershipResponse>> listGroupMembers(UUID groupId) {
     return ResponseEntity.ok(membershipService.listGroupMembers(groupId));
+  }
+
+  @Override
+  @RequiresAdmin
+  public ResponseEntity<ScheduledLessonResponse> scheduleLesson(
+      UUID groupId, ScheduleLessonRequest scheduleLessonRequest) {
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .body(scheduledLessonService.scheduleLesson(groupId, scheduleLessonRequest));
+  }
+
+  @Override
+  @RequiresAuthenticated
+  public ResponseEntity<List<ScheduledLessonResponse>> listScheduledLessons(UUID groupId) {
+    return ResponseEntity.ok(scheduledLessonService.listScheduledLessons(groupId));
+  }
+
+  @Override
+  @RequiresAdmin
+  public ResponseEntity<AttendanceResponse> markAttendance(
+      UUID groupId, UUID scheduledLessonId, MarkAttendanceRequest markAttendanceRequest) {
+    return ResponseEntity.ok(
+        attendanceService.markAttendance(scheduledLessonId, markAttendanceRequest));
   }
 }

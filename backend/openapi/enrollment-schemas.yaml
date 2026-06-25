@@ -90,3 +90,74 @@ components:
         enrolledAt:
           type: string
           format: date-time
+    ScheduleLessonRequest:
+      type: object
+      required:
+        - title
+        - scheduledAt
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        scheduledAt:
+          type: string
+          format: date-time
+        meetLink:
+          type: string
+    ScheduledLessonResponse:
+      type: object
+      required:
+        - id
+        - groupId
+        - title
+        - scheduledAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        groupId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        scheduledAt:
+          type: string
+          format: date-time
+        meetLink:
+          type: string
+        recordingUrl:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    MarkAttendanceRequest:
+      type: object
+      required:
+        - userId
+        - present
+      properties:
+        userId:
+          type: string
+          format: uuid
+        present:
+          type: boolean
+    AttendanceResponse:
+      type: object
+      required:
+        - id
+        - scheduledLessonId
+        - userId
+        - present
+      properties:
+        id:
+          type: string
+          format: uuid
+        scheduledLessonId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        present:
+          type: boolean

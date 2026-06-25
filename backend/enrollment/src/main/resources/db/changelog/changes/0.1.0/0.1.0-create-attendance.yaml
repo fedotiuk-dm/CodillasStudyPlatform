@@ -1,0 +1,40 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.1.0-create-attendance
+      author: codillas
+      comment: Create attendance table (initial development 0.1.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: attendance
+      changes:
+        - createTable:
+            tableName: attendance
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: scheduled_lesson_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: present
+                  type: boolean
+                  constraints: { nullable: false }
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz
+        - addUniqueConstraint:
+            tableName: attendance
+            columnNames: scheduled_lesson_id, user_id
+            constraintName: uq_attendance_lesson_user

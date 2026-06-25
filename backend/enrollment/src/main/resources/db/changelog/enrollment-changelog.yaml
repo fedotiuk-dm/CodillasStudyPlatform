@@ -7,3 +7,9 @@ databaseChangeLog:
   - include:
       file: changes/0.1.0/0.1.0-create-group-members.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changes/0.1.0/0.1.0-create-scheduled-lessons.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/0.1.0/0.1.0-create-attendance.yaml
+      relativeToChangelogFile: true
