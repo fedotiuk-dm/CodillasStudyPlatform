@@ -1,17 +1,20 @@
 COMPOSE = docker compose -f docker-compose.dev.yml
-FULL    = $(COMPOSE) --profile full
+INFRA   = postgres keycloak minio minio-init mailpit
 
-# `up` brings up EVERYTHING (infra + backend + frontend containers).
+# `up` runs the WHOLE dev stack (infra + backend + frontend) in dev mode — hot reload everywhere.
 init:      ; ./init.sh
-up:        ; $(FULL) up -d --build
-build:     ; $(FULL) build
-down:      ; $(FULL) down
-logs:      ; $(FULL) logs -f
-ps:        ; $(FULL) ps
-clean:     ; $(FULL) down -v
+up:        ; $(COMPOSE) up -d
+down:      ; $(COMPOSE) down
+logs:      ; $(COMPOSE) logs -f
+ps:        ; $(COMPOSE) ps
+clean:     ; $(COMPOSE) down -v
 
-# Infra only (Postgres + Keycloak + minio + mailpit) — run backend/frontend on the host.
-up-infra:  ; $(COMPOSE) up -d
-down-infra:; $(COMPOSE) down
+# Infra only — when you'd rather run backend/frontend on the host yourself.
+up-infra:  ; $(COMPOSE) up -d $(INFRA)
 
-.PHONY: init up build down logs ps clean up-infra down-infra
+# Build the production images (Dockerfiles) — for CI / a prod deploy, not the dev stack.
+build:
+	docker build -f ../backend/Dockerfile -t codillas-backend ../backend
+	docker build -f ../frontend/Dockerfile -t codillas-frontend ..
+
+.PHONY: init up down logs ps clean up-infra build

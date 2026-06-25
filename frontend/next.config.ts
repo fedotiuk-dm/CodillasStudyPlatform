@@ -11,6 +11,11 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   // React Compiler: auto-memoizes components/hooks (no manual useMemo/useCallback).
   reactCompiler: true,
+  // Next dev indicator (build/hot-reload badge) — only renders under `next dev`, not in the
+  // production/standalone build (the containers).
+  devIndicators: {
+    position: "bottom-right",
+  },
   // Smooth page transitions via the View Transitions API (cross-fade on navigation).
   experimental: {
     viewTransition: true,
