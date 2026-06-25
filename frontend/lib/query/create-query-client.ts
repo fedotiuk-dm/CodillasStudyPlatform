@@ -1,8 +1,16 @@
-import { QueryClient } from "@tanstack/react-query";
+import { MutationCache, QueryClient } from "@tanstack/react-query";
 
 /** One QueryClient for the whole app so the cache survives navigation between route groups. */
 export function createQueryClient(): QueryClient {
-  return new QueryClient({
+  let client: QueryClient;
+  // ponytail: any successful mutation invalidates every query. No per-endpoint rules table to
+  // maintain — over-fetches a little, invisible at admin-LMS query volume. Add a mutationKey→prefix
+  // rules map (see Boosting's invalidation-rules.ts) only if refetch traffic ever becomes a problem.
+  const mutationCache = new MutationCache({
+    onSuccess: () => client.invalidateQueries(),
+  });
+  client = new QueryClient({
+    mutationCache,
     defaultOptions: {
       queries: {
         refetchOnWindowFocus: true,
@@ -12,4 +20,5 @@ export function createQueryClient(): QueryClient {
       },
     },
   });
+  return client;
 }

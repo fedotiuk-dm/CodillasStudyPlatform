@@ -4,11 +4,11 @@ import { type Config, defineConfig } from "orval";
 // of truth). Orval resolves the cross-file $refs (paths → schemas → common) directly, so NO bundling
 // step is needed. Auth + base URL + FormData handling live in the axios mutator. Zod schemas are
 // generated per module (for react-hook-form resolvers) except where a module has no request bodies
-// worth validating (read-only, or live messaging).
+// worth validating: read-only (gradebook), no-body POST (notification), or multipart upload (files).
 const SPECS = "../backend/openapi";
 const MUTATOR = { path: "./lib/services/axios-instance.ts", name: "customInstance" };
 
-const ZOD_DISABLED = new Set(["gradebook", "chat", "notification", "files"]);
+const ZOD_DISABLED = new Set(["gradebook", "notification", "files"]);
 
 const MODULES = [
   "user",
