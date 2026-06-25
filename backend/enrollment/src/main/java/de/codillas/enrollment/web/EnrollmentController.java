@@ -1,0 +1,58 @@
+package de.codillas.enrollment.web;
+
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
+
+import de.codillas.enrollment.api.EnrollmentApi;
+import de.codillas.enrollment.api.dto.CreateGroupRequest;
+import de.codillas.enrollment.api.dto.EnrollStudentRequest;
+import de.codillas.enrollment.api.dto.GroupListResponse;
+import de.codillas.enrollment.api.dto.GroupResponse;
+import de.codillas.enrollment.api.dto.MembershipResponse;
+import de.codillas.enrollment.service.GroupService;
+import de.codillas.enrollment.service.MembershipService;
+import de.codillas.shared.security.RequiresAdmin;
+import de.codillas.shared.security.RequiresAuthenticated;
+
+import lombok.RequiredArgsConstructor;
+
+/** Thin delegator — implements the generated {@link EnrollmentApi}. */
+@RestController
+@RequiredArgsConstructor
+public class EnrollmentController implements EnrollmentApi {
+
+  private final GroupService groupService;
+  private final MembershipService membershipService;
+
+  @Override
+  @RequiresAdmin
+  public ResponseEntity<GroupResponse> createGroup(CreateGroupRequest createGroupRequest) {
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .body(groupService.createGroup(createGroupRequest));
+  }
+
+  @Override
+  @RequiresAuthenticated
+  public ResponseEntity<GroupListResponse> listGroups(Pageable pageable) {
+    return ResponseEntity.ok(groupService.listGroups(pageable));
+  }
+
+  @Override
+  @RequiresAdmin
+  public ResponseEntity<MembershipResponse> enrollStudent(
+      UUID groupId, EnrollStudentRequest enrollStudentRequest) {
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .body(membershipService.enrollStudent(groupId, enrollStudentRequest));
+  }
+
+  @Override
+  @RequiresAuthenticated
+  public ResponseEntity<List<MembershipResponse>> listGroupMembers(UUID groupId) {
+    return ResponseEntity.ok(membershipService.listGroupMembers(groupId));
+  }
+}

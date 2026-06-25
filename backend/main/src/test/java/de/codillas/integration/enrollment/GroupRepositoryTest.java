@@ -2,13 +2,16 @@ package de.codillas.integration.enrollment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import de.codillas.enrollment.domain.model.Group;
 import de.codillas.enrollment.domain.repository.GroupRepository;
 import de.codillas.integration.BaseIntegrationTest;
-import java.util.UUID;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @DisplayName("GroupRepository (integration)")
 class GroupRepositoryTest extends BaseIntegrationTest {

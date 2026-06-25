@@ -5,24 +5,27 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import de.codillas.enrollment.api.dto.CreateGroupRequest;
 import de.codillas.enrollment.api.dto.GroupListResponse;
 import de.codillas.enrollment.api.dto.GroupResponse;
 import de.codillas.enrollment.domain.model.Group;
 import de.codillas.enrollment.domain.repository.GroupRepository;
 import de.codillas.enrollment.mapper.GroupMapper;
-import java.util.List;
-import java.util.UUID;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("GroupService")

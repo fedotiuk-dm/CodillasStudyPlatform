@@ -63,3 +63,30 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/GroupResponse"
+    EnrollStudentRequest:
+      type: object
+      required:
+        - userId
+      properties:
+        userId:
+          type: string
+          format: uuid
+    MembershipResponse:
+      type: object
+      required:
+        - id
+        - groupId
+        - userId
+      properties:
+        id:
+          type: string
+          format: uuid
+        groupId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        enrolledAt:
+          type: string
+          format: date-time

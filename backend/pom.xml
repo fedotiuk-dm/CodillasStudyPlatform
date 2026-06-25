@@ -259,8 +259,10 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <!-- @{argLine} = the Mockito agent set by prepareAgent; -Xshare:off silences the CDS warning. -->
-          <argLine>@{argLine} -Xshare:off</argLine>
+          <!-- @{argLine} = the Mockito agent set by prepareAgent. The JVM's benign "CDS sharing
+               limited" note comes from the agent appending to the bootstrap classpath — we leave it
+               rather than disable CDS to hide it (same as the aksi / coffeetamine projects). -->
+          <argLine>@{argLine}</argLine>
         </configuration>
       </plugin>
       <!-- API-first generation, configured once. A module opts in via the openapi.* properties;

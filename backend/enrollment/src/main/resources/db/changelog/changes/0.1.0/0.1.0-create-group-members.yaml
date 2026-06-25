@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.1.0-create-group-members
+      author: codillas
+      comment: Create group_members table (initial development 0.1.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: group_members
+      changes:
+        - createTable:
+            tableName: group_members
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: group_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz
+        - addUniqueConstraint:
+            tableName: group_members
+            columnNames: group_id, user_id
+            constraintName: uq_group_members_group_user

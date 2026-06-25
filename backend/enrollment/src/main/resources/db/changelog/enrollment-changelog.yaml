@@ -4,3 +4,6 @@ databaseChangeLog:
   - include:
       file: changes/0.1.0/0.1.0-create-study-groups.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changes/0.1.0/0.1.0-create-group-members.yaml
+      relativeToChangelogFile: true

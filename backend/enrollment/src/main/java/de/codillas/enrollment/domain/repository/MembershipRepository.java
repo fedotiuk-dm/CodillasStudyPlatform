@@ -6,10 +6,10 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import de.codillas.enrollment.domain.model.Group;
+import de.codillas.enrollment.domain.model.Membership;
 
 @Repository
-public interface GroupRepository extends JpaRepository<Group, UUID> {
+public interface MembershipRepository extends JpaRepository<Membership, UUID> {
 
-  List<Group> findByCourseId(UUID courseId);
+  List<Membership> findByGroupId(UUID groupId);
 }

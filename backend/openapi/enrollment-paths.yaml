@@ -60,3 +60,58 @@ paths:
           $ref: "common.yaml#/components/responses/Unauthorized"
         "403":
           $ref: "common.yaml#/components/responses/Forbidden"
+  /api/groups/{groupId}/members:
+    post:
+      tags:
+        - enrollment
+      operationId: enrollStudent
+      summary: Enrol a student into a group
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "enrollment-schemas.yaml#/components/schemas/EnrollStudentRequest"
+      responses:
+        "201":
+          description: Enrolled
+          content:
+            application/json:
+              schema:
+                $ref: "enrollment-schemas.yaml#/components/schemas/MembershipResponse"
+        "400":
+          $ref: "common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+    get:
+      tags:
+        - enrollment
+      operationId: listGroupMembers
+      summary: List a group's members
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Group members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "enrollment-schemas.yaml#/components/schemas/MembershipResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"

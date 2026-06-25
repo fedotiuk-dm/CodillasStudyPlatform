@@ -1,14 +1,16 @@
 package de.codillas.enrollment.service;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import de.codillas.enrollment.api.dto.CreateGroupRequest;
 import de.codillas.enrollment.api.dto.GroupListResponse;
 import de.codillas.enrollment.api.dto.GroupResponse;
 import de.codillas.enrollment.domain.repository.GroupRepository;
 import de.codillas.enrollment.mapper.GroupMapper;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor

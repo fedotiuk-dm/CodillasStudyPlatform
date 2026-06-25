@@ -1,11 +1,14 @@
 package de.codillas.enrollment.domain.model;
 
-import de.codillas.shared.domain.BaseAuditableEntity;
+import java.time.LocalDate;
+import java.util.UUID;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import java.time.LocalDate;
-import java.util.UUID;
+
+import de.codillas.shared.domain.BaseAuditableEntity;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
