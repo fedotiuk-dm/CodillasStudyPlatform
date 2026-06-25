@@ -106,8 +106,10 @@ Per-feature order (double loop):
 
 Test layers:
 - **Domain logic** — pure JUnit, no Spring/DB (status machines, scoring). Fastest.
-- **Repository / Hibernate mapping** — `@DataJpaTest` against **Testcontainers Postgres** (never
-  H2; we use Liquibase + Postgres types). Run the real Liquibase schema in the test.
+- **Repository / Hibernate mapping** — `@SpringBootTest(webEnvironment = NONE)` against a
+  Testcontainers **Postgres** wired by Spring Boot `@ServiceConnection` (extend a
+  `PostgresTestContainer` base with a `static final PostgreSQLContainer` field — never `@Container`
+  + `@DynamicPropertySource`, never H2). The module's Liquibase changelog runs the real schema.
 - **Service** — happy path + `NotFound` / `Conflict`.
 - **Controller** — slice/integration: status codes, role security, pagination.
 

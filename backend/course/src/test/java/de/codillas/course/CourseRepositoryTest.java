@@ -7,32 +7,11 @@ import de.codillas.course.domain.repository.CourseRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
 @SpringBootTest(
     classes = CourseTestApplication.class,
     webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@Testcontainers
-class CourseRepositoryTest {
-
-  @Container
-  static final PostgreSQLContainer<?> POSTGRES =
-      new PostgreSQLContainer<>(DockerImageName.parse("postgres:18-alpine"));
-
-  @DynamicPropertySource
-  static void datasource(DynamicPropertyRegistry registry) {
-    registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
-    registry.add("spring.datasource.username", POSTGRES::getUsername);
-    registry.add("spring.datasource.password", POSTGRES::getPassword);
-    registry.add(
-        "spring.liquibase.change-log", () -> "classpath:db/changelog/course-changelog.yaml");
-    registry.add("spring.jpa.hibernate.ddl-auto", () -> "none");
-  }
+class CourseRepositoryTest extends PostgresTestContainer {
 
   @Autowired private CourseRepository repository;
 
