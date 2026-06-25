@@ -1,0 +1,34 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.1.0-create-chat-rooms
+      author: codillas
+      comment: Create chat_rooms table (initial development 0.1.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: chat_rooms
+      changes:
+        - createTable:
+            tableName: chat_rooms
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: type
+                  type: varchar(20)
+                  constraints: { nullable: false }
+              - column:
+                  name: name
+                  type: varchar(200)
+              - column:
+                  name: reference_id
+                  type: uuid
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz

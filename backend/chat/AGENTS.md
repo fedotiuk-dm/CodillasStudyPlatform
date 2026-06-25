@@ -4,9 +4,22 @@ Local contract for the `chat` module. Follows the chain: `backend/AGENTS.md` (gl
 Build/fill with the **`new-modulith-module`** skill — do not scaffold blind.
 
 - **Responsibility:** Full WebSocket chat — copy/adapt from boosting: group channel, student↔teacher DM, per-assignment thread.
-- **Key entities:** ChatRoom, ChatMessage
+- **Key entities:** ChatRoom, ChatRoomMember, ChatMessage
 - **Publishes:** MessagePosted
-- **Consumes:** StudentEnrolled
+- **Consumes:** StudentEnrolled (auto-creates the group channel + adds the student)
 - **Depends on (by id / events / API only):** user (by id)
 - **OpenAPI spec:** `backend/openapi/chat-paths.yaml` (+ `chat-schemas.yaml`)
-- **Status:** skeleton — implement in phase 6.
+- **Status:** implemented (v0.1.0 real-time core).
+
+## Conventions
+
+- **Access control = membership.** `ChatRoomMember` gates read/post; a non-member is told the room
+  does not exist (404, never leaks existence). No role annotations on room access — it's data-driven.
+- **Real-time = STOMP.** The broker/auth infra lives in `main` (`WebSocketConfig` +
+  `StompAuthInterceptor`, `@Profile("!integration-test")`): handshake `/ws`, publish `/app/**`,
+  subscribe `/topic/chat/{roomId}`. CONNECT is authenticated from the `Authorization: Bearer` header
+  (same `roles`→`ROLE_*` mapping as HTTP). `@EnableWebSocketSecurity` guards every frame.
+- **REST + WS share the service.** `ChatWsController` (`@MessageMapping`) and the REST `sendMessage`
+  both call `ChatService.postMessage`, which persists, broadcasts via `ChatBroadcastService`
+  (optional `SimpMessagingTemplate` — no-op when the broker is absent) and publishes `MessagePosted`.
+- v1 scope: rooms + members + messages + history. No presence/typing/reactions/read-receipts yet.

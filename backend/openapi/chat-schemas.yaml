@@ -1,0 +1,93 @@
+openapi: 3.0.4
+info:
+  title: Codillas Chat schemas
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    ChatRoomType:
+      type: string
+      enum:
+        - GROUP
+        - DIRECT
+        - ASSIGNMENT_THREAD
+    CreateRoomRequest:
+      type: object
+      required:
+        - type
+        - memberIds
+      properties:
+        type:
+          $ref: "#/components/schemas/ChatRoomType"
+        name:
+          type: string
+          maxLength: 200
+        referenceId:
+          type: string
+          format: uuid
+          description: The group or assignment this room is attached to (omit for a DM).
+        memberIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+    SendMessageRequest:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: string
+          minLength: 1
+    ChatRoomResponse:
+      type: object
+      required:
+        - id
+        - type
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          $ref: "#/components/schemas/ChatRoomType"
+        name:
+          type: string
+        referenceId:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+    ChatMessageResponse:
+      type: object
+      required:
+        - id
+        - roomId
+        - senderId
+        - content
+      properties:
+        id:
+          type: string
+          format: uuid
+        roomId:
+          type: string
+          format: uuid
+        senderId:
+          type: string
+          format: uuid
+        content:
+          type: string
+        sentAt:
+          type: string
+          format: date-time
+    ChatMessageListResponse:
+      allOf:
+        - $ref: "common.yaml#/components/schemas/PageResponse"
+        - type: object
+          required:
+            - content
+          properties:
+            content:
+              type: array
+              items:
+                $ref: "#/components/schemas/ChatMessageResponse"

@@ -1,2 +1,12 @@
-# Liquibase changelog for the 'chat' module. Add changesets under changes/.
-databaseChangeLog: []
+# Chat module changelog — SemVer 2.0.0: https://semver.org/spec/v2.0.0/
+databaseChangeLog:
+  # 0.1.0 — rooms, members, messages
+  - include:
+      file: changes/0.1.0/0.1.0-create-chat-rooms.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/0.1.0/0.1.0-create-chat-room-members.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/0.1.0/0.1.0-create-chat-messages.yaml
+      relativeToChangelogFile: true

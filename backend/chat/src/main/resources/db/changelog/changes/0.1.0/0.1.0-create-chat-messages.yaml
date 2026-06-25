@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.1.0-create-chat-messages
+      author: codillas
+      comment: Create chat_messages table (initial development 0.1.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: chat_messages
+      changes:
+        - createTable:
+            tableName: chat_messages
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: room_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: sender_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: content
+                  type: text
+                  constraints: { nullable: false }
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz

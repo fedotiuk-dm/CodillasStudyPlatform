@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.1.0-create-chat-room-members
+      author: codillas
+      comment: Create chat_room_members table — unique per (room, user) (0.1.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: chat_room_members
+      changes:
+        - createTable:
+            tableName: chat_room_members
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: room_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz
+        - addUniqueConstraint:
+            tableName: chat_room_members
+            columnNames: room_id, user_id
+            constraintName: uq_chat_room_members_room_user

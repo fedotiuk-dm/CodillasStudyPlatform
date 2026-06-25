@@ -11,6 +11,14 @@
   </parent>
   <artifactId>codillas-chat</artifactId>
   <name>Codillas Chat</name>
+
+  <properties>
+    <openapi.skip>false</openapi.skip>
+    <openapi.spec>chat-paths.yaml</openapi.spec>
+    <openapi.api-package>de.codillas.chat.api</openapi.api-package>
+    <openapi.model-package>de.codillas.chat.api.dto</openapi.model-package>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>de.codillas</groupId>
@@ -24,6 +32,11 @@
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-messaging</artifactId>
+    </dependency>
+    <!-- @ApplicationModuleListener for consuming StudentEnrolled. -->
+    <dependency>
+      <groupId>org.springframework.modulith</groupId>
+      <artifactId>spring-modulith-events-api</artifactId>
     </dependency>
   </dependencies>
 </project>

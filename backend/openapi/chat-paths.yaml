@@ -1,0 +1,116 @@
+openapi: 3.0.4
+info:
+  title: Codillas Chat API
+  description: Chat rooms and message history (real-time delivery over STOMP WebSocket).
+  version: 0.1.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    name: Codillas
+    email: support@codillas.de
+servers:
+  - url: http://localhost:8081
+    description: Local development
+tags:
+  - name: chat
+    description: Rooms + messages
+paths:
+  /api/chat/rooms:
+    get:
+      tags: [chat]
+      operationId: listMyRooms
+      summary: Rooms the current user belongs to
+      responses:
+        "200":
+          description: Rooms
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "chat-schemas.yaml#/components/schemas/ChatRoomResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+    post:
+      tags: [chat]
+      operationId: createRoom
+      summary: Create a chat room (DM or assignment thread)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "chat-schemas.yaml#/components/schemas/CreateRoomRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "chat-schemas.yaml#/components/schemas/ChatRoomResponse"
+        "400":
+          $ref: "common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+  /api/chat/rooms/{roomId}/messages:
+    get:
+      tags: [chat]
+      operationId: getMessages
+      summary: A room's message history (paginated)
+      x-spring-paginated: true
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - $ref: "common.yaml#/components/parameters/PageNumber"
+        - $ref: "common.yaml#/components/parameters/PageSize"
+        - $ref: "common.yaml#/components/parameters/Sort"
+      responses:
+        "200":
+          description: Messages
+          content:
+            application/json:
+              schema:
+                $ref: "chat-schemas.yaml#/components/schemas/ChatMessageListResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+    post:
+      tags: [chat]
+      operationId: sendMessage
+      summary: Post a message to a room (also broadcast over WebSocket)
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "chat-schemas.yaml#/components/schemas/SendMessageRequest"
+      responses:
+        "201":
+          description: Posted
+          content:
+            application/json:
+              schema:
+                $ref: "chat-schemas.yaml#/components/schemas/ChatMessageResponse"
+        "400":
+          $ref: "common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
