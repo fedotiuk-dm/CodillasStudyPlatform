@@ -1,10 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import type { z } from "zod";
 
+import { UserPicker } from "@/components/shared/user-picker";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -33,7 +35,6 @@ import {
 import { useListCourses } from "@/lib/api/course/course/course";
 import { useCreateGroup } from "@/lib/api/enrollment/enrollment/enrollment";
 import { CreateGroupBody } from "@/lib/api/enrollment/zod/enrollment/enrollment.zod";
-import { useKeycloak } from "@/lib/auth";
 
 type FormValues = z.infer<typeof CreateGroupBody>;
 
@@ -46,14 +47,14 @@ export function CreateGroupDialog({
   onOpenChange: (open: boolean) => void;
   onCreated: () => void;
 }) {
-  const { userId } = useKeycloak();
   const { data: coursesData } = useListCourses();
   const courses = coursesData?.content ?? [];
   const createGroup = useCreateGroup();
+  const [teacherName, setTeacherName] = useState<string>();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(CreateGroupBody),
-    defaultValues: { name: "", courseId: "", teacherId: userId ?? "", startDate: undefined },
+    defaultValues: { name: "", courseId: "", teacherId: "", startDate: undefined },
   });
 
   function onSubmit(values: FormValues) {
@@ -64,7 +65,8 @@ export function CreateGroupDialog({
           toast.success("Group created");
           onCreated();
           onOpenChange(false);
-          form.reset({ name: "", courseId: "", teacherId: userId ?? "", startDate: undefined });
+          form.reset({ name: "", courseId: "", teacherId: "", startDate: undefined });
+          setTeacherName(undefined);
         },
         onError: () => toast.error("Could not create the group"),
       },
@@ -120,11 +122,20 @@ export function CreateGroupDialog({
             <FormField
               control={form.control}
               name="teacherId"
+              rules={{ required: "Pick a teacher" }}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Teacher ID</FormLabel>
+                  <FormLabel>Teacher</FormLabel>
                   <FormControl>
-                    <Input placeholder="Keycloak user id (UUID)" {...field} />
+                    <UserPicker
+                      value={field.value}
+                      displayName={teacherName}
+                      placeholder="Search teachers…"
+                      onChange={(id, name) => {
+                        field.onChange(id);
+                        setTeacherName(name);
+                      }}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

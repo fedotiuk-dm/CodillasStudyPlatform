@@ -1,8 +1,11 @@
 package de.codillas.user.mapper;
 
+import org.springframework.data.domain.Page;
+
 import de.codillas.shared.mapper.CentralMapperConfig;
 import de.codillas.user.api.dto.UpdateProfileRequest;
 import de.codillas.user.api.dto.UserProfile;
+import de.codillas.user.api.dto.UserProfileListResponse;
 import de.codillas.user.domain.model.Profile;
 
 import org.mapstruct.BeanMapping;
@@ -15,6 +18,8 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface ProfileMapper {
 
   UserProfile toResponse(Profile entity);
+
+  UserProfileListResponse toListResponse(Page<Profile> page);
 
   @BeanMapping(
       ignoreByDefault = true,

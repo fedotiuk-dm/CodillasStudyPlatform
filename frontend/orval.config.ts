@@ -8,7 +8,7 @@ import { type Config, defineConfig } from "orval";
 const SPECS = "../backend/openapi";
 const MUTATOR = { path: "./lib/services/axios-instance.ts", name: "customInstance" };
 
-const ZOD_DISABLED = new Set(["gradebook", "chat", "notification"]);
+const ZOD_DISABLED = new Set(["gradebook", "chat", "notification", "files"]);
 
 const MODULES = [
   "user",

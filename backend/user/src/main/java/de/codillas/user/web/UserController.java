@@ -1,5 +1,6 @@
 package de.codillas.user.web;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -7,6 +8,7 @@ import de.codillas.shared.security.RequiresAuthenticated;
 import de.codillas.user.api.UserApi;
 import de.codillas.user.api.dto.UpdateProfileRequest;
 import de.codillas.user.api.dto.UserProfile;
+import de.codillas.user.api.dto.UserProfileListResponse;
 import de.codillas.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,12 @@ import lombok.RequiredArgsConstructor;
 public class UserController implements UserApi {
 
   private final UserService service;
+
+  @Override
+  @RequiresAuthenticated
+  public ResponseEntity<UserProfileListResponse> listProfiles(String q, Pageable pageable) {
+    return ResponseEntity.ok(service.listProfiles(q, pageable));
+  }
 
   @Override
   @RequiresAuthenticated

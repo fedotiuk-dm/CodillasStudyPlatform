@@ -95,12 +95,17 @@ services:
     container_name: codillas-backend
     restart: unless-stopped
     working_dir: /workspace
+    # Run as the host user so everything written into the bind-mounted source (target/, generated
+    # sources) stays host-owned — the host IDE/maven can always rebuild. HOME=/workspace keeps the
+    # maven repo at /workspace/.m2 (host-owned, gitignored), so no root-owned named volume.
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
     # Build all modules into the local repo first, then run only `main` (spring-boot:run on the
     # whole reactor would also hit the aggregator pom — "no main class"). Devtools restarts on
-    # recompiled classes (compile on the host; target/ is bind-mounted in).
+    # recompiled classes.
     command: ["sh", "-c", "./mvnw -q -DskipTests -pl main -am install && ./mvnw -q -pl main spring-boot:run"]
     ports: ["8081:8081"]
     environment:
+      HOME: /workspace
       DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-codillas}
       DB_USER: ${POSTGRES_USER:-codillas}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-codillas}
@@ -116,7 +121,6 @@ services:
       SPRING_MAIL_PORT: "1025"
     volumes:
       - ../backend:/workspace
-      - backend_m2:/root/.m2
     depends_on:
       postgres: { condition: service_healthy }
       keycloak: { condition: service_started }
@@ -127,10 +131,12 @@ services:
     container_name: codillas-frontend
     restart: unless-stopped
     working_dir: /app
+    # NOTE: orval is NOT run here — the generated client (lib/api) is produced on the HOST
+    # (`make gen`) so it stays host-owned and the host can always regenerate. The container only
+    # installs deps into its own node_modules volume (musl binaries) and runs next dev.
     command: >
       sh -c "corepack enable &&
              pnpm install --frozen-lockfile --ignore-scripts &&
-             ./node_modules/.bin/orval &&
              ./node_modules/.bin/next dev"
     ports: ["3000:3000"]
     environment:
@@ -151,5 +157,4 @@ services:
 volumes:
   postgres_data:
   minio_data:
-  backend_m2:
   frontend_node_modules:

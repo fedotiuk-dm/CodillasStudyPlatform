@@ -16,6 +16,32 @@ tags:
   - name: user
     description: User profile operations
 paths:
+  /api/users:
+    get:
+      tags:
+        - user
+      operationId: listProfiles
+      summary: List / search local user profiles (paginated)
+      x-spring-paginated: true
+      parameters:
+        - name: q
+          in: query
+          required: false
+          description: Case-insensitive filter on display name.
+          schema:
+            type: string
+        - $ref: "common.yaml#/components/parameters/PageNumber"
+        - $ref: "common.yaml#/components/parameters/PageSize"
+        - $ref: "common.yaml#/components/parameters/Sort"
+      responses:
+        "200":
+          description: Paginated profiles
+          content:
+            application/json:
+              schema:
+                $ref: "user-schemas.yaml#/components/schemas/UserProfileListResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
   /api/users/me:
     get:
       tags:

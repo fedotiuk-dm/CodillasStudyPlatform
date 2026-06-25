@@ -3,6 +3,8 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 .kotlin
+# Maven repo used by the dev backend container (HOME=/workspace → /workspace/.m2)
+backend/.m2/
 
 ### IntelliJ IDEA ###
 .idea/modules.xml

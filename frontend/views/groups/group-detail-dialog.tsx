@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { UserPicker, useProfileNames } from "@/components/shared/user-picker";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -66,16 +67,17 @@ function MembersTab({ groupId, open }: { groupId: string; open: boolean }) {
   const { data } = useListGroupMembers(groupId, { query: { enabled: open } });
   const members = data ?? [];
   const enroll = useEnrollStudent();
-  const [userId, setUserId] = useState("");
+  const nameOf = useProfileNames();
+  const [picked, setPicked] = useState<{ userId: string; displayName: string }>();
 
   function onEnroll() {
-    if (!userId.trim()) return;
+    if (!picked) return;
     enroll.mutate(
-      { groupId, data: { userId: userId.trim() } },
+      { groupId, data: { userId: picked.userId } },
       {
         onSuccess: () => {
           toast.success("Student enrolled");
-          setUserId("");
+          setPicked(undefined);
           queryClient.invalidateQueries({ queryKey: getListGroupMembersQueryKey(groupId) });
         },
         onError: () => toast.error("Could not enroll"),
@@ -88,19 +90,22 @@ function MembersTab({ groupId, open }: { groupId: string; open: boolean }) {
       {members.length === 0 && <p className="text-muted-foreground text-sm">No members yet.</p>}
       <ul className="grid gap-1 text-sm">
         {members.map((m) => (
-          <li key={m.id} className="rounded border px-3 py-2 font-mono text-xs">
-            {m.userId}
+          <li key={m.id} className="rounded border px-3 py-2">
+            {nameOf(m.userId)}
           </li>
         ))}
       </ul>
       <Separator />
-      <div className="flex items-center gap-2">
-        <Input
-          placeholder="Keycloak user id (UUID)"
-          value={userId}
-          onChange={(e) => setUserId(e.target.value)}
-        />
-        <Button disabled={enroll.isPending || !userId.trim()} onClick={onEnroll}>
+      <div className="flex items-start gap-2">
+        <div className="flex-1">
+          <UserPicker
+            value={picked?.userId}
+            displayName={picked?.displayName}
+            placeholder="Search students…"
+            onChange={(userId, displayName) => setPicked({ userId, displayName })}
+          />
+        </div>
+        <Button disabled={enroll.isPending || !picked} onClick={onEnroll}>
           Enroll
         </Button>
       </div>
@@ -178,20 +183,20 @@ function LessonsTab({ groupId, open }: { groupId: string; open: boolean }) {
 
 function LessonRow({ groupId, lesson }: { groupId: string; lesson: ScheduledLessonResponse }) {
   const mark = useMarkAttendance();
-  const [userId, setUserId] = useState("");
+  const [picked, setPicked] = useState<{ userId: string; displayName: string }>();
 
   function setPresence(present: boolean) {
-    if (!userId.trim()) return;
+    if (!picked) return;
     mark.mutate(
       {
         groupId,
         scheduledLessonId: lesson.id,
-        data: { userId: userId.trim(), present },
+        data: { userId: picked.userId, present },
       },
       {
         onSuccess: () => {
           toast.success(present ? "Marked present" : "Marked absent");
-          setUserId("");
+          setPicked(undefined);
         },
         onError: () => toast.error("Could not mark attendance"),
       },
@@ -215,12 +220,14 @@ function LessonRow({ groupId, lesson }: { groupId: string; lesson: ScheduledLess
         )}
       </div>
       <div className="flex items-center gap-2">
-        <Input
-          className="flex-1"
-          placeholder="Student id for attendance"
-          value={userId}
-          onChange={(e) => setUserId(e.target.value)}
-        />
+        <div className="flex-1">
+          <UserPicker
+            value={picked?.userId}
+            displayName={picked?.displayName}
+            placeholder="Search student…"
+            onChange={(userId, displayName) => setPicked({ userId, displayName })}
+          />
+        </div>
         <Button
           variant="outline"
           size="sm"

@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
+import { UserMultiPicker } from "@/components/shared/user-picker";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -31,7 +33,7 @@ import {
 import { useCreateRoom } from "@/lib/api/chat/chat/chat";
 import { ChatRoomType } from "@/lib/api/chat/model";
 
-type FormValues = { type: ChatRoomType; name: string; memberIds: string };
+type FormValues = { type: ChatRoomType; name: string };
 
 export function CreateRoomDialog({
   open,
@@ -43,23 +45,28 @@ export function CreateRoomDialog({
   onCreated: () => void;
 }) {
   const form = useForm<FormValues>({
-    defaultValues: { type: ChatRoomType.GROUP, name: "", memberIds: "" },
+    defaultValues: { type: ChatRoomType.GROUP, name: "" },
   });
   const createRoom = useCreateRoom();
+  const [members, setMembers] = useState<{ userId: string; displayName: string }[]>([]);
 
   function onSubmit(values: FormValues) {
-    const memberIds = values.memberIds
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
+    if (members.length === 0) return;
     createRoom.mutate(
-      { data: { type: values.type, name: values.name || undefined, memberIds } },
+      {
+        data: {
+          type: values.type,
+          name: values.name || undefined,
+          memberIds: members.map((m) => m.userId),
+        },
+      },
       {
         onSuccess: () => {
           toast.success("Room created");
           onCreated();
           onOpenChange(false);
           form.reset();
+          setMembers([]);
         },
         onError: () => toast.error("Could not create the room"),
       },
@@ -111,25 +118,12 @@ export function CreateRoomDialog({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="memberIds"
-              rules={{ required: "At least one member id" }}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Member IDs</FormLabel>
-                  <FormControl>
-                    <Input placeholder="uuid, uuid, …" {...field} />
-                  </FormControl>
-                  <p className="text-muted-foreground text-sm">
-                    Comma-separated Keycloak user ids.
-                  </p>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid gap-2">
+              <FormLabel>Members</FormLabel>
+              <UserMultiPicker value={members} onChange={setMembers} placeholder="Search people…" />
+            </div>
             <DialogFooter>
-              <Button type="submit" disabled={createRoom.isPending}>
+              <Button type="submit" disabled={createRoom.isPending || members.length === 0}>
                 {createRoom.isPending ? "Creating…" : "Create"}
               </Button>
             </DialogFooter>

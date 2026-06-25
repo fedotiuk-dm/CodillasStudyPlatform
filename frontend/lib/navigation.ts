@@ -1,6 +1,7 @@
 import {
   BookOpen,
   ClipboardList,
+  Contact,
   FileText,
   FolderOpen,
   GraduationCap,
@@ -33,6 +34,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { key: "chat", href: "/dashboard/chat", icon: MessageSquare, roles: [] },
   { key: "notifications", href: "/dashboard/notifications", icon: NotificationIcon, roles: [] },
   { key: "files", href: "/dashboard/files", icon: FolderOpen, roles: [] },
+  { key: "people", href: "/dashboard/people", icon: Contact, roles: [] },
 ] as const;
 
 /** The nav items the current user may see, filtered by their realm roles. */
