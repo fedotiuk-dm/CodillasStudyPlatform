@@ -1,2 +1,26 @@
-# Liquibase changelog for the 'course' module. Add changesets under changes/.
-databaseChangeLog: []
+# Liquibase changelog for the 'course' module.
+databaseChangeLog:
+  - changeSet:
+      id: 0001-create-courses
+      author: codillas
+      changes:
+        - createTable:
+            tableName: courses
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: name
+                  type: varchar(200)
+                  constraints: { nullable: false }
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz

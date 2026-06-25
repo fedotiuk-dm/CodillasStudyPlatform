@@ -105,9 +105,12 @@
       <artifactId>postgresql</artifactId>
       <scope>runtime</scope>
     </dependency>
+    <!-- Boot 4 modularized autoconfig: LiquibaseAutoConfiguration lives here, NOT in
+         spring-boot-autoconfigure, and liquibase-core does not pull it in transitively.
+         This brings liquibase-core + the autoconfiguration. -->
     <dependency>
-      <groupId>org.liquibase</groupId>
-      <artifactId>liquibase-core</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-liquibase</artifactId>
     </dependency>
 
     <!-- Test -->

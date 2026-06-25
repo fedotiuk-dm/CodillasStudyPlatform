@@ -1,0 +1,6 @@
+spring:
+  liquibase:
+    change-log: classpath:db/changelog/course-changelog.yaml
+  jpa:
+    hibernate:
+      ddl-auto: none        # Liquibase owns the schema; just use it
