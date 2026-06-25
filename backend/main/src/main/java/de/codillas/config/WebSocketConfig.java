@@ -8,14 +8,9 @@ import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.annotation.web.socket.EnableWebSocketSecurity;
 import org.springframework.security.messaging.access.intercept.MessageMatcherDelegatingAuthorizationManager;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
@@ -73,19 +68,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         .anyMessage()
         .denyAll()
         .build();
-  }
-
-  /**
-   * JWT authentication for STOMP — reuses the resource server's auto-configured decoder + converter
-   * (so role mapping stays in {@code application.yml}). {@link StompAuthInterceptor} delegates to
-   * it.
-   */
-  @Bean
-  AuthenticationManager messagingAuthenticationManager(
-      JwtDecoder jwtDecoder, JwtAuthenticationConverter jwtAuthenticationConverter) {
-    JwtAuthenticationProvider provider = new JwtAuthenticationProvider(jwtDecoder);
-    provider.setJwtAuthenticationConverter(jwtAuthenticationConverter);
-    return new ProviderManager(provider);
   }
 
   /** No-op CSRF interceptor — WebSocket is authed by the bearer JWT, not cookies. */
