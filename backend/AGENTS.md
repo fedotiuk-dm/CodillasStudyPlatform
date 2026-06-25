@@ -101,7 +101,7 @@ config/                      module-local @ConfigurationProperties
 - Java 25. Formatting: `mvn spotless:apply` (google-java-format) — enforced.
 - Lombok for boilerplate (`@RequiredArgsConstructor`, `@Getter/@Setter`, `@SuperBuilder`, `@Slf4j`).
 - One top-level type per file. Constructor injection only (no field `@Autowired`).
-- No magic strings for roles — use `de.codillas.user.Role`.
+- No magic strings for roles — use `de.codillas.shared.security.Role`.
 
 ## Testing (TDD)
 
@@ -131,6 +131,8 @@ Test layers:
 - **Service** — module unit test, mocked repository/mapper; happy path + `NotFound` / `Conflict`.
 - **Repository / persistence** — integration test in `main` (`BaseIntegrationTest`): real schema + mapping.
 - **Controller** — integration test in `main` (`@AutoConfigureMockMvc` + mock `jwt()`): status, roles, pagination.
+
+Every test **class and method** carries a `@DisplayName` describing the behavior.
 
 ## Verify
 

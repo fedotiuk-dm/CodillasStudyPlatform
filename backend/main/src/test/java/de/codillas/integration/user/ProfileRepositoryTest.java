@@ -10,13 +10,16 @@ import de.codillas.integration.BaseIntegrationTest;
 import de.codillas.user.domain.model.Profile;
 import de.codillas.user.domain.repository.ProfileRepository;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+@DisplayName("ProfileRepository (integration)")
 class ProfileRepositoryTest extends BaseIntegrationTest {
 
   @Autowired private ProfileRepository repository;
 
   @Test
+  @DisplayName("findByUserId returns the saved profile with its audit timestamp")
   void findByUserId_returnsSavedProfile() {
     UUID userId = UUID.randomUUID();
     repository.save(Profile.builder().userId(userId).displayName("Ada").build());

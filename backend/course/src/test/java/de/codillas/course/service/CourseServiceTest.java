@@ -20,6 +20,7 @@ import de.codillas.course.domain.model.Course;
 import de.codillas.course.domain.repository.CourseRepository;
 import de.codillas.course.mapper.CourseMapper;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayName("CourseService")
 class CourseServiceTest {
 
   @Mock private CourseRepository repository;
@@ -34,6 +36,7 @@ class CourseServiceTest {
   @InjectMocks private CourseServiceImpl service;
 
   @Test
+  @DisplayName("createCourse maps the request, persists it, and returns the response DTO")
   void createCourse_mapsPersistsAndReturnsResponse() {
     CreateCourseRequest request = new CreateCourseRequest("Java Backend");
     Course toSave = Course.builder().name("Java Backend").build();
@@ -44,13 +47,12 @@ class CourseServiceTest {
     when(repository.save(toSave)).thenReturn(saved);
     when(mapper.toResponse(saved)).thenReturn(response);
 
-    CourseResponse result = service.createCourse(request);
-
-    assertThat(result).isSameAs(response);
+    assertThat(service.createCourse(request)).isSameAs(response);
     verify(repository).save(toSave);
   }
 
   @Test
+  @DisplayName("listCourses maps the repository page to the list response")
   void listCourses_returnsMappedRepositoryPage() {
     Pageable pageable = PageRequest.of(0, 20);
     Page<Course> page = new PageImpl<>(List.of(Course.builder().name("Java Backend").build()));
@@ -59,8 +61,6 @@ class CourseServiceTest {
     when(repository.findAll(pageable)).thenReturn(page);
     when(mapper.toListResponse(page)).thenReturn(expected);
 
-    CourseListResponse result = service.listCourses(pageable);
-
-    assertThat(result).isSameAs(expected);
+    assertThat(service.listCourses(pageable)).isSameAs(expected);
   }
 }

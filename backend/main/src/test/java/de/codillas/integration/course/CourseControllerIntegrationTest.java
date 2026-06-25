@@ -13,13 +13,16 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import de.codillas.integration.BaseIntegrationTest;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+@DisplayName("CourseController (integration)")
 class CourseControllerIntegrationTest extends BaseIntegrationTest {
 
   @Autowired private MockMvc mockMvc;
 
   @Test
+  @DisplayName("POST /api/courses as ADMIN creates the course and returns 201 with the body")
   void createCourse_asAdmin_returns201WithBody() throws Exception {
     mockMvc
         .perform(
@@ -33,6 +36,7 @@ class CourseControllerIntegrationTest extends BaseIntegrationTest {
   }
 
   @Test
+  @DisplayName("POST /api/courses without the ADMIN role returns 403")
   void createCourse_withoutAdminRole_returns403() throws Exception {
     mockMvc
         .perform(
@@ -44,6 +48,7 @@ class CourseControllerIntegrationTest extends BaseIntegrationTest {
   }
 
   @Test
+  @DisplayName("GET /api/courses as STUDENT returns 200 with a content array")
   void listCourses_asStudent_returns200WithContentArray() throws Exception {
     mockMvc
         .perform(

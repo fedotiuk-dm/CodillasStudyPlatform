@@ -16,6 +16,7 @@ import de.codillas.user.domain.model.Profile;
 import de.codillas.user.domain.repository.ProfileRepository;
 import de.codillas.user.mapper.ProfileMapper;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayName("UserService")
 class UserServiceTest {
 
   @Mock private ProfileRepository repository;
@@ -31,6 +33,7 @@ class UserServiceTest {
   @InjectMocks private UserServiceImpl service;
 
   @Test
+  @DisplayName("getMyProfile returns the current user's mapped profile")
   void getMyProfile_returnsMappedProfile() {
     UUID userId = UUID.randomUUID();
     Profile profile = Profile.builder().userId(userId).displayName("Ada").build();
@@ -43,6 +46,7 @@ class UserServiceTest {
   }
 
   @Test
+  @DisplayName("getMyProfile throws NotFound when the profile does not exist")
   void getMyProfile_whenMissing_throwsNotFound() {
     UUID userId = UUID.randomUUID();
     when(currentUser.id()).thenReturn(userId);
@@ -52,6 +56,7 @@ class UserServiceTest {
   }
 
   @Test
+  @DisplayName("updateMyProfile upserts the profile and returns it")
   void updateMyProfile_upsertsAndReturns() {
     UUID userId = UUID.randomUUID();
     Profile profile = Profile.builder().userId(userId).build();

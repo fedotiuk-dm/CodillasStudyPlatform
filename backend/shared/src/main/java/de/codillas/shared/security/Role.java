@@ -1,9 +1,10 @@
-package de.codillas.user;
+package de.codillas.shared.security;
 
 /**
  * Platform roles, backed by Keycloak realm roles. New users default to {@link #STUDENT} (enforced
- * by the realm's {@code default-roles-codillas} composite); promotion to {@code TEACHER}/{@code
- * ADMIN} is explicit.
+ * by the realm's {@code default-roles-codillas} composite); promotion to {@code TEACHER} / {@code
+ * ADMIN} is explicit. Use the {@code @Requires*} annotations to guard endpoints; this enum is the
+ * source of truth for role names elsewhere.
  */
 public enum Role {
   ADMIN,
