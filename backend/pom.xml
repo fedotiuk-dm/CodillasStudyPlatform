@@ -42,6 +42,7 @@
     <openapi-generator.version>7.23.0</openapi-generator.version>
     <spotless.version>3.7.0</spotless.version>
     <google-java-format.version>1.35.0</google-java-format.version>
+    <mockito-maven-plugin.version>1.0.0</mockito-maven-plugin.version>
     <!-- API-first generation: a module with a spec overrides these four; others inherit skip=true. -->
     <openapi.skip>true</openapi.skip>
     <openapi.spec/>
@@ -241,14 +242,16 @@
           </java>
         </configuration>
       </plugin>
-      <!-- Resolve dependency jar paths into properties (e.g. ${org.mockito:mockito-core:jar}). -->
+      <!-- Mockito agent (Java 21+ needs explicit attachment). The prepareAgent goal sets argLine;
+           surefire propagates it via @{argLine}. Same setup as the aksi / coffeetamine projects. -->
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
+        <groupId>dev.jeschke.maven.mockito</groupId>
+        <artifactId>mockito-maven-plugin</artifactId>
+        <version>${mockito-maven-plugin.version}</version>
         <executions>
           <execution>
-            <id>resolve-dependency-properties</id>
-            <goals><goal>properties</goal></goals>
+            <id>prepare-agent</id>
+            <goals><goal>prepareAgent</goal></goals>
           </execution>
         </executions>
       </plugin>
@@ -256,8 +259,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <!-- Load Mockito as a static javaagent (no dynamic self-attach); -Xshare:off silences CDS. -->
-          <argLine>-javaagent:${org.mockito:mockito-core:jar} -Xshare:off</argLine>
+          <!-- @{argLine} = the Mockito agent set by prepareAgent; -Xshare:off silences the CDS warning. -->
+          <argLine>@{argLine} -Xshare:off</argLine>
         </configuration>
       </plugin>
       <!-- API-first generation, configured once. A module opts in via the openapi.* properties;
@@ -272,7 +275,7 @@
             <phase>generate-sources</phase>
             <configuration>
               <skip>${openapi.skip}</skip>
-              <inputSpec>${project.parent.basedir}/openapi/${openapi.spec}</inputSpec>
+              <inputSpec>${maven.multiModuleProjectDirectory}/openapi/${openapi.spec}</inputSpec>
               <apiPackage>${openapi.api-package}</apiPackage>
               <modelPackage>${openapi.model-package}</modelPackage>
             </configuration>

@@ -66,9 +66,10 @@ config/                      module-local @ConfigurationProperties
 
 ## MapStruct (thin mappers, no manual building)
 
-- Every mapper: `@Mapper(config = CentralMapperConfig.class)` (Spring component,
-  `unmappedTargetPolicy = ERROR`). **No hand-written builders/converters** — MapStruct maps both
-  directions, including **into entities**.
+- Every mapper: `@Mapper(config = CentralMapperConfig.class)` — Spring component,
+  `unmappedTargetPolicy = ERROR`, and `nullValueCheckStrategy = ALWAYS` (every mapping is null-safe:
+  a null source is checked before the setter, not only on type conversions). **No hand-written
+  builders/converters** — MapStruct maps both directions, including **into entities**.
 - DTO-direction methods (`toDto`, `toResponse`) are exhaustive — an unmapped field breaks the build.
 - Entity factories (`toEntity`): `@BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)` —
   id/version/timestamps/defaults are owned by Hibernate + the builder, not by mapping.
