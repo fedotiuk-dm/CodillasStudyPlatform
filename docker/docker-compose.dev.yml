@@ -106,6 +106,8 @@ services:
     ports: ["8081:8081"]
     environment:
       HOME: /workspace
+      # Load the demo seed data (context: seed). Omit in prod to keep the schema clean.
+      SPRING_LIQUIBASE_CONTEXTS: seed
       DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-codillas}
       DB_USER: ${POSTGRES_USER:-codillas}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-codillas}

@@ -7,3 +7,7 @@ databaseChangeLog:
   - include:
       file: changes/0.1.0/0.1.0-create-gradebook-memberships.yaml
       relativeToChangelogFile: true
+  # demo seed (context: seed)
+  - include:
+      file: changes/0.1.0/0.1.0-seed-gradebook.yaml
+      relativeToChangelogFile: true

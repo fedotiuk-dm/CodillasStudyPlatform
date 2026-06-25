@@ -5,3 +5,7 @@ databaseChangeLog:
   - include:
       file: changes/0.1.0/0.1.0-create-courses.yaml
       relativeToChangelogFile: true
+  # demo seed (context: seed)
+  - include:
+      file: changes/0.1.0/0.1.0-seed-course.yaml
+      relativeToChangelogFile: true

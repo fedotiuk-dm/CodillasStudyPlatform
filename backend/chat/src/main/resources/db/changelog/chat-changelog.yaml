@@ -10,3 +10,7 @@ databaseChangeLog:
   - include:
       file: changes/0.1.0/0.1.0-create-chat-messages.yaml
       relativeToChangelogFile: true
+  # demo seed (context: seed)
+  - include:
+      file: changes/0.1.0/0.1.0-seed-chat.yaml
+      relativeToChangelogFile: true

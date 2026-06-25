@@ -14,15 +14,26 @@
   },
   "roles": {
     "realm": [
-      { "name": "ADMIN", "description": "Platform administrator" },
-      { "name": "TEACHER", "description": "Teacher / instructor" },
-      { "name": "STUDENT", "description": "Student" },
+      {
+        "name": "ADMIN",
+        "description": "Platform administrator"
+      },
+      {
+        "name": "TEACHER",
+        "description": "Teacher / instructor"
+      },
+      {
+        "name": "STUDENT",
+        "description": "Student"
+      },
       {
         "name": "default-roles-codillas",
         "description": "Default roles for the codillas realm",
         "composite": true,
         "composites": {
-          "realm": ["STUDENT"]
+          "realm": [
+            "STUDENT"
+          ]
         },
         "clientRole": false,
         "containerId": "codillas"
@@ -36,8 +47,12 @@
       "publicClient": true,
       "standardFlowEnabled": true,
       "directAccessGrantsEnabled": true,
-      "redirectUris": ["http://localhost:3000/*"],
-      "webOrigins": ["http://localhost:3000"],
+      "redirectUris": [
+        "http://localhost:3000/*"
+      ],
+      "webOrigins": [
+        "http://localhost:3000"
+      ],
       "attributes": {
         "post.logout.redirect.uris": "http://localhost:3000/*",
         "pkce.code.challenge.method": "S256"
@@ -93,8 +108,17 @@
       "emailVerified": true,
       "firstName": "Ada",
       "lastName": "Admin",
-      "credentials": [{ "type": "password", "value": "admin", "temporary": false }],
-      "realmRoles": ["ADMIN"]
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "ADMIN"
+      ],
+      "id": "cc1fde04-3c8c-4dc1-8b94-c6e0289389c7"
     },
     {
       "username": "teacher",
@@ -103,8 +127,17 @@
       "emailVerified": true,
       "firstName": "Tom",
       "lastName": "Teacher",
-      "credentials": [{ "type": "password", "value": "teacher", "temporary": false }],
-      "realmRoles": ["TEACHER"]
+      "credentials": [
+        {
+          "type": "password",
+          "value": "teacher",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "TEACHER"
+      ],
+      "id": "6cbdfc12-d06c-4c6f-aefb-c62e9594ce27"
     },
     {
       "username": "student",
@@ -113,8 +146,17 @@
       "emailVerified": true,
       "firstName": "Sam",
       "lastName": "Student",
-      "credentials": [{ "type": "password", "value": "student", "temporary": false }],
-      "realmRoles": ["STUDENT"]
+      "credentials": [
+        {
+          "type": "password",
+          "value": "student",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "STUDENT"
+      ],
+      "id": "93552bf7-1c20-4667-b352-11c6dfda7fbb"
     }
   ]
 }

@@ -16,3 +16,7 @@ databaseChangeLog:
   - include:
       file: changes/0.1.0/0.1.0-create-answers.yaml
       relativeToChangelogFile: true
+  # demo seed (context: seed)
+  - include:
+      file: changes/0.1.0/0.1.0-seed-assessment.yaml
+      relativeToChangelogFile: true

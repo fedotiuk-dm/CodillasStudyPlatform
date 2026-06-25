@@ -13,3 +13,7 @@ databaseChangeLog:
   - include:
       file: changes/0.1.0/0.1.0-create-attendance.yaml
       relativeToChangelogFile: true
+  # demo seed (context: seed)
+  - include:
+      file: changes/0.1.0/0.1.0-seed-enrollment.yaml
+      relativeToChangelogFile: true

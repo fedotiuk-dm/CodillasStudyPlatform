@@ -1,0 +1,13 @@
+# Demo seed data — runs ONLY under the `seed` Liquibase context (dev stack sets it).
+databaseChangeLog:
+  - changeSet:
+      id: 0.1.0-seed-course
+      author: codillas
+      context: seed
+      comment: Demo courses (dev only)
+      changes:
+        - sqlFile:
+            path: 0.1.0-seed-course.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false

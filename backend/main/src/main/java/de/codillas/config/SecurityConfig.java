@@ -39,7 +39,10 @@ public class SecurityConfig {
                         "/actuator/health/**",
                         "/v3/api-docs/**",
                         "/swagger-ui/**",
-                        "/swagger-ui.html")
+                        "/swagger-ui.html",
+                        // The WebSocket handshake carries no Authorization header (browsers can't set
+                        // one); auth happens on the STOMP CONNECT frame via StompAuthInterceptor.
+                        "/ws/**")
                     .permitAll()
                     .anyRequest()
                     .authenticated())

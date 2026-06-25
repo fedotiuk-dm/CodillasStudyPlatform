@@ -20,6 +20,9 @@ spring:
 
   liquibase:
     change-log: classpath:db/changelog/codillas-changelog.yaml
+    # Schema changesets carry no context (always run). Demo data lives in `context: seed` changesets
+    # — kept out by the default `prod` context; the dev stack overrides this to `seed` to load it.
+    contexts: ${SPRING_LIQUIBASE_CONTEXTS:prod}
 
   security:
     oauth2:
