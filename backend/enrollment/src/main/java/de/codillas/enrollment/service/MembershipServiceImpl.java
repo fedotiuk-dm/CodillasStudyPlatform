@@ -28,8 +28,7 @@ public class MembershipServiceImpl implements MembershipService {
   @Override
   @Transactional
   public MembershipResponse enrollStudent(UUID groupId, EnrollStudentRequest request) {
-    Membership saved =
-        repository.save(Membership.builder().groupId(groupId).userId(request.getUserId()).build());
+    Membership saved = repository.save(mapper.toEntity(request, groupId));
     events.publishEvent(new StudentEnrolled(groupId, request.getUserId()));
     return mapper.toResponse(saved);
   }

@@ -1,7 +1,6 @@
 package de.codillas.enrollment.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -41,9 +40,11 @@ class MembershipServiceTest {
     UUID groupId = UUID.randomUUID();
     UUID userId = UUID.randomUUID();
     EnrollStudentRequest request = new EnrollStudentRequest(userId);
+    Membership toSave = Membership.builder().groupId(groupId).userId(userId).build();
     Membership saved = Membership.builder().groupId(groupId).userId(userId).build();
     MembershipResponse dto = new MembershipResponse(UUID.randomUUID(), groupId, userId);
-    when(repository.save(any(Membership.class))).thenReturn(saved);
+    when(mapper.toEntity(request, groupId)).thenReturn(toSave);
+    when(repository.save(toSave)).thenReturn(saved);
     when(mapper.toResponse(saved)).thenReturn(dto);
 
     assertThat(service.enrollStudent(groupId, request)).isSameAs(dto);
