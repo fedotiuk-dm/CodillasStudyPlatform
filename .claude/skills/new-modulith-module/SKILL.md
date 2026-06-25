@@ -1,75 +1,187 @@
 ---
 name: new-modulith-module
-description: Use when adding a new backend module to CodillasStudyPlatform, or filling in an existing module skeleton. Encodes the canonical Spring Modulith + Maven multi-module pattern (package layout, pom, Liquibase, OpenAPI-first, MapStruct, events) so every module looks the same.
+description: Use when adding a new backend module to CodillasStudyPlatform, or filling in an existing module skeleton with endpoints. Encodes the canonical pattern — Maven multi-module + Spring Modulith, API-first OpenAPI (x-spring-paginated), thin MapStruct mappers (CentralMapperConfig, no manual builders), thin MVC controllers implementing generated interfaces — so every module looks the same.
 ---
 
-# Adding / filling a Modulith module
+# Module builder
 
-Reference: `docs/architecture/overview.md`. Pattern mirrors the boosting project
-(`/home/iddqd/IdeaProjects/BoostingJavaSpringNextjs/backend`). Each backend
-module is its own Maven module **and** an `@ApplicationModule` package.
+Authoritative conventions: `backend/AGENTS.md` (read it first) and the module's own
+`backend/<module>/AGENTS.md`. This skill is the step-by-step. Pattern mirrors the boosting
+backend. Generated code is read-only; change the spec and regenerate.
 
-## Canonical layout (`backend/<module>/`)
+## Layout (`backend/<module>/src/main/java/de/codillas/<module>/`)
 
 ```
-pom.xml                                  parent = codillas-study-platform, depends on codillas-shared
-src/main/java/de/codillas/<module>/
-  package-info.java                      @ApplicationModule
-  domain/model/                          @Entity, enums, value objects
-  domain/repository/                     Spring Data repositories (+ Specs)
-  service/                               <X>Service interface + <X>ServiceImpl, @ApplicationModuleListener listeners
-  web/                                   REST controllers (implement OpenAPI-generated interfaces)
-  web/dto/                               request/response DTOs (or use generated ones)
-  mapper/                                MapStruct mappers (entity <-> dto)
-  config/                                module-local @ConfigurationProperties / config
-src/main/resources/db/changelog/
-  <module>-changelog.yaml                included by main's master changelog
-  changes/<version>/...                  individual changesets
+package-info.java     @ApplicationModule
+web/                  @RestController implements <Module>Api    (thin)
+service/              <X>Service + <X>ServiceImpl
+domain/model/         @Entity, enums
+domain/repository/    JpaRepository
+mapper/               @Mapper(config = CentralMapperConfig.class)
+event/                domain event records
+config/               module-local @ConfigurationProperties
+src/main/resources/db/changelog/<module>-changelog.yaml
+backend/openapi/<module>-paths.yaml, <module>-schemas.yaml      (specs live at backend root)
 ```
 
-## Rules (non-negotiable — they keep the monolith clean)
+## Steps to add/fill module `foo`
 
-- Cross-module references **by id only** — never import another module's `@Entity`.
-- No calling another module's repository/service internals. Talk via:
-  - **events** for notifications/side effects (publish `ApplicationEventPublisher`,
-    consume with `@ApplicationModuleListener`), or
-  - a module's **published API** (an interface in the module root package) for queries.
-- Each module **owns its tables**; no cross-module joins. `gradebook` is a read
-  model fed by events.
-- `@EnableMethodSecurity` is on; guard endpoints with `@PreAuthorize` using
-  roles `ROLE_ADMIN` / `ROLE_TEACHER` / `ROLE_STUDENT`.
+### 1. Register the module
+- `backend/foo/pom.xml`: parent `codillas-study-platform`, artifactId `codillas-foo`, depend on
+  `codillas-shared`. Add only module-specific deps (common ones inherit from parent).
+- Add `<module>foo</module>` to `backend/pom.xml`; add `codillas-foo` dep to `backend/main/pom.xml`.
+- `package-info.java`: `@ApplicationModule` over `package de.codillas.foo;`.
 
-## Steps to add a module named `foo`
+### 2. Write the OpenAPI spec (API-first)
+`backend/openapi/foo-paths.yaml` + `foo-schemas.yaml`. Paginated list operation:
+```yaml
+/api/foos:
+  get:
+    tags: [foo]
+    operationId: listFoos
+    x-spring-paginated: true            # → Spring Pageable param; do NOT add page/size params too
+    parameters:
+      - { name: search, in: query, required: false, schema: { type: string } }
+    responses:
+      "200":
+        content:
+          application/json:
+            schema: { $ref: "foo-schemas.yaml#/components/schemas/FooListResponse" }
+  post:
+    tags: [foo]
+    operationId: createFoo
+    requestBody:
+      required: true
+      content: { application/json: { schema: { $ref: "foo-schemas.yaml#/components/schemas/CreateFooRequest" } } }
+    responses:
+      "201": { content: { application/json: { schema: { $ref: "foo-schemas.yaml#/components/schemas/Foo" } } } }
+```
+```yaml
+# foo-schemas.yaml
+FooListResponse:
+  allOf:
+    - $ref: "common.yaml#/components/schemas/PageResponse"
+    - type: object
+      required: [content]
+      properties: { content: { type: array, items: { $ref: "#/components/schemas/Foo" } } }
+```
 
-1. `backend/foo/` with the layout above; `package-info.java`:
-   ```java
-   @ApplicationModule
-   package de.codillas.foo;
-   import org.springframework.modulith.ApplicationModule;
-   ```
-2. `backend/foo/pom.xml`: parent `codillas-study-platform`, artifactId
-   `codillas-foo`, dependency on `codillas-shared`. Common deps (web, jpa,
-   validation, modulith-core, mapstruct) are inherited from the parent — only
-   add module-specific ones (e.g. websocket for `chat`).
-3. Register in `backend/pom.xml` `<modules>` and add a `codillas-foo` dependency
-   in `backend/main/pom.xml`.
-4. Liquibase: `db/changelog/foo-changelog.yaml` (`databaseChangeLog: []` to
-   start), then add an `include` line in
-   `backend/main/src/main/resources/db/changelog/codillas-changelog.yaml`.
-5. **API-first**: write the OpenAPI spec, wire `openapi-generator` to produce
-   server interfaces + DTOs, implement them in `web/`. Orval consumes the same
-   spec for the frontend client.
-6. Events: define event records in the module root (or in `shared` if multiple
-   modules consume them — see the event map in the overview doc).
-7. Test: `@ApplicationModuleTest` for the slice; `ApplicationModules.of(app).verify()`
-   in a Modulith test guards boundaries.
+### 3. Wire the generator (foo/pom.xml `<build><plugins>`)
+Config is inherited from the parent pluginManagement — only the execution + build-helper here:
+```xml
+<plugin>
+  <groupId>org.openapitools</groupId>
+  <artifactId>openapi-generator-maven-plugin</artifactId>
+  <executions><execution>
+    <id>generate-foo-api</id>
+    <goals><goal>generate</goal></goals>
+    <phase>generate-sources</phase>
+    <configuration>
+      <inputSpec>${project.parent.basedir}/openapi/foo-paths.yaml</inputSpec>
+      <apiPackage>de.codillas.foo.api</apiPackage>
+      <modelPackage>de.codillas.foo.api.dto</modelPackage>
+    </configuration>
+  </execution></executions>
+</plugin>
+<plugin>
+  <groupId>org.codehaus.mojo</groupId>
+  <artifactId>build-helper-maven-plugin</artifactId>
+  <executions><execution>
+    <id>add-generated-source</id>
+    <goals><goal>add-source</goal></goals>
+    <phase>generate-sources</phase>
+    <configuration><sources>
+      <source>${project.build.directory}/generated-sources/openapi/src/main/java</source>
+    </sources></configuration>
+  </execution></executions>
+</plugin>
+```
+
+### 4. Domain + repository
+```java
+@Entity @Table(name = "foos")
+@Getter @Setter @NoArgsConstructor @SuperBuilder
+public class Foo extends BaseAuditableEntity {
+  @Column(nullable = false) private String name;
+}
+
+public interface FooRepository extends JpaRepository<Foo, UUID> {}
+```
+
+### 5. Mapper (thin — no manual building)
+```java
+@Mapper(config = CentralMapperConfig.class)
+public interface FooMapper {
+  Foo /*dto*/ toDto(Foo entity);                         // exhaustive (unmapped target = build error)
+
+  @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
+  Foo toEntity(CreateFooRequest request);                // id/timestamps owned by Hibernate/builder
+
+  @BeanMapping(ignoreByDefault = true,
+      nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+  @Mapping(target = "name")
+  void updateEntity(@MappingTarget Foo entity, UpdateFooRequest request);
+
+  FooListResponse toListResponse(Page<Foo> page);        // Page envelope auto-mapped
+}
+```
+
+### 6. Service (interface + impl)
+```java
+public interface FooService {
+  FooListResponse listFoos(Pageable pageable);
+  Foo createFoo(CreateFooRequest request);
+}
+
+@Service @RequiredArgsConstructor @Slf4j @Transactional(readOnly = true)
+public class FooServiceImpl implements FooService {
+  private final FooRepository repository;
+  private final FooMapper mapper;
+
+  @Override public FooListResponse listFoos(Pageable pageable) {
+    return mapper.toListResponse(repository.findAll(pageable));
+  }
+
+  @Override @Transactional public Foo createFoo(CreateFooRequest request) {
+    return mapper.toDto(repository.save(mapper.toEntity(request)));
+  }
+
+  private Foo findByIdOrThrow(UUID id) {
+    return repository.findById(id).orElseThrow(() -> new NotFoundException("Foo", id));
+  }
+}
+```
+
+### 7. Controller (thin delegator)
+```java
+@RestController @RequiredArgsConstructor
+public class FooController implements FooApi {
+  private final FooService service;
+
+  @Override @PreAuthorize("hasRole('STUDENT')")
+  public ResponseEntity<FooListResponse> listFoos(String search, Pageable pageable) {
+    return ResponseEntity.ok(service.listFoos(pageable));
+  }
+
+  @Override @PreAuthorize("hasRole('ADMIN')")
+  public ResponseEntity<Foo> createFoo(CreateFooRequest request) {
+    return ResponseEntity.status(HttpStatus.CREATED).body(service.createFoo(request));
+  }
+}
+```
+
+### 8. Liquibase
+`db/changelog/foo-changelog.yaml` changeset for the `foos` table; add an `include` line to
+`backend/main/src/main/resources/db/changelog/codillas-changelog.yaml`.
+
+### 9. Events (if the module signals other modules)
+Record in `event/`; publish via `ApplicationEventPublisher`; consumers use `@ApplicationModuleListener`.
 
 ## Verify
-
 ```bash
-cd backend && mvn -pl foo -am test          # module + its deps
-cd backend && mvn -q compile                # whole backend
+cd backend && mvn -pl foo -am test     # generates spec, compiles, module tests
+mvn spotless:apply                     # format
 ```
 
-ponytail: don't add web/jpa/websocket deps a module doesn't use; don't create
-`domain/`, `mapper/`, `config/` folders until there's something to put in them.
+ponytail: don't create `domain/`, `mapper/`, `event/`, `config/` until there's something to put
+in them. Reference other modules by id + events, never by their `@Entity`.

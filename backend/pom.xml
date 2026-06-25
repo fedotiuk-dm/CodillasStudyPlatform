@@ -80,6 +80,18 @@
       <artifactId>mapstruct</artifactId>
       <version>${mapstruct.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <!-- jspecify @Nullable: Boot manages the version but it is NOT on the compile classpath
+         transitively (spring-core declares it optional). Generated DTOs import it, so it must be
+         declared explicitly — same as boosting/backend/pom.xml. -->
+    <dependency>
+      <groupId>org.jspecify</groupId>
+      <artifactId>jspecify</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.postgresql</groupId>
@@ -111,6 +123,46 @@
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-maven-plugin</artifactId>
         </plugin>
+        <!-- API-first: each module adds an <execution> with its inputSpec + packages. -->
+        <plugin>
+          <groupId>org.openapitools</groupId>
+          <artifactId>openapi-generator-maven-plugin</artifactId>
+          <version>${openapi-generator.version}</version>
+          <configuration>
+            <generatorName>spring</generatorName>
+            <enablePostProcessFile>true</enablePostProcessFile>
+            <generateModelDocumentation>false</generateModelDocumentation>
+            <configOptions>
+              <documentationProvider>source</documentationProvider>
+              <interfaceOnly>true</interfaceOnly>
+              <useTags>true</useTags>
+              <useSpringBoot4>true</useSpringBoot4>
+              <useJackson3>true</useJackson3>
+              <openApiNullable>false</openApiNullable>
+              <useEnumCaseInsensitive>false</useEnumCaseInsensitive>
+              <containerDefaultToNull>false</containerDefaultToNull>
+              <hideGenerationTimestamp>true</hideGenerationTimestamp>
+              <useSwaggerUI>false</useSwaggerUI>
+              <skipDefaultInterface>true</skipDefaultInterface>
+            </configOptions>
+            <generateAliasAsModel>true</generateAliasAsModel>
+            <typeMappings>
+              <typeMapping>OffsetDateTime=Instant</typeMapping>
+              <typeMapping>LocalDateTime=Instant</typeMapping>
+            </typeMappings>
+            <importMappings>
+              <importMapping>Instant=java.time.Instant</importMapping>
+              <importMapping>OffsetDateTime=java.time.Instant</importMapping>
+              <importMapping>LocalDateTime=java.time.Instant</importMapping>
+              <importMapping>Pageable=org.springframework.data.domain.Pageable</importMapping>
+              <importMapping>Nullable=org.jspecify.annotations.Nullable</importMapping>
+            </importMappings>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
@@ -119,6 +171,17 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <annotationProcessorPaths>
+            <!-- Order matters: lombok, then the binding, then mapstruct. -->
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>${lombok.version}</version>
+            </path>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok-mapstruct-binding</artifactId>
+              <version>0.2.0</version>
+            </path>
             <path>
               <groupId>org.mapstruct</groupId>
               <artifactId>mapstruct-processor</artifactId>
