@@ -1,0 +1,62 @@
+openapi: 3.0.4
+info:
+  title: Codillas Enrollment API
+  description: Cohorts (groups) running a course on a schedule.
+  version: 0.1.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    name: Codillas
+    email: support@codillas.de
+servers:
+  - url: http://localhost:8081
+    description: Local development
+tags:
+  - name: enrollment
+    description: Group (cohort) operations
+paths:
+  /api/groups:
+    get:
+      tags:
+        - enrollment
+      operationId: listGroups
+      summary: List groups (paginated)
+      x-spring-paginated: true
+      parameters:
+        - $ref: "common.yaml#/components/parameters/PageNumber"
+        - $ref: "common.yaml#/components/parameters/PageSize"
+        - $ref: "common.yaml#/components/parameters/Sort"
+      responses:
+        "200":
+          description: Paginated groups
+          content:
+            application/json:
+              schema:
+                $ref: "enrollment-schemas.yaml#/components/schemas/GroupListResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+    post:
+      tags:
+        - enrollment
+      operationId: createGroup
+      summary: Create a group for a course
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "enrollment-schemas.yaml#/components/schemas/CreateGroupRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "enrollment-schemas.yaml#/components/schemas/GroupResponse"
+        "400":
+          $ref: "common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"

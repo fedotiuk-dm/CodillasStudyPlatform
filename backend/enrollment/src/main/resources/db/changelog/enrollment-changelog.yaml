@@ -1,2 +1,6 @@
-# Liquibase changelog for the 'enrollment' module. Add changesets under changes/.
-databaseChangeLog: []
+# Enrollment module changelog — SemVer 2.0.0: https://semver.org/spec/v2.0.0/
+databaseChangeLog:
+  # 0.1.0 — groups (cohorts)
+  - include:
+      file: changes/0.1.0/0.1.0-create-study-groups.yaml
+      relativeToChangelogFile: true

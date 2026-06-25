@@ -1,0 +1,39 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.1.0-create-study-groups
+      author: codillas
+      comment: Create study_groups table (initial development 0.1.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: study_groups
+      changes:
+        - createTable:
+            tableName: study_groups
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: name
+                  type: varchar(200)
+                  constraints: { nullable: false }
+              - column:
+                  name: course_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: teacher_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: start_date
+                  type: date
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz
