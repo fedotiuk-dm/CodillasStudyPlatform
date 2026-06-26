@@ -30,12 +30,13 @@ export function useRoomMessages(roomId: string) {
     return () => sub.unsubscribe();
   }, [roomId]);
 
+  // REST history is NEWEST_FIRST → reverse to oldest-first; live messages arrive chronologically
+  // and go last. We don't sort by sentAt: a just-broadcast message has no sentAt yet (the server
+  // emits it before the timestamp is flushed), and (null) would otherwise sort it to the top.
   const history = data?.content ?? [];
   const byId = new Map<string, ChatMessageResponse>();
-  for (const m of [...history, ...live]) byId.set(m.id, m);
-  const messages = [...byId.values()].sort((a, b) =>
-    (a.sentAt ?? "").localeCompare(b.sentAt ?? ""),
-  );
+  for (const m of [...[...history].reverse(), ...live]) byId.set(m.id, m);
+  const messages = [...byId.values()];
 
   function send(content: string) {
     getChatSocket().publish(`/app/chat/${roomId}/send`, { content });
