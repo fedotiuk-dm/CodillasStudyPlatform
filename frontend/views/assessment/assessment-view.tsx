@@ -20,7 +20,7 @@ import {
 import { useListTests, usePublishTest } from "@/lib/api/assessment/assessment/assessment";
 import { useHasAnyRole } from "@/lib/auth";
 import { Role } from "@/lib/constants";
-import { CreateTestDialog } from "./create-test-dialog";
+import { TestWizard } from "./test-wizard";
 import { ManageQuestionsDialog } from "./manage-questions-dialog";
 import { TakeAttemptDialog } from "./take-attempt-dialog";
 
@@ -115,7 +115,7 @@ export function AssessmentView() {
         </CardContent>
       </Card>
 
-      <CreateTestDialog open={createOpen} onOpenChange={setCreateOpen} />
+      <TestWizard open={createOpen} onOpenChange={setCreateOpen} />
 
       {manageTestId && (
         <ManageQuestionsDialog
