@@ -3,7 +3,6 @@ package de.codillas.course.mapper;
 import java.util.List;
 import java.util.UUID;
 
-import org.mapstruct.*;
 import org.springframework.data.domain.Page;
 
 import de.codillas.course.api.dto.CourseDetailResponse;
@@ -18,6 +17,8 @@ import de.codillas.course.domain.model.Course;
 import de.codillas.course.domain.model.Lesson;
 import de.codillas.course.domain.model.Section;
 import de.codillas.shared.mapper.CentralMapperConfig;
+
+import org.mapstruct.*;
 
 @Mapper(config = CentralMapperConfig.class)
 public interface CourseMapper {
