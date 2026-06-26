@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
+import { DateTimeField } from "@/components/shared/date-time-field";
 import { FormDialog } from "@/components/shared/form-dialog";
 import { UserPicker } from "@/components/shared/user-picker";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -123,7 +124,12 @@ export function CreateGroupDialog({
           <FormItem>
             <FormLabel>{t("startDate")}</FormLabel>
             <FormControl>
-              <Input type="date" {...field} value={field.value ?? ""} />
+              <DateTimeField
+                mode="date"
+                value={field.value ?? undefined}
+                onChange={field.onChange}
+                placeholder={t("startDate")}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>

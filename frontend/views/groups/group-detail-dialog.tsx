@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { DateTimeField } from "@/components/shared/date-time-field";
 import { UserPicker } from "@/components/shared/user-picker";
 import { Button } from "@/components/ui/button";
 import {
@@ -128,7 +129,7 @@ function LessonsTab({ groupId, open }: { groupId: string; open: boolean }) {
         groupId,
         data: {
           title,
-          scheduledAt: new Date(scheduledAt).toISOString(),
+          scheduledAt,
           meetLink: meetLink || undefined,
         },
       },
@@ -157,10 +158,11 @@ function LessonsTab({ groupId, open }: { groupId: string; open: boolean }) {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
-        <Input
-          type="datetime-local"
-          value={scheduledAt}
-          onChange={(e) => setScheduledAt(e.target.value)}
+        <DateTimeField
+          mode="datetime"
+          value={scheduledAt || undefined}
+          onChange={(v) => setScheduledAt(v ?? "")}
+          placeholder={t("scheduleLesson")}
         />
         <Input
           placeholder={t("meetLinkPlaceholder")}

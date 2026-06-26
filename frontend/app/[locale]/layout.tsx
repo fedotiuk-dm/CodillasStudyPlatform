@@ -6,8 +6,6 @@ import type { ReactNode } from "react";
 
 import { routing } from "@/i18n/routing";
 import { SITE_NAME } from "@/lib/constants";
-import "@/styles/globals.css";
-import { RootProviders } from "../RootProviders";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -22,6 +20,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
 };
 
+// The <html>/<body> shell and the app providers live in the root layout (app/layout.tsx) so they
+// survive a locale switch. This layout only swaps the messages for the active locale — that's the
+// part that *should* re-render when the language changes.
 export default async function LocaleLayout({
   children,
   params,
@@ -32,13 +33,5 @@ export default async function LocaleLayout({
   }
   setRequestLocale(locale);
 
-  return (
-    <html lang={locale} suppressHydrationWarning>
-      <body className="min-h-screen antialiased">
-        <NextIntlClientProvider>
-          <RootProviders>{children}</RootProviders>
-        </NextIntlClientProvider>
-      </body>
-    </html>
-  );
+  return <NextIntlClientProvider>{children}</NextIntlClientProvider>;
 }

@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 
+import { DateTimeField } from "@/components/shared/date-time-field";
 import { FormDialog } from "@/components/shared/form-dialog";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -41,8 +42,7 @@ export function CreateAssignmentDialog({
             groupId,
             title: values.title,
             description: values.description || undefined,
-            // datetime-local → offset ISO the API expects
-            dueAt: values.dueAt ? new Date(values.dueAt).toISOString() : undefined,
+            dueAt: values.dueAt || undefined,
           },
         })
       }
@@ -81,7 +81,12 @@ export function CreateAssignmentDialog({
           <FormItem>
             <FormLabel>{t("due")}</FormLabel>
             <FormControl>
-              <Input type="datetime-local" {...field} />
+              <DateTimeField
+                mode="datetime"
+                value={field.value || undefined}
+                onChange={field.onChange}
+                placeholder={t("due")}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
