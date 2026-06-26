@@ -178,8 +178,12 @@ export function TestWizard({
               </li>
             ))}
           </ol>
-          <label className="flex items-center gap-2 text-sm">
-            <Checkbox checked={publishNow} onCheckedChange={(c) => setPublishNow(c === true)} />
+          <label htmlFor="publish-now" className="flex items-center gap-2 text-sm">
+            <Checkbox
+              id="publish-now"
+              checked={publishNow}
+              onCheckedChange={(c) => setPublishNow(c === true)}
+            />
             {t("publishNow")}
           </label>
         </div>

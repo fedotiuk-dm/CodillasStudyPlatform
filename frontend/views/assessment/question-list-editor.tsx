@@ -50,7 +50,11 @@ export function QuestionListEditor({
     onChange(value.map((q, i) => (i === index ? { ...q, ...fields } : q)));
   }
 
-  function patchOption(qi: number, oi: number, fields: Partial<{ text: string; correct: boolean }>) {
+  function patchOption(
+    qi: number,
+    oi: number,
+    fields: Partial<{ text: string; correct: boolean }>,
+  ) {
     const q = value[qi];
     const options = (q.options ?? []).map((o, i) => (i === oi ? { ...o, ...fields } : o));
     patch(qi, { options });
@@ -73,7 +77,13 @@ export function QuestionListEditor({
             <div className="flex items-center justify-between">
               <span className="font-medium text-sm">{t("questionNumber", { number: qi + 1 })}</span>
               <div className="flex items-center gap-1">
-                <Button type="button" variant="ghost" size="sm" onClick={() => move(qi, -1)} disabled={qi === 0}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => move(qi, -1)}
+                  disabled={qi === 0}
+                >
                   {t("moveUp")}
                 </Button>
                 <Button
@@ -105,7 +115,7 @@ export function QuestionListEditor({
                 patch(qi, {
                   type,
                   options: becomesOptions
-                    ? q.options && q.options.length
+                    ? q.options?.length
                       ? q.options
                       : [
                           { text: "", correct: true },
@@ -172,7 +182,9 @@ export function QuestionListEditor({
                   variant="outline"
                   size="sm"
                   className="justify-self-start"
-                  onClick={() => patch(qi, { options: [...(q.options ?? []), { text: "", correct: false }] })}
+                  onClick={() =>
+                    patch(qi, { options: [...(q.options ?? []), { text: "", correct: false }] })
+                  }
                 >
                   {t("addOption")}
                 </Button>
