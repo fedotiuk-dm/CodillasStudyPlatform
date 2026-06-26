@@ -114,8 +114,8 @@ class AssessmentControllerIntegrationTest extends BaseIntegrationTest {
   }
 
   @Test
-  @DisplayName("starting a second attempt at the same test is a conflict (409)")
-  void startAttempt_twice_returns409() throws Exception {
+  @DisplayName("starting an attempt again resumes the same attempt instead of creating a new one")
+  void startAttempt_twice_resumesSameAttempt() throws Exception {
     UUID teacher = UUID.randomUUID();
     UUID student = UUID.randomUUID();
 
@@ -134,11 +134,20 @@ class AssessmentControllerIntegrationTest extends BaseIntegrationTest {
         .perform(post("/api/tests/{testId}/publish", testId).with(as(teacher, "TEACHER")))
         .andExpect(status().isOk());
 
+    String first =
+        mockMvc
+            .perform(post("/api/tests/{testId}/attempts", testId).with(as(student, "STUDENT")))
+            .andExpect(status().isCreated())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    UUID firstAttemptId = UUID.fromString(JsonPath.read(first, "$.id"));
+
+    // Reopening the same test resumes the existing attempt (same id), it does not create a new one.
     mockMvc
         .perform(post("/api/tests/{testId}/attempts", testId).with(as(student, "STUDENT")))
-        .andExpect(status().isCreated());
-    mockMvc
-        .perform(post("/api/tests/{testId}/attempts", testId).with(as(student, "STUDENT")))
-        .andExpect(status().isConflict());
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").value(firstAttemptId.toString()))
+        .andExpect(jsonPath("$.status").value("IN_PROGRESS"));
   }
 }

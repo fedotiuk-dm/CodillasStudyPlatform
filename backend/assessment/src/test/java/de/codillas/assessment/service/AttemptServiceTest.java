@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -57,9 +58,12 @@ class AttemptServiceTest {
   @InjectMocks private AttemptServiceImpl service;
 
   @Test
-  @DisplayName("startAttempt fails when the test is not published")
+  @DisplayName("startAttempt fails when a brand-new attempt targets an unpublished test")
   void startAttempt_notPublished() {
     UUID testId = UUID.randomUUID();
+    UUID studentId = UUID.randomUUID();
+    when(currentUser.id()).thenReturn(studentId);
+    when(repository.findByTestIdAndStudentId(testId, studentId)).thenReturn(Optional.empty());
     when(testRepository.findById(testId))
         .thenReturn(
             Optional.of(
@@ -71,20 +75,24 @@ class AttemptServiceTest {
   }
 
   @Test
-  @DisplayName("startAttempt fails when the student already has an attempt")
-  void startAttempt_duplicate() {
+  @DisplayName(
+      "startAttempt resumes the student's existing attempt instead of creating a duplicate")
+  void startAttempt_resumesExisting() {
     UUID testId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
-    when(testRepository.findById(testId))
-        .thenReturn(
-            Optional.of(
-                de.codillas.assessment.domain.model.Test.builder()
-                    .status(TestStatus.PUBLISHED)
-                    .build()));
+    UUID attemptId = UUID.randomUUID();
+    Attempt existing = Attempt.builder().id(attemptId).testId(testId).studentId(studentId).build();
+    Answer saved = Answer.builder().questionId(UUID.randomUUID()).build();
+    AttemptResponse dto = mock(AttemptResponse.class);
+
     when(currentUser.id()).thenReturn(studentId);
-    when(repository.existsByTestIdAndStudentId(testId, studentId)).thenReturn(true);
-    assertThatExceptionOfType(de.codillas.shared.exception.ConflictException.class)
-        .isThrownBy(() -> service.startAttempt(testId));
+    when(repository.findByTestIdAndStudentId(testId, studentId)).thenReturn(Optional.of(existing));
+    when(answerRepository.findByAttemptId(attemptId)).thenReturn(List.of(saved));
+    when(mapper.toAnswerResponses(List.of(saved))).thenReturn(List.of());
+    when(mapper.toResponse(eq(existing), any())).thenReturn(dto);
+
+    assertThat(service.startAttempt(testId)).isSameAs(dto);
+    verify(repository, never()).save(any());
   }
 
   @Test

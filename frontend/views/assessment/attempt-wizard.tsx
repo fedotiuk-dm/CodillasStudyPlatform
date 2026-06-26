@@ -44,6 +44,8 @@ export function AttemptWizard({
   const [step, setStep] = useState(0);
   const startedRef = useRef(false);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: start.mutate is stable; depending on
+  // the mutation object would re-run this on every mutation state change and auto-retry on error.
   useEffect(() => {
     if (!open) {
       setAttempt(null);
@@ -57,13 +59,25 @@ export function AttemptWizard({
     start.mutate(
       { testId },
       {
-        onSuccess: (a) => setAttempt(a),
+        // The backend resumes an existing attempt: seed the drafts from any answers already saved
+        // so a resumed (or already-submitted) attempt shows the student's prior progress.
+        onSuccess: (a) => {
+          setAttempt(a);
+          setAnswers(
+            Object.fromEntries(
+              a.answers.map((ans) => [
+                ans.questionId,
+                { selectedOptionIds: ans.selectedOptionIds ?? [], text: ans.text ?? "" },
+              ]),
+            ),
+          );
+        },
         onError: () => {
           startedRef.current = false;
         },
       },
     );
-  }, [open, testId, start]);
+  }, [open, testId]);
 
   const questions = test?.questions ?? [];
   const stepCount = questions.length + 1; // + review

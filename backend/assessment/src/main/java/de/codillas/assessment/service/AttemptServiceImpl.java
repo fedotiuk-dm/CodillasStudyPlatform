@@ -2,6 +2,7 @@ package de.codillas.assessment.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -54,14 +55,19 @@ public class AttemptServiceImpl implements AttemptService {
   @Override
   @Transactional
   public AttemptResponse startAttempt(UUID testId) {
+    UUID studentId = currentUser.id();
+    // One attempt per (test, student): resume the existing one (IN_PROGRESS to continue, or
+    // SUBMITTED/GRADED so the caller shows the result) instead of creating a duplicate.
+    Optional<Attempt> existing = repository.findByTestIdAndStudentId(testId, studentId);
+    if (existing.isPresent()) {
+      Attempt attempt = existing.get();
+      return mapper.toResponse(
+          attempt, mapper.toAnswerResponses(answerRepository.findByAttemptId(attempt.getId())));
+    }
     Test test =
         testRepository.findById(testId).orElseThrow(() -> new NotFoundException("Test", testId));
     if (test.getStatus() != TestStatus.PUBLISHED) {
       throw new ConflictException("Test is not published");
-    }
-    UUID studentId = currentUser.id();
-    if (repository.existsByTestIdAndStudentId(testId, studentId)) {
-      throw new ConflictException("You have already started this test");
     }
     Attempt saved = repository.save(mapper.toEntity(testId, studentId));
     return mapper.toResponse(saved, List.of());
