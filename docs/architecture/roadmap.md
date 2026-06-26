@@ -11,6 +11,22 @@
 > current maturity and the open TODOs. When you finish work, flip the status and tick
 > the TODO — don't add TODOs to `AGENTS.md`.
 
+## ✅ Core complete (Google-Classroom-replacement surface)
+
+P0–P2 functional scope is done and green, on stacked `feat/*` branches:
+`course-backbone` → `enrollment` → `roles` → `notification` → `gradebook` → `chat` → `i18n`.
+
+Covered: course **structure** (Section→Lesson→Material) + teacher builder + file upload to
+minio; **cohorts** (groups, schedule↔lesson, attendance) + student "my courses/schedule";
+**homework** (assign→submit→review→grade, versioned) + **tests** (build + auto-grade);
+**gradebook** (event-fed) + analytics + CSV; **chat** (group + canonical DM, WebSocket);
+**notifications** (in-app + email + deadline reminders); **RBAC** with ADMIN>TEACHER>STUDENT
+gradation; full **uk/en/de** i18n. Every feature has tests; the `main` integration suite is green.
+
+Deliberately deferred (YAGNI / your call): admin-panel shell, master OpenAPI aggregation,
+file versioning/preview, assessment metadata-FieldRenderer + code question type, `MessagePosted`
+notifications (needs presence). **Future vision** (multi-tenant + payments) is separate, below.
+
 ## Legend
 
 - **stub** — scaffold only (entity + CRUD plumbing), no real domain logic.
@@ -90,9 +106,11 @@ This is the central missing piece; most of the roadmap below depends on it.
 
 ## Cross-cutting
 
-- [ ] **Admin panel** `/admin/*` (role-gated) — overview §12 decided one Next.js app; admin tasks currently done through teacher flows.
-- [ ] Frontend role-gating is client-side/UX only; the real boundary is backend `@PreAuthorize`. Keep it that way; don't trust the client.
-- [ ] One master OpenAPI aggregation endpoint (each module publishes separately today).
+- [x] **i18n complete** — all views localized across uk/en/de (9 feature namespaces). Committed `d863d59`.
+- [x] **Role gradation** — `RoleHierarchy` ADMIN > TEACHER > STUDENT + roles on `/me` + graded frontend gating. Committed `662b55b`.
+- [~] **Admin panel** `/admin/*` — **deferred (YAGNI for now)**: every admin capability (create courses, manage groups/members, schedule, attendance) already exists in the role-gated views and an admin sees them through the same nav. A dedicated shell would re-surface existing screens, not add capability. Build it later if you want a consolidated admin home — say the word.
+- [x] Frontend role-gating is client-side/UX only; the real boundary is backend `@PreAuthorize` + `RoleHierarchy`. Kept that way (documented in overview §9).
+- [~] Master OpenAPI aggregation — **deferred**: a dev-docs convenience (single Swagger UI), not user-facing; per-module specs already drive Orval + generated server interfaces.
 
 ## Prioritized roadmap
 
