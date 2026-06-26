@@ -4,9 +4,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -14,19 +12,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import { Textarea } from "@/components/ui/textarea";
 import {
   useGetTest,
-  useGradeAnswer,
   useSaveAnswer,
   useStartAttempt,
   useSubmitAttempt,
 } from "@/lib/api/assessment/assessment/assessment";
-import type { AttemptResponse, QuestionResponse } from "@/lib/api/assessment/model";
+import type { AttemptResponse } from "@/lib/api/assessment/model";
 
-type AnswerDraft = { selectedOptionIds: string[]; text: string };
+import { type AnswerDraft, QuestionAnswerInput } from "./question-answer-input";
+import { ResultPanel } from "./result-panel";
 
 export function TakeAttemptDialog({
   testId,
@@ -121,7 +116,7 @@ export function TakeAttemptDialog({
         ) : (
           <div className="grid gap-4">
             {test?.questions.map((q, i) => (
-              <QuestionInput
+              <QuestionAnswerInput
                 key={q.id}
                 index={i}
                 question={q}
@@ -139,145 +134,5 @@ export function TakeAttemptDialog({
         )}
       </DialogContent>
     </Dialog>
-  );
-}
-
-function QuestionInput({
-  index,
-  question: q,
-  draft,
-  onChange,
-}: {
-  index: number;
-  question: QuestionResponse;
-  draft?: AnswerDraft;
-  onChange: (patch: Partial<AnswerDraft>) => void;
-}) {
-  const t = useTranslations("tests");
-  const selected = draft?.selectedOptionIds ?? [];
-  const single = q.type === "SINGLE_CHOICE" || q.type === "TRUE_FALSE";
-
-  return (
-    <div className="grid gap-2 rounded-md border p-3">
-      <p className="font-medium text-sm">
-        {index + 1}. {q.prompt}{" "}
-        <span className="font-normal text-muted-foreground">
-          ({q.points} {t("pt")})
-        </span>
-      </p>
-      {q.type === "CODE" ? (
-        <Textarea
-          className="font-mono text-sm"
-          rows={8}
-          spellCheck={false}
-          placeholder={t("codePlaceholder")}
-          value={draft?.text ?? ""}
-          onChange={(e) => onChange({ text: e.target.value })}
-        />
-      ) : q.type === "SHORT_TEXT" ? (
-        <Input
-          placeholder={t("answerPlaceholder")}
-          value={draft?.text ?? ""}
-          onChange={(e) => onChange({ text: e.target.value })}
-        />
-      ) : (
-        <div className="grid gap-1.5">
-          {q.options.map((o) =>
-            single ? (
-              <label key={o.id} className="flex items-center gap-2 text-sm">
-                <input
-                  type="radio"
-                  name={`q-${q.id}`}
-                  checked={selected[0] === o.id}
-                  onChange={() => onChange({ selectedOptionIds: [o.id] })}
-                />
-                {o.text}
-              </label>
-            ) : (
-              // biome-ignore lint/a11y/noLabelWithoutControl: Radix Checkbox is the control
-              <label key={o.id} className="flex items-center gap-2 text-sm">
-                <Checkbox
-                  checked={selected.includes(o.id)}
-                  onCheckedChange={(c) =>
-                    onChange({
-                      selectedOptionIds: c
-                        ? [...selected, o.id]
-                        : selected.filter((id) => id !== o.id),
-                    })
-                  }
-                />
-                {o.text}
-              </label>
-            ),
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function ResultPanel({
-  attempt,
-  test,
-  canManage,
-}: {
-  attempt: AttemptResponse;
-  test: QuestionResponse[];
-  canManage: boolean;
-}) {
-  const t = useTranslations("tests");
-  const grade = useGradeAnswer();
-  const [scores, setScores] = useState<Record<string, string>>({});
-  const promptFor = (questionId: string) => test.find((q) => q.id === questionId)?.prompt ?? "—";
-
-  return (
-    <div className="grid gap-3">
-      <div className="flex items-center gap-2">
-        <Badge variant={attempt.status === "GRADED" ? "default" : "secondary"}>
-          {attempt.status}
-        </Badge>
-        <span className="font-medium">
-          {t("score")}: {attempt.score}
-        </span>
-      </div>
-      <Separator />
-      {attempt.answers.map((ans) => (
-        <div key={ans.id} className="grid gap-1 rounded-md border p-3 text-sm">
-          <p className="font-medium">{promptFor(ans.questionId)}</p>
-          {ans.text && <p className="text-muted-foreground">“{ans.text}”</p>}
-          <p className="text-muted-foreground">
-            {t("awarded")}: {ans.awardedPoints ?? t("pending")}
-          </p>
-          {canManage && ans.awardedPoints == null && (
-            <div className="flex items-center gap-2">
-              <Input
-                type="number"
-                min={0}
-                className="w-24"
-                placeholder={t("pointsPlaceholder")}
-                value={scores[ans.id] ?? ""}
-                onChange={(e) => setScores((p) => ({ ...p, [ans.id]: e.target.value }))}
-              />
-              <Button
-                size="sm"
-                disabled={!scores[ans.id]}
-                onClick={() =>
-                  grade.mutate(
-                    {
-                      attemptId: attempt.id,
-                      answerId: ans.id,
-                      data: { awardedPoints: Number(scores[ans.id]) },
-                    },
-                    { onSuccess: () => toast.success(t("graded")) },
-                  )
-                }
-              >
-                {t("grade")}
-              </Button>
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
   );
 }
