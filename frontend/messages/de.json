@@ -74,6 +74,9 @@
     "materialAdded": "Material hinzugefügt",
     "materialDeleted": "Material gelöscht",
     "urlRequired": "Geben Sie eine URL für ein Link-Material an.",
-    "fileIdRequired": "Geben Sie eine Datei-ID für ein Datei-Material an."
+    "fileIdRequired": "Geben Sie eine Datei-ID für ein Datei-Material an.",
+    "file": "Datei",
+    "chooseFile": "Datei wählen",
+    "uploading": "Wird hochgeladen…"
   }
 }

@@ -74,6 +74,9 @@
     "materialAdded": "Material added",
     "materialDeleted": "Material deleted",
     "urlRequired": "Provide a URL for a link material.",
-    "fileIdRequired": "Provide a file ID for a file material."
+    "fileIdRequired": "Provide a file ID for a file material.",
+    "file": "File",
+    "chooseFile": "Choose file",
+    "uploading": "Uploading…"
   }
 }

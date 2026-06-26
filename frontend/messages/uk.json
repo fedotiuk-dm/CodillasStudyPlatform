@@ -74,6 +74,9 @@
     "materialAdded": "Матеріал додано",
     "materialDeleted": "Матеріал видалено",
     "urlRequired": "Вкажіть URL для матеріалу-посилання.",
-    "fileIdRequired": "Вкажіть ID файлу для матеріалу-файлу."
+    "fileIdRequired": "Вкажіть ID файлу для матеріалу-файлу.",
+    "file": "Файл",
+    "chooseFile": "Вибрати файл",
+    "uploading": "Завантаження…"
   }
 }

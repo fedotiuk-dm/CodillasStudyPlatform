@@ -2,9 +2,11 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { FileUploadField } from "@/components/shared/file-upload-field";
 import { FormDialog } from "@/components/shared/form-dialog";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -17,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { useAddMaterial } from "@/lib/api/course/course/course";
 import type { CreateMaterialRequest } from "@/lib/api/course/model";
+import { FileReferenceType } from "@/lib/api/files/model";
 
 export function AddMaterialDialog({
   lessonId,
@@ -29,6 +32,7 @@ export function AddMaterialDialog({
 }) {
   const t = useTranslations("course");
   const addMaterial = useAddMaterial();
+  const [fileName, setFileName] = useState<string | null>(null);
 
   // ponytail: hand-rolled schema so we can enforce the FILE/LINK one-of rule the spec can't express
   const schema = z
@@ -128,14 +132,23 @@ export function AddMaterialDialog({
           name="fileId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("fileId")}</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="00000000-0000-0000-0000-000000000000"
-                  {...field}
-                  value={field.value ?? ""}
-                />
-              </FormControl>
+              <FormLabel>{t("file")}</FormLabel>
+              <FileUploadField
+                referenceType={FileReferenceType.MATERIAL}
+                value={
+                  field.value && fileName ? { id: field.value, originalFilename: fileName } : null
+                }
+                onUploaded={(stored) => {
+                  field.onChange(stored.id);
+                  setFileName(stored.originalFilename);
+                }}
+                onClear={() => {
+                  field.onChange("");
+                  setFileName(null);
+                }}
+                chooseLabel={t("chooseFile")}
+                uploadingLabel={t("uploading")}
+              />
               <FormMessage />
             </FormItem>
           )}
