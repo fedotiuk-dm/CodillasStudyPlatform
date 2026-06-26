@@ -44,11 +44,13 @@ This is the central missing piece; most of the roadmap below depends on it.
 
 ### `course` — backbone built (P0, backend done)
 - [x] Model `Section → Lesson → Material` (OpenAPI-first → entities → Liquibase 0.2.0). Structure CRUD + nested course-tree read. Unit-tested (material validation, cascade delete); schema validated by `main` integration suite.
-- [ ] Re-point `homework.Assignment` at a `lessonId` (`assessment.Test` already references `lessonId`).
+- [x] Re-point `homework.Assignment` at a `lessonId` — already wired: `Assignment.lessonId` (nullable) + spec field exist, same as `assessment.Test`. No data change needed. (Optional follow-up: homework↔lesson **UX** — pick a lesson when creating homework, show it under the lesson.)
 - [x] Course detail / structure UI: Orval regen + teacher builder + student read-only view, role-gated, i18n (uk/en/de), `safeHref` guard on rendered links. Committed `3859c9d`.
 - [x] Reusable `FileUploadField` → minio via the `files` module (one gateway, others reference by id); wired into course materials. Committed `b68b847`. Reuse for homework/chat next.
-- [ ] Controller integration tests in `main` for the new endpoints (roles, 404s, cascade).
-- [ ] Publish a `CourseStructureChanged` / `LessonCreated` event if `enrollment` needs to react.
+- [x] Controller integration tests in `main` for the new endpoints (roles, 404s, cascade). Committed `d6e5598`.
+- [~] Publish a `CourseStructureChanged` / `LessonCreated` event — **skipped (YAGNI)**: no module consumes it yet. Add when `enrollment` actually needs to react.
+
+**P0 done.** Course backbone + builder UI + reusable file upload + tests all green and committed.
 
 ### `enrollment` — partial (P1)
 - [ ] Wire `ScheduledLesson` to a real `Lesson` (currently no `Lesson` to reference).
