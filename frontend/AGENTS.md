@@ -33,9 +33,17 @@ messages/<locale>.json  Translations.   proxy.ts  next-intl middleware (Next 16 
   resolves the cross-file `$ref`s directly — **no bundling step**. Generated code is read-only;
   change the backend spec, regenerate. Every request goes through the axios mutator (one place for
   auth + serialization). Use the generated `useXxx` query/mutation hooks.
-- **Invalidation is manual.** Orval does not auto-invalidate; it generates `getXxxQueryKey()`. After
-  a mutation, `queryClient.invalidateQueries({ queryKey: getXxxQueryKey(...) })`. Centralize the
-  resource→keys mapping when CRUD views need it.
+- **Mutations fire from event handlers, never a `useEffect` on mount/open.** Create the resource in
+  the click handler (`const x = await xxx.mutateAsync(...)`) and pass it into the dialog as a prop;
+  `useEffect` is for queries (`enabled:`), not mutations. A mutation fired on open detaches its
+  observer under React StrictMode (dev) and hangs `pending` forever — the gated control never
+  enables. Guard double-submit with the mutation's `isPending`. (See `assessment-view.tsx` `onTake`.)
+- **Invalidation is global + automatic.** The `MutationCache` in `lib/query/create-query-client.ts`
+  invalidates **every** query on any successful mutation — no per-endpoint rules to maintain
+  (over-fetches a little, invisible at admin-LMS volume; blanket invalidation never goes stale,
+  whereas a partial rules map silently under-invalidates). Upgrade to a centralized
+  `mutationKey → query-prefix` rules map (cf. Boosting's `lib/query/invalidation-rules.ts`) only if
+  refetch traffic becomes a **measured** problem — and then port the **full** mapping, not a subset.
 - **Zod** is generated next to the client (`lib/api/<module>/zod/`) for `react-hook-form` resolvers.
   Disabled for read-only / live-messaging modules (gradebook, chat, notification) in `orval.config.ts`.
 - **Auth.** `keycloak` is a singleton (one `init`). Read identity/roles via `useKeycloak`/`useRoles`/

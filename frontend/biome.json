@@ -1,5 +1,6 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.5.1/schema.json",
+  "plugins": ["./biome/no-mutate-in-effect.grit"],
   "files": {
     "ignoreUnknown": false,
     "includes": [
@@ -11,7 +12,8 @@
       "!**/next-env.d.ts",
       "!**/scripts",
       "!**/.vscode",
-      "!**/styles"
+      "!**/styles",
+      "!**/*.grit"
     ]
   },
   "vcs": {

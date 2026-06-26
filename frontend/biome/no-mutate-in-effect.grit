@@ -1,0 +1,12 @@
+// Codillas lint: never fire a react-query mutation from inside useEffect.
+// It detaches its observer under React StrictMode (dev) and hangs 'pending' — the gated
+// control never enables. Fire mutateAsync from an event handler and pass the created entity
+// into the dialog as a prop. See frontend/AGENTS.md.
+`$obj.$method($args)` as $call where {
+  $method <: or { `mutate`, `mutateAsync` },
+  $call <: within or { `useEffect($cb)`, `useEffect($cb, $deps)` },
+  register_diagnostic(
+    span = $call,
+    message = "Mutation inside useEffect: detaches under React StrictMode and hangs 'pending'. Fire mutateAsync from an event handler and pass the created entity in as a prop (frontend/AGENTS.md)."
+  )
+}
