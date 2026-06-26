@@ -60,10 +60,11 @@ This is the central missing piece; most of the roadmap below depends on it.
 
 **Enrollment P1 block done.**
 
-### `user` — stub (P1)
-- [ ] Admin account provisioning → Keycloak via `keycloak-admin-client` (no self-registration).
-- [ ] Default role STUDENT at creation; explicit promotion to TEACHER/ADMIN.
-- [ ] Profile view/edit (decide split between Keycloak-owned vs platform `Profile`).
+### `user` / security — partial (P1)
+- [x] **Role gradation** — `RoleHierarchy` ADMIN > TEACHER > STUDENT + roles surfaced on `/api/users/me` + graded frontend gating. Committed `662b55b`. (This was the real gap: `@RequiresX` existed but weren't graded — an admin didn't satisfy a teacher gate.)
+- [~] Admin account provisioning → Keycloak — **dropped (YAGNI)**: admin self-registration is pointless and the admin-client write can't be verified here. Accounts created in the Keycloak console; default STUDENT via realm default-roles.
+- [x] Profile view/edit — GET/PUT `/api/users/me` already done.
+- [ ] (optional) In-app role assignment UI — only if you later want role management in the platform (needs Keycloak write).
 
 ### `notification` — partial (P1)
 - [ ] Email channel (currently in-app only).
