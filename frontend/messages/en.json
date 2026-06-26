@@ -281,6 +281,7 @@
     "pointsPlaceholder": "points",
     "grade": "Grade",
     "graded": "Graded",
-    "submitted": "Submitted"
+    "submitted": "Submitted",
+    "codePlaceholder": "Write your code…"
   }
 }

@@ -281,6 +281,7 @@
     "pointsPlaceholder": "бали",
     "grade": "Оцінити",
     "graded": "Оцінено",
-    "submitted": "Надіслано"
+    "submitted": "Надіслано",
+    "codePlaceholder": "Напишіть свій код…"
   }
 }

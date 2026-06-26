@@ -125,9 +125,9 @@ public class TestServiceImpl implements TestService {
   private void validate(CreateQuestionRequest request) {
     QuestionType type = request.getType();
     List<CreateOptionRequest> options = request.getOptions();
-    if (type == QuestionType.SHORT_TEXT) {
+    if (type == QuestionType.SHORT_TEXT || type == QuestionType.CODE) {
       if (options != null && !options.isEmpty()) {
-        throw new BadRequestException("A SHORT_TEXT question takes no options");
+        throw new BadRequestException("A " + type + " question takes no options");
       }
       return;
     }

@@ -12,12 +12,13 @@ components:
         - PUBLISHED
     QuestionType:
       type: string
-      description: Discriminator for the question shape — choice types carry options.
+      description: Discriminator for the question shape — choice types carry options; SHORT_TEXT and CODE are manually-graded free text.
       enum:
         - SINGLE_CHOICE
         - MULTIPLE_CHOICE
         - TRUE_FALSE
         - SHORT_TEXT
+        - CODE
     AttemptStatus:
       type: string
       enum:

@@ -65,6 +65,13 @@ class AttemptGraderTest {
   }
 
   @Test
+  @DisplayName("code is not auto-graded (null) — manual like short text")
+  void code_isNull() {
+    assertThat(grader.autoScore(question(QuestionType.CODE, 10), List.of(), answer(Set.of())))
+        .isNull();
+  }
+
+  @Test
   @DisplayName("totalScore sums graded answers and ignores pending ones")
   void totalScore_sumsGraded() {
     Answer graded = Answer.builder().awardedPoints(5).build();

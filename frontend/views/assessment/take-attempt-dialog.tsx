@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
 import {
   useGetTest,
   useGradeAnswer,
@@ -164,7 +165,16 @@ function QuestionInput({
           ({q.points} {t("pt")})
         </span>
       </p>
-      {q.type === "SHORT_TEXT" ? (
+      {q.type === "CODE" ? (
+        <Textarea
+          className="font-mono text-sm"
+          rows={8}
+          spellCheck={false}
+          placeholder={t("codePlaceholder")}
+          value={draft?.text ?? ""}
+          onChange={(e) => onChange({ text: e.target.value })}
+        />
+      ) : q.type === "SHORT_TEXT" ? (
         <Input
           placeholder={t("answerPlaceholder")}
           value={draft?.text ?? ""}
