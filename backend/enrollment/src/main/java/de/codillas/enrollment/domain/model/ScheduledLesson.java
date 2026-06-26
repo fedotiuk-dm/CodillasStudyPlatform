@@ -32,6 +32,13 @@ public class ScheduledLesson extends BaseAuditableEntity {
   @Column(name = "scheduled_at", nullable = false)
   private Instant scheduledAt;
 
+  /**
+   * Course lesson this session runs, by id (the course module owns it). Optional for ad-hoc
+   * sessions.
+   */
+  @Column(name = "lesson_id")
+  private UUID lessonId;
+
   @Column(name = "meet_link")
   private String meetLink;
 

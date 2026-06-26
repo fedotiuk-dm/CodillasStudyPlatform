@@ -1,7 +1,7 @@
 openapi: 3.0.4
 info:
   title: Codillas Enrollment schemas
-  version: 0.1.0
+  version: 0.2.0
 paths: {}
 components:
   schemas:
@@ -105,6 +105,10 @@ components:
           format: date-time
         meetLink:
           type: string
+        lessonId:
+          type: string
+          format: uuid
+          description: Optional course lesson this session runs (by id; the course module owns it).
     ScheduledLessonResponse:
       type: object
       required:
@@ -128,6 +132,9 @@ components:
           type: string
         recordingUrl:
           type: string
+        lessonId:
+          type: string
+          format: uuid
         createdAt:
           type: string
           format: date-time

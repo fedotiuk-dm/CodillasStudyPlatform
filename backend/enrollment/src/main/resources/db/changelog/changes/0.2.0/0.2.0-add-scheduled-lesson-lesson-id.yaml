@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.2.0-add-scheduled-lesson-lesson-id
+      author: codillas
+      comment: Link a scheduled lesson to a course lesson by id (0.2.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: scheduled_lessons
+                columnName: lesson_id
+      changes:
+        - addColumn:
+            tableName: scheduled_lessons
+            columns:
+              - column:
+                  name: lesson_id
+                  type: uuid
