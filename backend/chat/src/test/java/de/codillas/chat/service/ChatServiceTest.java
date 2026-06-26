@@ -102,6 +102,31 @@ class ChatServiceTest {
   }
 
   @Test
+  @DisplayName(
+      "creating a DIRECT room returns the existing DM between the same two users (no duplicate)")
+  void createRoom_directExisting_returnsExistingRoom() {
+    UUID creator = UUID.randomUUID();
+    UUID other = UUID.randomUUID();
+    UUID roomId = UUID.randomUUID();
+    CreateRoomRequest request = mock(CreateRoomRequest.class);
+    when(request.getType()).thenReturn(de.codillas.chat.api.dto.ChatRoomType.DIRECT);
+    when(request.getMemberIds()).thenReturn(List.of(other));
+    ChatRoom existing = ChatRoom.builder().id(roomId).type(ChatRoomType.DIRECT).build();
+    ChatRoomResponse dto = mock(ChatRoomResponse.class);
+    when(memberRepository.findByUserId(creator))
+        .thenReturn(List.of(ChatRoomMember.builder().roomId(roomId).userId(creator).build()));
+    when(memberRepository.findByUserId(other))
+        .thenReturn(List.of(ChatRoomMember.builder().roomId(roomId).userId(other).build()));
+    when(roomRepository.findById(roomId)).thenReturn(Optional.of(existing));
+    when(memberRepository.countByRoomId(roomId)).thenReturn(2L);
+    when(mapper.toRoomResponse(existing)).thenReturn(dto);
+
+    assertThat(service.createRoom(creator, request)).isSameAs(dto);
+    verify(roomRepository, never()).save(any());
+    verify(mapper, never()).toRoom(any());
+  }
+
+  @Test
   @DisplayName("onStudentEnrolled creates the group room on first enrolment and adds the member")
   void onStudentEnrolled_createsRoomAndAddsMember() {
     UUID groupId = UUID.randomUUID();

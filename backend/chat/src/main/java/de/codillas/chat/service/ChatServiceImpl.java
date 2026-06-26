@@ -2,8 +2,10 @@ package de.codillas.chat.service;
 
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
@@ -50,11 +52,37 @@ public class ChatServiceImpl implements ChatService {
   @Override
   @Transactional
   public ChatRoomResponse createRoom(UUID creatorId, CreateRoomRequest request) {
-    ChatRoom room = roomRepository.save(mapper.toRoom(request));
     Set<UUID> members = new LinkedHashSet<>(request.getMemberIds());
     members.add(creatorId);
+
+    // A DM is canonical: one room per pair. Return the existing one instead of a duplicate.
+    if (request.getType() == de.codillas.chat.api.dto.ChatRoomType.DIRECT && members.size() == 2) {
+      UUID other = members.stream().filter(id -> !id.equals(creatorId)).findFirst().orElseThrow();
+      Optional<ChatRoom> existing = findDirectRoom(creatorId, other);
+      if (existing.isPresent()) {
+        return mapper.toRoomResponse(existing.get());
+      }
+    }
+
+    ChatRoom room = roomRepository.save(mapper.toRoom(request));
     members.forEach(userId -> addMember(room.getId(), userId));
     return mapper.toRoomResponse(room);
+  }
+
+  /** The DIRECT room shared by exactly these two users, if one already exists. */
+  private Optional<ChatRoom> findDirectRoom(UUID a, UUID b) {
+    Set<UUID> aRoomIds =
+        memberRepository.findByUserId(a).stream()
+            .map(ChatRoomMember::getRoomId)
+            .collect(Collectors.toSet());
+    return memberRepository.findByUserId(b).stream()
+        .map(ChatRoomMember::getRoomId)
+        .filter(aRoomIds::contains)
+        .map(roomRepository::findById)
+        .flatMap(Optional::stream)
+        .filter(room -> room.getType() == ChatRoomType.DIRECT)
+        .filter(room -> memberRepository.countByRoomId(room.getId()) == 2)
+        .findFirst();
   }
 
   @Override
