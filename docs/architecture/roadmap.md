@@ -100,9 +100,9 @@ This is the central missing piece; most of the roadmap below depends on it.
 - [~] Versioning / soft-delete — **not needed (YAGNI)**: homework already versions submissions, and files are id-referenced content blobs (a changed material is a new upload + ref swap). Decided against.
 - [~] File preview — nice-to-have, **deferred**. Upload/download/delete work; the reusable `FileUploadField` covers attachment UX everywhere.
 
-### `homework` / `assessment` — done (polish only)
-- [ ] `assessment`: formalize a metadata-driven `FieldRenderer` (one component per question type) so new question types are cheap. Borrow the *pattern* from the boosting calculator, **not** its FormulaNode engine.
-- [ ] `assessment`: code question type + (later, if wanted) branching/adaptive tests — out of scope for "completeness".
+### `homework` / `assessment` — done
+- [x] `assessment`: **CODE question type** — code answers (manual-graded like SHORT_TEXT, monospace editor in the taker). Committed `c39e9f5`. The builder already renders new non-option types generically, so the metadata-`FieldRenderer` formalization buys little — not done.
+- [~] `assessment`: branching/adaptive tests — deferred (genuinely new scope; not needed to replace Google Classroom).
 
 ## Cross-cutting
 
