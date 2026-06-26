@@ -22,7 +22,7 @@ import { useHasAnyRole } from "@/lib/auth";
 import { Role } from "@/lib/constants";
 import { TestWizard } from "./test-wizard";
 import { ManageQuestionsDialog } from "./manage-questions-dialog";
-import { TakeAttemptDialog } from "./take-attempt-dialog";
+import { AttemptWizard } from "./attempt-wizard";
 
 export function AssessmentView() {
   const t = useTranslations("tests");
@@ -126,7 +126,7 @@ export function AssessmentView() {
       )}
 
       {takeTest && (
-        <TakeAttemptDialog
+        <AttemptWizard
           testId={takeTest.id}
           testTitle={takeTest.title}
           canManage={canManage}
