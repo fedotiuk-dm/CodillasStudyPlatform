@@ -14,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Link } from "@/i18n/navigation";
 import { useListCourses } from "@/lib/api/course/course/course";
 import { useHasRole } from "@/lib/auth";
 import { Role } from "@/lib/constants";
@@ -47,7 +48,11 @@ export function CoursesView() {
               <TableBody>
                 {courses.map((course) => (
                   <TableRow key={course.id}>
-                    <TableCell className="font-medium">{course.name}</TableCell>
+                    <TableCell className="font-medium">
+                      <Link href={`/dashboard/courses/${course.id}`} className="hover:underline">
+                        {course.name}
+                      </Link>
+                    </TableCell>
                     <TableCell className="text-muted-foreground">
                       {course.description ?? "—"}
                     </TableCell>
