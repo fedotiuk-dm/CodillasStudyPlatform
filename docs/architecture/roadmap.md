@@ -77,8 +77,8 @@ This is the central missing piece; most of the roadmap below depends on it.
 - [x] Teacher analytics (per-student + group average) + CSV export — client-side from the existing group gradebook (no backend needed). Committed `0e2b995`.
 
 ### `chat` — partial (P2)
-- [ ] Student↔teacher DM rooms (only group rooms today).
-- [ ] Optional per-assignment thread (overview §5.1.11).
+- [x] Student↔teacher DM rooms — `DIRECT` type + creation + frontend dialog already existed; made creation **idempotent** (one canonical room per pair). Committed `06c670b`. Follow-up (polish): show the other member's name for a nameless DM in the room list (needs the room response to carry members).
+- [~] Per-assignment thread — `ASSIGNMENT_THREAD` room type + `referenceId` exist and are creatable; auto-threading from the homework UI is a nicety, deferred.
 
 ### `files` — partial (P2)
 - [ ] Decide if versioning / soft-delete is needed (homework already versions submissions — may not be).
