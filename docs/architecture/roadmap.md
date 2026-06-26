@@ -86,7 +86,7 @@ This is the central missing piece; most of the roadmap below depends on it.
 - [x] Email channel — already built (`EmailNotifier`: Thymeleaf + `JavaMailSender` via `ObjectProvider` (skips gracefully when no server) + `RecipientEmailResolver`, `@Async`); dev → mailpit. Wired into every event handler.
 - [x] Deadline reminders — `AssignmentDueSoon` event + homework `DueReminderJob` (hourly, fires once via `due_reminder_sent`) → notification fans out in-app + email. Committed `2b280e4`.
 - [x] Events consumed: `AssignmentPublished`, `SubmissionGraded`, `AttemptCompleted` ✅.
-- [~] `MessagePosted` → notification — **deferred**: only group rooms exist today, so notifying per message = spam; "if recipient offline" needs presence we don't track. Revisit with DM chat + presence.
+- [x] `MessagePosted` → notification — done, **DM-scoped**: chat publishes `DirectMessagePosted` for DIRECT rooms only (one clear recipient → no presence needed, no group spam); notification sends in-app + email. Committed `ca02346`. Group-channel-on-every-message notifications still intentionally skipped.
 
 ### `gradebook` — P2 done
 - [x] Read model is event-fed (`GradebookEventListener` consumes `SubmissionGraded` + `AttemptCompleted`). Attendance is not a grade source.
