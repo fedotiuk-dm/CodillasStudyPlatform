@@ -72,9 +72,9 @@ This is the central missing piece; most of the roadmap below depends on it.
 - [x] Events consumed: `AssignmentPublished`, `SubmissionGraded`, `AttemptCompleted` ✅.
 - [~] `MessagePosted` → notification — **deferred**: only group rooms exist today, so notifying per message = spam; "if recipient offline" needs presence we don't track. Revisit with DM chat + presence.
 
-### `gradebook` — partial (P2)
-- [ ] Confirm read model is populated from `SubmissionGraded` + `AttemptCompleted` + attendance.
-- [ ] Teacher analytics (per-group stats), export (CSV).
+### `gradebook` — P2 done
+- [x] Read model is event-fed (`GradebookEventListener` consumes `SubmissionGraded` + `AttemptCompleted`). Attendance is not a grade source.
+- [x] Teacher analytics (per-student + group average) + CSV export — client-side from the existing group gradebook (no backend needed). Committed `0e2b995`.
 
 ### `chat` — partial (P2)
 - [ ] Student↔teacher DM rooms (only group rooms today).
