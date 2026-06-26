@@ -17,12 +17,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useListTests, usePublishTest } from "@/lib/api/assessment/assessment/assessment";
+import {
+  useListTests,
+  usePublishTest,
+  useStartAttempt,
+} from "@/lib/api/assessment/assessment/assessment";
+import type { AttemptResponse } from "@/lib/api/assessment/model";
 import { useHasAnyRole } from "@/lib/auth";
 import { Role } from "@/lib/constants";
-import { TestWizard } from "./test-wizard";
-import { ManageQuestionsDialog } from "./manage-questions-dialog";
 import { AttemptWizard } from "./attempt-wizard";
+import { ManageQuestionsDialog } from "./manage-questions-dialog";
+import { TestWizard } from "./test-wizard";
 
 export function AssessmentView() {
   const t = useTranslations("tests");
@@ -30,10 +35,27 @@ export function AssessmentView() {
   const canManage = useHasAnyRole([Role.ADMIN, Role.TEACHER]);
   const [createOpen, setCreateOpen] = useState(false);
   const [manageTestId, setManageTestId] = useState<string | null>(null);
-  const [takeTest, setTakeTest] = useState<{ id: string; title: string } | null>(null);
+  const [takeTest, setTakeTest] = useState<{
+    id: string;
+    title: string;
+    attempt: AttemptResponse;
+  } | null>(null);
   const publish = usePublishTest();
+  const startAttempt = useStartAttempt();
 
   const tests = data?.content ?? [];
+
+  // Create (or resume) the attempt on the click, then open the wizard with it already in hand —
+  // mirrors Boosting's handleTipConfirm. No mutation is fired from inside the dialog on open.
+  async function onTake(test: { id: string; title: string }) {
+    if (startAttempt.isPending) return;
+    try {
+      const attempt = await startAttempt.mutateAsync({ testId: test.id });
+      setTakeTest({ id: test.id, title: test.title, attempt });
+    } catch {
+      /* global error toast */
+    }
+  }
 
   function onPublish(testId: string) {
     publish.mutate(
@@ -101,7 +123,8 @@ export function AssessmentView() {
                       {test.status === "PUBLISHED" && (
                         <Button
                           size="sm"
-                          onClick={() => setTakeTest({ id: test.id, title: test.title })}
+                          disabled={startAttempt.isPending}
+                          onClick={() => onTake(test)}
                         >
                           {t("take")}
                         </Button>
@@ -129,6 +152,7 @@ export function AssessmentView() {
         <AttemptWizard
           testId={takeTest.id}
           testTitle={takeTest.title}
+          attempt={takeTest.attempt}
           canManage={canManage}
           open={!!takeTest}
           onOpenChange={(o) => !o && setTakeTest(null)}

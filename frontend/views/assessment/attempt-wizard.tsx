@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { WizardShell } from "@/components/shared/wizard-shell";
@@ -9,7 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import {
   useGetTest,
   useSaveAnswer,
-  useStartAttempt,
   useSubmitAttempt,
 } from "@/lib/api/assessment/assessment/assessment";
 import type { AttemptResponse } from "@/lib/api/assessment/model";
@@ -20,69 +19,51 @@ function isAnswered(a?: AnswerDraft) {
   return !!a && (a.selectedOptionIds.length > 0 || a.text.trim().length > 0);
 }
 
+// Seed editable drafts from the attempt's already-saved answers, so a resumed (or submitted)
+// attempt shows the student's prior progress.
+function seedDrafts(attempt: AttemptResponse): Record<string, AnswerDraft> {
+  return Object.fromEntries(
+    attempt.answers.map((ans) => [
+      ans.questionId,
+      { selectedOptionIds: ans.selectedOptionIds ?? [], text: ans.text ?? "" },
+    ]),
+  );
+}
+
 export function AttemptWizard({
   testId,
   testTitle,
   canManage,
   open,
   onOpenChange,
+  attempt: initialAttempt,
 }: {
   testId: string;
   testTitle: string;
   canManage: boolean;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  // Created by the caller (the "Take" click) and handed in ready. The wizard never starts the
+  // attempt itself — so there is no mutation fired on open (which detaches and hangs under React
+  // StrictMode). Resource-creating mutations belong in the event handler, not a mount effect.
+  attempt: AttemptResponse;
 }) {
   const t = useTranslations("tests");
+  const tc = useTranslations("common");
   const { data: test } = useGetTest(testId, { query: { enabled: open } });
-  const start = useStartAttempt();
   const saveAnswer = useSaveAnswer();
   const submit = useSubmitAttempt();
 
-  const [attempt, setAttempt] = useState<AttemptResponse | null>(null);
-  const [answers, setAnswers] = useState<Record<string, AnswerDraft>>({});
+  const [attempt, setAttempt] = useState(initialAttempt);
+  const [answers, setAnswers] = useState<Record<string, AnswerDraft>>(() =>
+    seedDrafts(initialAttempt),
+  );
   const [step, setStep] = useState(0);
-  const startedRef = useRef(false);
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: start.mutate is stable; depending on
-  // the mutation object would re-run this on every mutation state change and auto-retry on error.
-  useEffect(() => {
-    if (!open) {
-      setAttempt(null);
-      setAnswers({});
-      setStep(0);
-      startedRef.current = false;
-      return;
-    }
-    if (startedRef.current) return;
-    startedRef.current = true;
-    start.mutate(
-      { testId },
-      {
-        // The backend resumes an existing attempt: seed the drafts from any answers already saved
-        // so a resumed (or already-submitted) attempt shows the student's prior progress.
-        onSuccess: (a) => {
-          setAttempt(a);
-          setAnswers(
-            Object.fromEntries(
-              a.answers.map((ans) => [
-                ans.questionId,
-                { selectedOptionIds: ans.selectedOptionIds ?? [], text: ans.text ?? "" },
-              ]),
-            ),
-          );
-        },
-        onError: () => {
-          startedRef.current = false;
-        },
-      },
-    );
-  }, [open, testId]);
 
   const questions = test?.questions ?? [];
   const stepCount = questions.length + 1; // + review
   const onReview = step === questions.length;
-  const submitted = attempt && attempt.status !== "IN_PROGRESS";
+  const submitted = attempt.status !== "IN_PROGRESS";
 
   function setAnswer(questionId: string, patch: Partial<AnswerDraft>) {
     setAnswers((prev) => {
@@ -92,7 +73,6 @@ export function AttemptWizard({
   }
 
   async function persist(questionId: string) {
-    if (!attempt) return;
     const a = answers[questionId];
     if (!isAnswered(a)) return;
     await saveAnswer.mutateAsync({
@@ -118,12 +98,14 @@ export function AttemptWizard({
   }
 
   async function onSubmit() {
-    if (!attempt || !test || submitted) {
+    if (!test || submitted) {
       onOpenChange(false);
       return;
     }
     try {
-      await Promise.all(questions.filter((q) => isAnswered(answers[q.id])).map((q) => persist(q.id)));
+      await Promise.all(
+        questions.filter((q) => isAnswered(answers[q.id])).map((q) => persist(q.id)),
+      );
       const graded = await submit.mutateAsync({ attemptId: attempt.id });
       setAttempt(graded);
       toast.success(t("submitted"));
@@ -137,12 +119,10 @@ export function AttemptWizard({
       open={open}
       onOpenChange={onOpenChange}
       title={testTitle}
-      description={
-        submitted ? t("result") : onReview ? t("reviewAnswers") : t("answerPrompt")
-      }
+      description={submitted ? t("result") : onReview ? t("reviewAnswers") : t("answerPrompt")}
       stepCount={stepCount}
       activeStep={step}
-      canAdvance={!!attempt}
+      canAdvance={!!test}
       isSubmitting={submit.isPending || saveAnswer.isPending}
       onBack={() => setStep((s) => Math.max(0, s - 1))}
       onNext={onNext}
@@ -152,7 +132,9 @@ export function AttemptWizard({
       submitLabel={submitted ? t("wizardBack") : t("submitAttempt")}
       submittingLabel={t("submitting")}
     >
-      {submitted ? (
+      {!test ? (
+        <p className="text-muted-foreground text-sm">{tc("loading")}</p>
+      ) : submitted ? (
         <ResultPanel attempt={attempt} test={questions} canManage={canManage} />
       ) : onReview ? (
         <div className="grid gap-2">
