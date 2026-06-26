@@ -53,10 +53,10 @@ This is the central missing piece; most of the roadmap below depends on it.
 **P0 done.** Course backbone + builder UI + reusable file upload + tests all green and committed.
 
 ### `enrollment` — partial (P1)
-- [ ] Wire `ScheduledLesson` to a real `Lesson` (currently no `Lesson` to reference).
+- [x] Wire `ScheduledLesson` to a real `Lesson` (optional `lessonId` by-id ref). Committed `f90dd25`.
+- [x] Confirm `StudentEnrolled` event fans out — verified: consumed by `gradebook`, `chat`, `notification`.
 - [ ] Student-facing views: "my courses", "my schedule" (calendar/agenda).
 - [ ] Attendance UI (manual by teacher — see open question in overview §13).
-- [ ] Confirm `StudentEnrolled` event fans out to `chat` (add to room) + `gradebook` (init).
 
 ### `user` — stub (P1)
 - [ ] Admin account provisioning → Keycloak via `keycloak-admin-client` (no self-registration).
