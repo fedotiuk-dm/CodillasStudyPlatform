@@ -99,4 +99,11 @@ public class EnrollmentController implements EnrollmentApi {
     return ResponseEntity.ok(
         attendanceService.markAttendance(scheduledLessonId, markAttendanceRequest));
   }
+
+  @Override
+  @RequiresAdmin
+  public ResponseEntity<List<AttendanceResponse>> listAttendance(
+      UUID groupId, UUID scheduledLessonId) {
+    return ResponseEntity.ok(attendanceService.listAttendance(scheduledLessonId));
+  }
 }

@@ -205,6 +205,37 @@ paths:
         "401":
           $ref: "common.yaml#/components/responses/Unauthorized"
   /api/groups/{groupId}/lessons/{scheduledLessonId}/attendance:
+    get:
+      tags:
+        - enrollment
+      operationId: listAttendance
+      summary: List the recorded attendance for a scheduled lesson
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: scheduledLessonId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Attendance records for the lesson
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "enrollment-schemas.yaml#/components/schemas/AttendanceResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
     put:
       tags:
         - enrollment

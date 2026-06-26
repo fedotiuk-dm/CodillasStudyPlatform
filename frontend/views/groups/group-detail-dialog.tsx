@@ -17,6 +17,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   useEnrollStudent,
+  useListAttendance,
   useListGroupMembers,
   useListScheduledLessons,
   useMarkAttendance,
@@ -172,6 +173,10 @@ function LessonsTab({ groupId, open }: { groupId: string; open: boolean }) {
 
 function LessonRow({ groupId, lesson }: { groupId: string; lesson: ScheduledLessonResponse }) {
   const mark = useMarkAttendance();
+  const nameOf = useProfileNames();
+  // Marking invalidates queries globally (central MutationCache), so this refetches after a mark.
+  const { data: attendance } = useListAttendance(groupId, lesson.id);
+  const records = attendance ?? [];
   const [picked, setPicked] = useState<{ userId: string; displayName: string }>();
 
   function setPresence(present: boolean) {
@@ -207,6 +212,18 @@ function LessonRow({ groupId, lesson }: { groupId: string; lesson: ScheduledLess
           </a>
         )}
       </div>
+      {records.length > 0 && (
+        <ul className="grid gap-1">
+          {records.map((r) => (
+            <li key={r.id} className="flex items-center justify-between rounded border px-2 py-1">
+              <span>{nameOf(r.userId)}</span>
+              <span className={r.present ? "text-green-600" : "text-muted-foreground"}>
+                {r.present ? "Present" : "Absent"}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
       <div className="flex items-center gap-2">
         <div className="flex-1">
           <UserPicker

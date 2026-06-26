@@ -1,5 +1,6 @@
 package de.codillas.enrollment.mapper;
 
+import java.util.List;
 import java.util.UUID;
 
 import de.codillas.enrollment.api.dto.AttendanceResponse;
@@ -17,6 +18,8 @@ import org.mapstruct.ReportingPolicy;
 public interface AttendanceMapper {
 
   AttendanceResponse toResponse(Attendance entity);
+
+  List<AttendanceResponse> toResponseList(List<Attendance> entities);
 
   @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
   @Mapping(target = "scheduledLessonId", source = "scheduledLessonId")

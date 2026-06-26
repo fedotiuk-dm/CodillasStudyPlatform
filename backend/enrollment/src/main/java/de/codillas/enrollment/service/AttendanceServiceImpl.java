@@ -1,5 +1,6 @@
 package de.codillas.enrollment.service;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -31,5 +32,10 @@ public class AttendanceServiceImpl implements AttendanceService {
             .orElseGet(() -> mapper.toEntity(request, scheduledLessonId));
     mapper.updateEntity(attendance, request);
     return mapper.toResponse(repository.save(attendance));
+  }
+
+  @Override
+  public List<AttendanceResponse> listAttendance(UUID scheduledLessonId) {
+    return mapper.toResponseList(repository.findByScheduledLessonId(scheduledLessonId));
   }
 }
