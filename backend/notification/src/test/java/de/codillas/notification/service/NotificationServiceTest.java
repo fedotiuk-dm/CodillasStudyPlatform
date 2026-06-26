@@ -21,6 +21,7 @@ import de.codillas.notification.domain.repository.NotificationRepository;
 import de.codillas.notification.mapper.NotificationMapper;
 import de.codillas.shared.event.AssignmentDueSoon;
 import de.codillas.shared.event.AssignmentPublished;
+import de.codillas.shared.event.DirectMessagePosted;
 import de.codillas.shared.event.SubmissionGraded;
 
 import org.junit.jupiter.api.DisplayName;
@@ -99,6 +100,27 @@ class NotificationServiceTest {
     verify(repository, times(2)).save(any(Notification.class));
     verify(emailNotifier, times(2))
         .send(any(), eq("Assignment due soon"), eq("Assignment due soon"), anyString());
+  }
+
+  @Test
+  @DisplayName("onDirectMessage notifies the recipient in-app and by email")
+  void onDirectMessage_notifiesRecipient() {
+    UUID roomId = UUID.randomUUID();
+    UUID recipientId = UUID.randomUUID();
+    UUID senderId = UUID.randomUUID();
+    DirectMessagePosted event = new DirectMessagePosted(roomId, recipientId, senderId);
+    when(mapper.toNotification(
+            eq(recipientId),
+            eq(NotificationType.DIRECT_MESSAGE),
+            anyString(),
+            anyString(),
+            eq(roomId)))
+        .thenReturn(new Notification());
+
+    service.onDirectMessage(event);
+
+    verify(repository).save(any(Notification.class));
+    verify(emailNotifier).send(eq(recipientId), eq("New message"), eq("New message"), anyString());
   }
 
   @Test

@@ -7,6 +7,7 @@ import java.util.UUID;
 import de.codillas.shared.event.AssignmentDueSoon;
 import de.codillas.shared.event.AssignmentPublished;
 import de.codillas.shared.event.AttemptCompleted;
+import de.codillas.shared.event.DirectMessagePosted;
 import de.codillas.shared.event.StudentEnrolled;
 import de.codillas.shared.event.SubmissionGraded;
 
@@ -35,17 +36,21 @@ class NotificationEventListenerTest {
         new SubmissionGraded(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 7);
     AttemptCompleted completed =
         new AttemptCompleted(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 9);
+    DirectMessagePosted directMessage =
+        new DirectMessagePosted(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID());
 
     listener.on(enrolled);
     listener.on(published);
     listener.on(dueSoon);
     listener.on(graded);
     listener.on(completed);
+    listener.on(directMessage);
 
     verify(service).onStudentEnrolled(enrolled);
     verify(service).onAssignmentPublished(published);
     verify(service).onAssignmentDueSoon(dueSoon);
     verify(service).onSubmissionGraded(graded);
     verify(service).onAttemptCompleted(completed);
+    verify(service).onDirectMessage(directMessage);
   }
 }

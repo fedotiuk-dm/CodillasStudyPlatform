@@ -15,5 +15,7 @@ public interface ChatRoomMemberRepository extends JpaRepository<ChatRoomMember, 
 
   List<ChatRoomMember> findByUserId(UUID userId);
 
+  List<ChatRoomMember> findByRoomId(UUID roomId);
+
   long countByRoomId(UUID roomId);
 }

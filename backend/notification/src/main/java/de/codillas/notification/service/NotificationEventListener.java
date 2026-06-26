@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import de.codillas.shared.event.AssignmentDueSoon;
 import de.codillas.shared.event.AssignmentPublished;
 import de.codillas.shared.event.AttemptCompleted;
+import de.codillas.shared.event.DirectMessagePosted;
 import de.codillas.shared.event.StudentEnrolled;
 import de.codillas.shared.event.SubmissionGraded;
 
@@ -41,5 +42,10 @@ class NotificationEventListener {
   @ApplicationModuleListener
   void on(AttemptCompleted event) {
     service.onAttemptCompleted(event);
+  }
+
+  @ApplicationModuleListener
+  void on(DirectMessagePosted event) {
+    service.onDirectMessage(event);
   }
 }

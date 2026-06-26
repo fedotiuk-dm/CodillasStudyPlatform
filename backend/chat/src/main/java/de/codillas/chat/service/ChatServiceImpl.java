@@ -25,6 +25,7 @@ import de.codillas.chat.domain.repository.ChatRoomMemberRepository;
 import de.codillas.chat.domain.repository.ChatRoomRepository;
 import de.codillas.chat.mapper.ChatMapper;
 import de.codillas.shared.domain.repository.GenericSpecification;
+import de.codillas.shared.event.DirectMessagePosted;
 import de.codillas.shared.event.MessagePosted;
 import de.codillas.shared.exception.NotFoundException;
 
@@ -102,7 +103,26 @@ public class ChatServiceImpl implements ChatService {
     ChatMessageResponse dto = mapper.toMessageResponse(message);
     broadcast.broadcastMessage(roomId, dto);
     events.publishEvent(new MessagePosted(roomId, message.getId(), senderId));
+    notifyDirectRecipient(roomId, senderId);
     return dto;
+  }
+
+  /**
+   * For a DIRECT room, alert the single other member — a DM has exactly one recipient, so we can
+   * notify without presence tracking and without spamming a group channel. GROUP /
+   * ASSIGNMENT_THREAD rooms rely on real-time delivery only.
+   */
+  private void notifyDirectRecipient(UUID roomId, UUID senderId) {
+    ChatRoom room = roomRepository.findById(roomId).orElseThrow();
+    if (room.getType() != ChatRoomType.DIRECT) {
+      return;
+    }
+    memberRepository.findByRoomId(roomId).stream()
+        .map(ChatRoomMember::getUserId)
+        .filter(userId -> !userId.equals(senderId))
+        .forEach(
+            recipientId ->
+                events.publishEvent(new DirectMessagePosted(roomId, recipientId, senderId)));
   }
 
   @Override

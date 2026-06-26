@@ -8,6 +8,7 @@ import de.codillas.notification.api.dto.NotificationListResponse;
 import de.codillas.shared.event.AssignmentDueSoon;
 import de.codillas.shared.event.AssignmentPublished;
 import de.codillas.shared.event.AttemptCompleted;
+import de.codillas.shared.event.DirectMessagePosted;
 import de.codillas.shared.event.StudentEnrolled;
 import de.codillas.shared.event.SubmissionGraded;
 
@@ -26,4 +27,6 @@ public interface NotificationService {
   void onSubmissionGraded(SubmissionGraded event);
 
   void onAttemptCompleted(AttemptCompleted event);
+
+  void onDirectMessage(DirectMessagePosted event);
 }

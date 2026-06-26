@@ -12,6 +12,7 @@ components:
         - ASSIGNMENT_DUE_SOON
         - SUBMISSION_GRADED
         - ATTEMPT_COMPLETED
+        - DIRECT_MESSAGE
     NotificationResponse:
       type: object
       required:

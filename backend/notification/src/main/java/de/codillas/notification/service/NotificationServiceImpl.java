@@ -16,6 +16,7 @@ import de.codillas.shared.domain.repository.GenericSpecification;
 import de.codillas.shared.event.AssignmentDueSoon;
 import de.codillas.shared.event.AssignmentPublished;
 import de.codillas.shared.event.AttemptCompleted;
+import de.codillas.shared.event.DirectMessagePosted;
 import de.codillas.shared.event.StudentEnrolled;
 import de.codillas.shared.event.SubmissionGraded;
 import de.codillas.shared.exception.NotFoundException;
@@ -110,6 +111,17 @@ public class NotificationServiceImpl implements NotificationService {
         "Test scored",
         "Your test attempt scored " + event.score() + " points.",
         event.attemptId());
+  }
+
+  @Override
+  @Transactional
+  public void onDirectMessage(DirectMessagePosted event) {
+    notify(
+        event.recipientId(),
+        NotificationType.DIRECT_MESSAGE,
+        "New message",
+        "You have a new direct message.",
+        event.roomId());
   }
 
   private void notify(
