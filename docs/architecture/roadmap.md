@@ -23,7 +23,7 @@
 |----------------|----------|----------|--------------------------------------------------------------------|
 | `shared`       | done     | —        | Kernel: events, security, error handling, API conventions.         |
 | `user`         | stub     | partial  | Only `Profile`. No account provisioning, no profile edit.          |
-| `course`       | partial  | partial  | Backbone built: Section→Lesson→Material CRUD + nested tree. UI pending.  |
+| `course`       | partial  | done     | Backbone + builder UI done. TODO: re-point homework; controller IT tests.  |
 | `enrollment`   | partial  | partial  | Group/Membership/ScheduledLesson/Attendance exist; no schedule UI.  |
 | `homework`     | done     | done     | Full lifecycle + versioned submissions + review/grade. State machine.|
 | `assessment`   | done     | done     | Test/Question/Attempt + auto-grade. Strongest module.               |
@@ -45,7 +45,8 @@ This is the central missing piece; most of the roadmap below depends on it.
 ### `course` — backbone built (P0, backend done)
 - [x] Model `Section → Lesson → Material` (OpenAPI-first → entities → Liquibase 0.2.0). Structure CRUD + nested course-tree read. Unit-tested (material validation, cascade delete); schema validated by `main` integration suite.
 - [ ] Re-point `homework.Assignment` at a `lessonId` (`assessment.Test` already references `lessonId`).
-- [ ] Course detail / structure UI: Orval regen + builder (sections, lessons, materials, Meet link, recording URL).
+- [x] Course detail / structure UI: Orval regen + teacher builder + student read-only view, role-gated, i18n (uk/en/de), `safeHref` guard on rendered links. Committed `3859c9d`.
+- [x] Reusable `FileUploadField` → minio via the `files` module (one gateway, others reference by id); wired into course materials. Committed `b68b847`. Reuse for homework/chat next.
 - [ ] Controller integration tests in `main` for the new endpoints (roles, 404s, cascade).
 - [ ] Publish a `CourseStructureChanged` / `LessonCreated` event if `enrollment` needs to react.
 
