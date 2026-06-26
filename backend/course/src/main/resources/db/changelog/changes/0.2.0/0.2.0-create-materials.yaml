@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.2.0-create-materials
+      author: codillas
+      comment: Create materials table (course structure 0.2.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: materials
+      changes:
+        - createTable:
+            tableName: materials
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: lesson_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: type
+                  type: varchar(10)
+                  constraints: { nullable: false }
+              - column:
+                  name: title
+                  type: varchar(200)
+                  constraints: { nullable: false }
+              - column:
+                  name: url
+                  type: text
+              - column:
+                  name: file_id
+                  type: uuid
+              - column:
+                  name: sort_order
+                  type: int
+                  constraints: { nullable: false }
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz

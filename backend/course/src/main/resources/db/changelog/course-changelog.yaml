@@ -9,3 +9,13 @@ databaseChangeLog:
   - include:
       file: changes/0.1.0/0.1.0-seed-course.yaml
       relativeToChangelogFile: true
+  # 0.2.0 — course structure: sections → lessons → materials
+  - include:
+      file: changes/0.2.0/0.2.0-create-sections.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/0.2.0/0.2.0-create-lessons.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/0.2.0/0.2.0-create-materials.yaml
+      relativeToChangelogFile: true

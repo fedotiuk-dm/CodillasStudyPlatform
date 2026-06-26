@@ -23,7 +23,7 @@
 |----------------|----------|----------|--------------------------------------------------------------------|
 | `shared`       | done     | —        | Kernel: events, security, error handling, API conventions.         |
 | `user`         | stub     | partial  | Only `Profile`. No account provisioning, no profile edit.          |
-| `course`       | **stub** | partial  | **Only `Course`. No Section/Lesson/Material — the missing backbone.** |
+| `course`       | partial  | partial  | Backbone built: Section→Lesson→Material CRUD + nested tree. UI pending.  |
 | `enrollment`   | partial  | partial  | Group/Membership/ScheduledLesson/Attendance exist; no schedule UI.  |
 | `homework`     | done     | done     | Full lifecycle + versioned submissions + review/grade. State machine.|
 | `assessment`   | done     | done     | Test/Question/Attempt + auto-grade. Strongest module.               |
@@ -42,10 +42,11 @@ This is the central missing piece; most of the roadmap below depends on it.
 
 ## Per-module detail & TODOs
 
-### `course` — stub → needs the backbone (P0)
-- [ ] Model `Section → Lesson → Material` (OpenAPI-first → entities → Liquibase) via the `new-modulith-module` skill.
-- [ ] Re-point `homework.Assignment` and `assessment.Test` at a `lessonId` (by-id ref).
-- [ ] Course detail / structure UI (sections, lessons, materials); attach Meet link + materials per lesson.
+### `course` — backbone built (P0, backend done)
+- [x] Model `Section → Lesson → Material` (OpenAPI-first → entities → Liquibase 0.2.0). Structure CRUD + nested course-tree read. Unit-tested (material validation, cascade delete); schema validated by `main` integration suite.
+- [ ] Re-point `homework.Assignment` at a `lessonId` (`assessment.Test` already references `lessonId`).
+- [ ] Course detail / structure UI: Orval regen + builder (sections, lessons, materials, Meet link, recording URL).
+- [ ] Controller integration tests in `main` for the new endpoints (roles, 404s, cascade).
 - [ ] Publish a `CourseStructureChanged` / `LessonCreated` event if `enrollment` needs to react.
 
 ### `enrollment` — partial (P1)

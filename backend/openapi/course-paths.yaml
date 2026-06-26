@@ -1,8 +1,8 @@
 openapi: 3.0.4
 info:
   title: Codillas Course API
-  description: Course catalog — admin-authored course templates (structure & content).
-  version: 0.1.0
+  description: Course template — admin-authored courses with a Section → Lesson → Material structure.
+  version: 0.2.0
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -14,7 +14,7 @@ servers:
     description: Local development
 tags:
   - name: course
-    description: Course catalog operations
+    description: Course catalog and Section → Lesson → Material structure authoring
 paths:
   /api/courses:
     get:
@@ -60,3 +60,248 @@ paths:
           $ref: "common.yaml#/components/responses/Unauthorized"
         "403":
           $ref: "common.yaml#/components/responses/Forbidden"
+  /api/courses/{courseId}:
+    get:
+      tags:
+        - course
+      operationId: getCourse
+      summary: Get a course with its full Section → Lesson structure
+      parameters:
+        - $ref: "#/components/parameters/CourseId"
+      responses:
+        "200":
+          description: Course with nested sections and lesson summaries
+          content:
+            application/json:
+              schema:
+                $ref: "course-schemas.yaml#/components/schemas/CourseDetailResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+  /api/courses/{courseId}/sections:
+    post:
+      tags:
+        - course
+      operationId: createSection
+      summary: Add a section to a course
+      parameters:
+        - $ref: "#/components/parameters/CourseId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "course-schemas.yaml#/components/schemas/CreateSectionRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "course-schemas.yaml#/components/schemas/SectionResponse"
+        "400":
+          $ref: "common.yaml#/components/responses/BadRequest"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+  /api/sections/{sectionId}:
+    patch:
+      tags:
+        - course
+      operationId: updateSection
+      summary: Rename a section
+      parameters:
+        - $ref: "#/components/parameters/SectionId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "course-schemas.yaml#/components/schemas/UpdateSectionRequest"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "course-schemas.yaml#/components/schemas/SectionResponse"
+        "400":
+          $ref: "common.yaml#/components/responses/BadRequest"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+    delete:
+      tags:
+        - course
+      operationId: deleteSection
+      summary: Delete a section and all its lessons and materials
+      parameters:
+        - $ref: "#/components/parameters/SectionId"
+      responses:
+        "204":
+          description: Deleted
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+  /api/sections/{sectionId}/lessons:
+    post:
+      tags:
+        - course
+      operationId: createLesson
+      summary: Add a lesson to a section
+      parameters:
+        - $ref: "#/components/parameters/SectionId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "course-schemas.yaml#/components/schemas/CreateLessonRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "course-schemas.yaml#/components/schemas/LessonResponse"
+        "400":
+          $ref: "common.yaml#/components/responses/BadRequest"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+  /api/lessons/{lessonId}:
+    get:
+      tags:
+        - course
+      operationId: getLesson
+      summary: Get a lesson with its materials
+      parameters:
+        - $ref: "#/components/parameters/LessonId"
+      responses:
+        "200":
+          description: Lesson with materials
+          content:
+            application/json:
+              schema:
+                $ref: "course-schemas.yaml#/components/schemas/LessonResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+    patch:
+      tags:
+        - course
+      operationId: updateLesson
+      summary: Update a lesson (title, summary, Meet link, recording URL)
+      parameters:
+        - $ref: "#/components/parameters/LessonId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "course-schemas.yaml#/components/schemas/UpdateLessonRequest"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "course-schemas.yaml#/components/schemas/LessonResponse"
+        "400":
+          $ref: "common.yaml#/components/responses/BadRequest"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+    delete:
+      tags:
+        - course
+      operationId: deleteLesson
+      summary: Delete a lesson and its materials
+      parameters:
+        - $ref: "#/components/parameters/LessonId"
+      responses:
+        "204":
+          description: Deleted
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+  /api/lessons/{lessonId}/materials:
+    post:
+      tags:
+        - course
+      operationId: addMaterial
+      summary: Attach a material (uploaded file or external link) to a lesson
+      parameters:
+        - $ref: "#/components/parameters/LessonId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "course-schemas.yaml#/components/schemas/CreateMaterialRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "course-schemas.yaml#/components/schemas/MaterialResponse"
+        "400":
+          $ref: "common.yaml#/components/responses/BadRequest"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+  /api/materials/{materialId}:
+    delete:
+      tags:
+        - course
+      operationId: deleteMaterial
+      summary: Delete a material
+      parameters:
+        - $ref: "#/components/parameters/MaterialId"
+      responses:
+        "204":
+          description: Deleted
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+components:
+  parameters:
+    CourseId:
+      name: courseId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    SectionId:
+      name: sectionId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    LessonId:
+      name: lessonId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    MaterialId:
+      name: materialId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid

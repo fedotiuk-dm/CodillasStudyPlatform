@@ -1,0 +1,45 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.2.0-create-lessons
+      author: codillas
+      comment: Create lessons table (course structure 0.2.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: lessons
+      changes:
+        - createTable:
+            tableName: lessons
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: section_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: title
+                  type: varchar(200)
+                  constraints: { nullable: false }
+              - column:
+                  name: summary
+                  type: text
+              - column:
+                  name: meeting_url
+                  type: text
+              - column:
+                  name: recording_url
+                  type: text
+              - column:
+                  name: sort_order
+                  type: int
+                  constraints: { nullable: false }
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz

@@ -35,8 +35,7 @@ public class UserServiceImpl implements UserService {
   @Transactional
   public UserProfile getMyProfile() {
     UUID userId = currentUser.id();
-    Profile profile =
-        repository.findByUserId(userId).orElseGet(() -> provisionFromToken(userId));
+    Profile profile = repository.findByUserId(userId).orElseGet(() -> provisionFromToken(userId));
     return mapper.toResponse(profile);
   }
 

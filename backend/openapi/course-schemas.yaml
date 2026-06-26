@@ -1,7 +1,7 @@
 openapi: 3.0.4
 info:
   title: Codillas Course schemas
-  version: 0.1.0
+  version: 0.2.0
 paths: {}
 components:
   schemas:
@@ -45,3 +45,188 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/CourseResponse"
+    CourseDetailResponse:
+      type: object
+      description: A course with its full ordered Section → Lesson structure (lesson materials are fetched per lesson).
+      required:
+        - id
+        - name
+        - sections
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        sections:
+          type: array
+          items:
+            $ref: "#/components/schemas/SectionResponse"
+    CreateSectionRequest:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+    UpdateSectionRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+    SectionResponse:
+      type: object
+      required:
+        - id
+        - courseId
+        - title
+        - sortOrder
+        - lessons
+      properties:
+        id:
+          type: string
+          format: uuid
+        courseId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        sortOrder:
+          type: integer
+        lessons:
+          type: array
+          items:
+            $ref: "#/components/schemas/LessonSummary"
+    LessonSummary:
+      type: object
+      required:
+        - id
+        - title
+        - sortOrder
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        sortOrder:
+          type: integer
+    CreateLessonRequest:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        summary:
+          type: string
+        meetingUrl:
+          type: string
+          description: Google Meet link for the live session.
+        recordingUrl:
+          type: string
+          description: Recording URL posted after the session.
+    UpdateLessonRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        summary:
+          type: string
+        meetingUrl:
+          type: string
+        recordingUrl:
+          type: string
+    LessonResponse:
+      type: object
+      required:
+        - id
+        - sectionId
+        - title
+        - sortOrder
+        - materials
+      properties:
+        id:
+          type: string
+          format: uuid
+        sectionId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        summary:
+          type: string
+        meetingUrl:
+          type: string
+        recordingUrl:
+          type: string
+        sortOrder:
+          type: integer
+        materials:
+          type: array
+          items:
+            $ref: "#/components/schemas/MaterialResponse"
+    MaterialType:
+      type: string
+      description: FILE references an uploaded file (by id) in the files module; LINK is an external URL.
+      enum:
+        - FILE
+        - LINK
+    CreateMaterialRequest:
+      type: object
+      required:
+        - type
+        - title
+      properties:
+        type:
+          $ref: "#/components/schemas/MaterialType"
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        url:
+          type: string
+          description: Required for LINK materials.
+        fileId:
+          type: string
+          format: uuid
+          description: Required for FILE materials — id of a file in the files module.
+    MaterialResponse:
+      type: object
+      required:
+        - id
+        - lessonId
+        - type
+        - title
+        - sortOrder
+      properties:
+        id:
+          type: string
+          format: uuid
+        lessonId:
+          type: string
+          format: uuid
+        type:
+          $ref: "#/components/schemas/MaterialType"
+        title:
+          type: string
+        url:
+          type: string
+        fileId:
+          type: string
+          format: uuid
+        sortOrder:
+          type: integer

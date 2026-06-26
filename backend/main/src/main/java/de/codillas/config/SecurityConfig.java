@@ -40,7 +40,8 @@ public class SecurityConfig {
                         "/v3/api-docs/**",
                         "/swagger-ui/**",
                         "/swagger-ui.html",
-                        // The WebSocket handshake carries no Authorization header (browsers can't set
+                        // The WebSocket handshake carries no Authorization header (browsers can't
+                        // set
                         // one); auth happens on the STOMP CONNECT frame via StompAuthInterceptor.
                         "/ws/**")
                     .permitAll()
@@ -50,7 +51,10 @@ public class SecurityConfig {
     return http.build();
   }
 
-  /** Allows the browser SPA origin(s) to call the API. Configurable via {@code app.cors.allowed-origins}. */
+  /**
+   * Allows the browser SPA origin(s) to call the API. Configurable via {@code
+   * app.cors.allowed-origins}.
+   */
   @Bean
   CorsConfigurationSource corsConfigurationSource(
       @Value("${app.cors.allowed-origins:http://localhost:3000}") List<String> allowedOrigins) {
