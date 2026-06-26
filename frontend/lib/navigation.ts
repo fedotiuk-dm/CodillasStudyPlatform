@@ -6,6 +6,7 @@ import {
   FileText,
   FolderOpen,
   GraduationCap,
+  LayoutDashboard,
   Library,
   type LucideIcon,
   MessageSquare,
@@ -28,6 +29,7 @@ export interface NavItem {
 // Single source of truth for the app sidebar. Hrefs are locale-relative (the i18n <Link> adds the
 // /{locale} prefix). Labels live in messages/*.json under `nav.<key>`.
 export const NAV_ITEMS: readonly NavItem[] = [
+  { key: "admin", href: "/dashboard/admin", icon: LayoutDashboard, roles: [Role.ADMIN] },
   { key: "courses", href: "/dashboard/courses", icon: BookOpen, roles: [] },
   { key: "myCourses", href: "/dashboard/my-courses", icon: Library, roles: [] },
   { key: "schedule", href: "/dashboard/schedule", icon: CalendarClock, roles: [] },

@@ -26,7 +26,8 @@
     "chat": "Chat",
     "notifications": "Benachrichtigungen",
     "files": "Dateien",
-    "people": "Personen"
+    "people": "Personen",
+    "admin": "Verwaltung"
   },
   "course": {
     "course": "Kurs",
@@ -283,5 +284,13 @@
     "graded": "Bewertet",
     "submitted": "Abgegeben",
     "codePlaceholder": "Schreiben Sie Ihren Code…"
+  },
+  "admin": {
+    "title": "Admin-Übersicht",
+    "description": "Plattform-Kennzahlen und Schnellzugriffe.",
+    "courses": "Kurse",
+    "groups": "Gruppen",
+    "people": "Personen",
+    "forbidden": "Nur für Administratoren."
   }
 }

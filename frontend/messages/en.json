@@ -26,7 +26,8 @@
     "chat": "Chat",
     "notifications": "Notifications",
     "files": "Files",
-    "people": "People"
+    "people": "People",
+    "admin": "Admin"
   },
   "course": {
     "course": "Course",
@@ -283,5 +284,13 @@
     "graded": "Graded",
     "submitted": "Submitted",
     "codePlaceholder": "Write your code…"
+  },
+  "admin": {
+    "title": "Admin overview",
+    "description": "Platform totals and quick links.",
+    "courses": "Courses",
+    "groups": "Groups",
+    "people": "People",
+    "forbidden": "Admins only."
   }
 }
