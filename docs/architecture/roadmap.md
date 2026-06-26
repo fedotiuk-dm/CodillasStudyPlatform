@@ -56,7 +56,9 @@ This is the central missing piece; most of the roadmap below depends on it.
 - [x] Wire `ScheduledLesson` to a real `Lesson` (optional `lessonId` by-id ref). Committed `f90dd25`.
 - [x] Confirm `StudentEnrolled` event fans out — verified: consumed by `gradebook`, `chat`, `notification`.
 - [x] Student-facing views: "My courses" + "My schedule" (backend `/api/me/groups` + `/api/me/schedule`, current-user scoped; frontend views + nav). Committed `0f308b2`.
-- [ ] Attendance UI (teacher marks attendance per scheduled lesson; `markAttendance` endpoint already exists).
+- [x] Attendance: read endpoint `listAttendance` + current-state display in the group dialog. Committed `0fd4c37`. Note: attendance is `@RequiresAdmin` (matches all enrollment writes in this module) — opening it to teachers, and i18n for the groups views, are separate follow-ups.
+
+**Enrollment P1 block done.**
 
 ### `user` — stub (P1)
 - [ ] Admin account provisioning → Keycloak via `keycloak-admin-client` (no self-registration).
