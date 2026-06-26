@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { DataState } from "@/components/shared/data-state";
@@ -21,6 +22,7 @@ import { Role } from "@/lib/constants";
 import { CreateCourseDialog } from "./create-course-dialog";
 
 export function CoursesView() {
+  const t = useTranslations("courses");
   const { data, isLoading, isError } = useListCourses();
   const canManage = useHasRole(Role.ADMIN);
   const [open, setOpen] = useState(false);
@@ -30,9 +32,11 @@ export function CoursesView() {
   return (
     <>
       <PageHeader
-        title="Courses"
-        description="The catalogue of courses the school runs."
-        action={canManage ? <Button onClick={() => setOpen(true)}>New course</Button> : undefined}
+        title={t("title")}
+        description={t("description")}
+        action={
+          canManage ? <Button onClick={() => setOpen(true)}>{t("newCourse")}</Button> : undefined
+        }
       />
 
       <Card>
@@ -41,8 +45,8 @@ export function CoursesView() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Description</TableHead>
+                  <TableHead>{t("name")}</TableHead>
+                  <TableHead>{t("descriptionLabel")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

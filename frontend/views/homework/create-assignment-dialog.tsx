@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 
 import { FormDialog } from "@/components/shared/form-dialog";
@@ -21,6 +22,7 @@ export function CreateAssignmentDialog({
   onOpenChange: (open: boolean) => void;
   onCreated?: () => void;
 }) {
+  const t = useTranslations("homework");
   const form = useForm<FormValues>({ defaultValues: { title: "", description: "", dueAt: "" } });
   const createAssignment = useCreateAssignment();
 
@@ -28,11 +30,11 @@ export function CreateAssignmentDialog({
     <FormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="New assignment"
-      description="Created as a draft — publish it to make it visible."
+      title={t("newAssignment")}
+      description={t("dialogDescription")}
       form={form}
       onCreated={onCreated}
-      success="Assignment created (draft)"
+      success={t("created")}
       onSubmit={(values) =>
         createAssignment.mutateAsync({
           data: {
@@ -48,12 +50,12 @@ export function CreateAssignmentDialog({
       <FormField
         control={form.control}
         name="title"
-        rules={{ required: "Title is required" }}
+        rules={{ required: t("titleRequired") }}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Title</FormLabel>
+            <FormLabel>{t("titleLabel")}</FormLabel>
             <FormControl>
-              <Input placeholder="e.g. Week 1 exercises" {...field} />
+              <Input placeholder={t("titlePlaceholder")} {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -64,9 +66,9 @@ export function CreateAssignmentDialog({
         name="description"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Description</FormLabel>
+            <FormLabel>{t("descriptionLabel")}</FormLabel>
             <FormControl>
-              <Textarea placeholder="Instructions…" {...field} />
+              <Textarea placeholder={t("descriptionPlaceholder")} {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -77,7 +79,7 @@ export function CreateAssignmentDialog({
         name="dueAt"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Due</FormLabel>
+            <FormLabel>{t("due")}</FormLabel>
             <FormControl>
               <Input type="datetime-local" {...field} />
             </FormControl>

@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
@@ -31,6 +32,7 @@ export function CreateGroupDialog({
   onOpenChange: (open: boolean) => void;
   onCreated?: () => void;
 }) {
+  const t = useTranslations("groups");
   const { data: coursesData } = useListCourses();
   const courses = coursesData?.content ?? [];
   const createGroup = useCreateGroup();
@@ -45,12 +47,12 @@ export function CreateGroupDialog({
     <FormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="New group"
-      description="A cohort that runs a course on a schedule."
+      title={t("newGroup")}
+      description={t("dialogDescription")}
       form={form}
       onCreated={onCreated}
       onReset={() => setTeacherName(undefined)}
-      success="Group created"
+      success={t("created")}
       onSubmit={(values) =>
         createGroup.mutateAsync({ data: { ...values, startDate: values.startDate || undefined } })
       }
@@ -60,9 +62,9 @@ export function CreateGroupDialog({
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Name</FormLabel>
+            <FormLabel>{t("name")}</FormLabel>
             <FormControl>
-              <Input placeholder="e.g. Cohort A" {...field} />
+              <Input placeholder={t("namePlaceholder")} {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -73,11 +75,11 @@ export function CreateGroupDialog({
         name="courseId"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Course</FormLabel>
+            <FormLabel>{t("course")}</FormLabel>
             <Select onValueChange={field.onChange} value={field.value}>
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a course" />
+                  <SelectValue placeholder={t("selectCourse")} />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -95,15 +97,15 @@ export function CreateGroupDialog({
       <FormField
         control={form.control}
         name="teacherId"
-        rules={{ required: "Pick a teacher" }}
+        rules={{ required: t("pickTeacher") }}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Teacher</FormLabel>
+            <FormLabel>{t("teacher")}</FormLabel>
             <FormControl>
               <UserPicker
                 value={field.value}
                 displayName={teacherName}
-                placeholder="Search teachers…"
+                placeholder={t("searchTeachers")}
                 onChange={(id, name) => {
                   field.onChange(id);
                   setTeacherName(name);
@@ -119,7 +121,7 @@ export function CreateGroupDialog({
         name="startDate"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Start date</FormLabel>
+            <FormLabel>{t("startDate")}</FormLabel>
             <FormControl>
               <Input type="date" {...field} value={field.value ?? ""} />
             </FormControl>

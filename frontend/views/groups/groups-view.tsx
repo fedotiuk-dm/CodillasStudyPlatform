@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { DataState } from "@/components/shared/data-state";
@@ -22,6 +23,7 @@ import { CreateGroupDialog } from "./create-group-dialog";
 import { GroupDetailDialog } from "./group-detail-dialog";
 
 export function GroupsView() {
+  const t = useTranslations("groups");
   const { data, isLoading, isError } = useListGroups();
   const { data: coursesData } = useListCourses();
   const canManage = useHasAnyRole([Role.ADMIN, Role.TEACHER]);
@@ -34,9 +36,11 @@ export function GroupsView() {
   return (
     <>
       <PageHeader
-        title="Groups"
-        description="Cohorts running a course on a schedule."
-        action={canManage ? <Button onClick={() => setOpen(true)}>New group</Button> : undefined}
+        title={t("title")}
+        description={t("description")}
+        action={
+          canManage ? <Button onClick={() => setOpen(true)}>{t("newGroup")}</Button> : undefined
+        }
       />
 
       <Card>
@@ -45,10 +49,10 @@ export function GroupsView() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Course</TableHead>
-                  <TableHead>Start date</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>{t("name")}</TableHead>
+                  <TableHead>{t("course")}</TableHead>
+                  <TableHead>{t("startDate")}</TableHead>
+                  <TableHead className="text-right">{t("actions")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -66,7 +70,7 @@ export function GroupsView() {
                           size="sm"
                           onClick={() => setDetail({ id: g.id, name: g.name })}
                         >
-                          Manage
+                          {t("manage")}
                         </Button>
                       )}
                     </TableCell>

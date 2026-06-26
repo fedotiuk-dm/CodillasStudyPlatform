@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -28,6 +29,7 @@ export function CreateRoomDialog({
   onOpenChange: (open: boolean) => void;
   onCreated?: () => void;
 }) {
+  const t = useTranslations("chat");
   const form = useForm<FormValues>({
     defaultValues: { type: ChatRoomType.GROUP, name: "" },
   });
@@ -38,13 +40,13 @@ export function CreateRoomDialog({
     <FormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="New room"
-      description="Start a conversation with one or more members."
+      title={t("newRoom")}
+      description={t("dialogDescription")}
       form={form}
       onCreated={onCreated}
       onReset={() => setMembers([])}
       submitDisabled={members.length === 0}
-      success="Room created"
+      success={t("created")}
       onSubmit={(values) =>
         createRoom.mutateAsync({
           data: {
@@ -60,7 +62,7 @@ export function CreateRoomDialog({
         name="type"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Type</FormLabel>
+            <FormLabel>{t("type")}</FormLabel>
             <Select onValueChange={field.onChange} value={field.value}>
               <FormControl>
                 <SelectTrigger>
@@ -68,9 +70,9 @@ export function CreateRoomDialog({
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {Object.values(ChatRoomType).map((t) => (
-                  <SelectItem key={t} value={t}>
-                    {t}
+                {Object.values(ChatRoomType).map((roomType) => (
+                  <SelectItem key={roomType} value={roomType}>
+                    {roomType}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -83,16 +85,16 @@ export function CreateRoomDialog({
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Name</FormLabel>
+            <FormLabel>{t("name")}</FormLabel>
             <FormControl>
-              <Input placeholder="Optional room name" {...field} />
+              <Input placeholder={t("namePlaceholder")} {...field} />
             </FormControl>
           </FormItem>
         )}
       />
       <div className="grid gap-2">
-        <FormLabel>Members</FormLabel>
-        <UserMultiPicker value={members} onChange={setMembers} placeholder="Search people…" />
+        <FormLabel>{t("members")}</FormLabel>
+        <UserMultiPicker value={members} onChange={setMembers} placeholder={t("searchPeople")} />
       </div>
     </FormDialog>
   );

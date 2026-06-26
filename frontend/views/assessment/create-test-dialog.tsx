@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 
 import { FormDialog } from "@/components/shared/form-dialog";
@@ -18,6 +19,7 @@ export function CreateTestDialog({
   onOpenChange: (open: boolean) => void;
   onCreated?: () => void;
 }) {
+  const t = useTranslations("tests");
   const form = useForm<FormValues>({ defaultValues: { title: "" } });
   const createTest = useCreateTest();
 
@@ -25,22 +27,22 @@ export function CreateTestDialog({
     <FormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="New test"
-      description="Create a draft, then add questions and publish."
+      title={t("newTest")}
+      description={t("dialogDescription")}
       form={form}
       onCreated={onCreated}
-      success="Test created (draft)"
+      success={t("created")}
       onSubmit={(values) => createTest.mutateAsync({ data: { title: values.title } })}
     >
       <FormField
         control={form.control}
         name="title"
-        rules={{ required: "Title is required" }}
+        rules={{ required: t("titleRequired") }}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Title</FormLabel>
+            <FormLabel>{t("titleLabel")}</FormLabel>
             <FormControl>
-              <Input placeholder="e.g. Module 1 quiz" {...field} />
+              <Input placeholder={t("titlePlaceholder")} {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -31,6 +32,7 @@ import { CreateAssignmentDialog } from "./create-assignment-dialog";
 import { SubmissionsDialog } from "./submissions-dialog";
 
 export function HomeworkView() {
+  const t = useTranslations("homework");
   const { data: groupsData } = useListGroups();
   const groups = groupsData?.content ?? [];
   const [groupId, setGroupId] = useState("");
@@ -50,7 +52,7 @@ export function HomeworkView() {
       { assignmentId },
       {
         onSuccess: () => {
-          toast.success("Assignment published");
+          toast.success(t("published"));
         },
       },
     );
@@ -59,11 +61,11 @@ export function HomeworkView() {
   return (
     <>
       <PageHeader
-        title="Homework"
-        description="Assignments and submissions, per group."
+        title={t("title")}
+        description={t("description")}
         action={
           canManage && groupId ? (
-            <Button onClick={() => setOpen(true)}>New assignment</Button>
+            <Button onClick={() => setOpen(true)}>{t("newAssignment")}</Button>
           ) : undefined
         }
       />
@@ -71,7 +73,7 @@ export function HomeworkView() {
       <div className="mb-4 max-w-xs">
         <Select value={groupId} onValueChange={setGroupId}>
           <SelectTrigger>
-            <SelectValue placeholder="Select a group" />
+            <SelectValue placeholder={t("selectGroup")} />
           </SelectTrigger>
           <SelectContent>
             {groups.map((g) => (
@@ -90,10 +92,10 @@ export function HomeworkView() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Title</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Due</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>{t("titleLabel")}</TableHead>
+                    <TableHead>{t("status")}</TableHead>
+                    <TableHead>{t("due")}</TableHead>
+                    <TableHead className="text-right">{t("actions")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -114,7 +116,7 @@ export function HomeworkView() {
                           size="sm"
                           onClick={() => setSubsFor({ id: a.id, title: a.title })}
                         >
-                          Submissions
+                          {t("submissions")}
                         </Button>
                         {canManage && a.status === "DRAFT" && (
                           <Button
@@ -123,7 +125,7 @@ export function HomeworkView() {
                             disabled={publish.isPending}
                             onClick={() => onPublish(a.id)}
                           >
-                            Publish
+                            {t("publish")}
                           </Button>
                         )}
                       </TableCell>

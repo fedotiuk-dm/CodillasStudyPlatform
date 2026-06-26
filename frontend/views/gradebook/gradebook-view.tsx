@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { DataState } from "@/components/shared/data-state";
@@ -32,11 +33,12 @@ import { Role } from "@/lib/constants";
 import { useProfileNames } from "@/lib/hooks/use-profile-names";
 
 export function GradebookView() {
+  const t = useTranslations("gradebook");
   const canManage = useHasAnyRole([Role.ADMIN, Role.TEACHER]);
 
   return (
     <>
-      <PageHeader title="Gradebook" description="Graded homework and tests." />
+      <PageHeader title={t("title")} description={t("description")} />
       <div className="grid gap-6">
         <MyGradebook />
         {canManage && <GroupGradebook />}
@@ -46,6 +48,7 @@ export function GradebookView() {
 }
 
 function MyGradebook() {
+  const t = useTranslations("gradebook");
   const { userId } = useKeycloak();
   const { data, isLoading, isError } = useGetStudentGradebook(userId ?? "", {
     query: { enabled: !!userId },
@@ -55,20 +58,20 @@ function MyGradebook() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">My grades</CardTitle>
+        <CardTitle className="text-base">{t("myGrades")}</CardTitle>
       </CardHeader>
       <CardContent>
         <DataState
           isLoading={isLoading || !userId}
           isError={isError}
           isEmpty={entries.length === 0}
-          emptyMessage="No grades yet."
+          emptyMessage={t("noGrades")}
         >
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Source</TableHead>
-                <TableHead className="text-right">Score</TableHead>
+                <TableHead>{t("source")}</TableHead>
+                <TableHead className="text-right">{t("score")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -94,6 +97,7 @@ const csvCell = (v: string | number) => {
 };
 
 function GroupGradebook() {
+  const t = useTranslations("gradebook");
   const { data: groupsData } = useListGroups();
   const groups = groupsData?.content ?? [];
   const [groupId, setGroupId] = useState("");
@@ -119,7 +123,7 @@ function GroupGradebook() {
 
   function exportCsv() {
     const groupName = groups.find((g) => g.id === groupId)?.name ?? "group";
-    const header = ["Student", "Entries", "Total", "Average"];
+    const header = [t("student"), t("entries"), t("total"), t("average")];
     const lines = rows.map((r) => [r.name, r.entries, r.total, r.average].map(csvCell).join(","));
     const csv = [header.join(","), ...lines].join("\n");
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
@@ -133,14 +137,14 @@ function GroupGradebook() {
   return (
     <Card>
       <CardHeader className="flex-row items-center justify-between gap-4 space-y-0">
-        <CardTitle className="text-base">Group grades</CardTitle>
+        <CardTitle className="text-base">{t("groupGrades")}</CardTitle>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" disabled={rows.length === 0} onClick={exportCsv}>
-            Export CSV
+            {t("exportCsv")}
           </Button>
           <Select value={groupId} onValueChange={setGroupId}>
             <SelectTrigger className="w-48">
-              <SelectValue placeholder="Select a group" />
+              <SelectValue placeholder={t("selectGroup")} />
             </SelectTrigger>
             <SelectContent>
               {groups.map((g) => (
@@ -158,15 +162,15 @@ function GroupGradebook() {
             isLoading={isLoading}
             isError={isError}
             isEmpty={students.length === 0}
-            emptyMessage="No grades for this group yet."
+            emptyMessage={t("noGroupGrades")}
           >
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Student</TableHead>
-                  <TableHead className="text-right">Entries</TableHead>
-                  <TableHead className="text-right">Total</TableHead>
-                  <TableHead className="text-right">Average</TableHead>
+                  <TableHead>{t("student")}</TableHead>
+                  <TableHead className="text-right">{t("entries")}</TableHead>
+                  <TableHead className="text-right">{t("total")}</TableHead>
+                  <TableHead className="text-right">{t("average")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -181,8 +185,9 @@ function GroupGradebook() {
               </TableBody>
             </Table>
             <p className="mt-3 text-muted-foreground text-sm">
-              Group average: <span className="font-medium text-foreground">{groupAverage}</span> ·{" "}
-              {rows.length} students
+              {t("groupAverage")}:{" "}
+              <span className="font-medium text-foreground">{groupAverage}</span> ·{" "}
+              {t("studentsCount", { count: rows.length })}
             </p>
           </DataState>
         )}

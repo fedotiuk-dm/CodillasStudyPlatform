@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
@@ -22,6 +23,7 @@ export function CreateCourseDialog({
   onOpenChange: (open: boolean) => void;
   onCreated?: () => void;
 }) {
+  const t = useTranslations("courses");
   const form = useForm<FormValues>({
     resolver: zodResolver(CreateCourseBody),
     defaultValues: { name: "", description: "" },
@@ -32,11 +34,11 @@ export function CreateCourseDialog({
     <FormDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="New course"
-      description="Add a course to the catalogue."
+      title={t("newCourse")}
+      description={t("dialogDescription")}
       form={form}
       onCreated={onCreated}
-      success="Course created"
+      success={t("created")}
       onSubmit={(values) => createCourse.mutateAsync({ data: values })}
     >
       <FormField
@@ -44,9 +46,9 @@ export function CreateCourseDialog({
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Name</FormLabel>
+            <FormLabel>{t("name")}</FormLabel>
             <FormControl>
-              <Input placeholder="e.g. Java Fundamentals" {...field} />
+              <Input placeholder={t("namePlaceholder")} {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -57,10 +59,10 @@ export function CreateCourseDialog({
         name="description"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Description</FormLabel>
+            <FormLabel>{t("descriptionLabel")}</FormLabel>
             <FormControl>
               <Textarea
-                placeholder="What the course covers…"
+                placeholder={t("descriptionPlaceholder")}
                 {...field}
                 value={field.value ?? ""}
               />

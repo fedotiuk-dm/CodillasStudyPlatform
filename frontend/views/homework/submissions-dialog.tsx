@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -47,6 +48,7 @@ export function SubmissionsDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useTranslations("homework");
   const { data } = useListSubmissions(assignmentId, { query: { enabled: open } });
   const submissions = data ?? [];
 
@@ -69,7 +71,7 @@ export function SubmissionsDialog({
       { assignmentId, data: { content: draft } },
       {
         onSuccess: () => {
-          toast.success("Draft saved");
+          toast.success(t("draftSaved"));
           setDraft("");
         },
       },
@@ -82,15 +84,13 @@ export function SubmissionsDialog({
         <DialogHeader>
           <DialogTitle>{assignmentTitle}</DialogTitle>
           <DialogDescription>
-            {canManage
-              ? "Review and grade student submissions."
-              : "Your submissions for this task."}
+            {canManage ? t("manageDescription") : t("studentDescription")}
           </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-3">
           {submissions.length === 0 && (
-            <p className="text-muted-foreground text-sm">No submissions yet.</p>
+            <p className="text-muted-foreground text-sm">{t("noSubmissions")}</p>
           )}
           {submissions.map((s) => (
             <SubmissionRow
@@ -100,22 +100,27 @@ export function SubmissionsDialog({
               onUpdate={(content) =>
                 update.mutate(
                   { submissionId: s.id, data: { content } },
-                  { onSuccess: done("Updated") },
+                  { onSuccess: done(t("updated")) },
                 )
               }
               onSubmit={() =>
-                submit.mutate({ submissionId: s.id }, { onSuccess: done("Submitted") })
+                submit.mutate({ submissionId: s.id }, { onSuccess: done(t("submitted")) })
               }
               onReview={(comment) =>
                 review.mutate(
                   { submissionId: s.id, data: { comment } },
-                  { onSuccess: done("Review sent") },
+                  { onSuccess: done(t("reviewSent")) },
                 )
               }
               onGrade={(score) =>
-                grade.mutate({ submissionId: s.id, data: { score } }, { onSuccess: done("Graded") })
+                grade.mutate(
+                  { submissionId: s.id, data: { score } },
+                  { onSuccess: done(t("graded")) },
+                )
               }
-              onReturn={() => ret.mutate({ submissionId: s.id }, { onSuccess: done("Returned") })}
+              onReturn={() =>
+                ret.mutate({ submissionId: s.id }, { onSuccess: done(t("returned")) })
+              }
             />
           ))}
         </div>
@@ -124,18 +129,18 @@ export function SubmissionsDialog({
           <>
             <Separator />
             <div className="grid gap-2">
-              <p className="font-medium text-sm">New submission</p>
+              <p className="font-medium text-sm">{t("newSubmission")}</p>
               <Textarea
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
-                placeholder="Your work…"
+                placeholder={t("workPlaceholder")}
               />
               <Button
                 className="justify-self-start"
                 disabled={create.isPending || !draft.trim()}
                 onClick={onCreate}
               >
-                Save draft
+                {t("saveDraft")}
               </Button>
             </div>
           </>
@@ -162,6 +167,7 @@ function SubmissionRow({
   onGrade: (score: number) => void;
   onReturn: () => void;
 }) {
+  const t = useTranslations("homework");
   const [editing, setEditing] = useState(false);
   const [content, setContent] = useState(s.content ?? "");
   const [comment, setComment] = useState("");
@@ -185,10 +191,10 @@ function SubmissionRow({
         {!canManage && s.status === "DRAFT" && !editing && (
           <>
             <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
-              Edit
+              {t("edit")}
             </Button>
             <Button size="sm" onClick={onSubmit}>
-              Submit
+              {t("submit")}
             </Button>
           </>
         )}
@@ -200,7 +206,7 @@ function SubmissionRow({
               setEditing(false);
             }}
           >
-            Save
+            {t("save")}
           </Button>
         )}
 
@@ -210,12 +216,12 @@ function SubmissionRow({
             <div className="flex flex-1 items-center gap-2">
               <Input
                 className="flex-1"
-                placeholder="Review comment…"
+                placeholder={t("reviewCommentPlaceholder")}
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
               />
               <Button size="sm" disabled={!comment.trim()} onClick={() => onReview(comment)}>
-                Send review
+                {t("sendReview")}
               </Button>
             </div>
             <div className="flex items-center gap-2">
@@ -224,19 +230,19 @@ function SubmissionRow({
                 min={0}
                 max={100}
                 className="w-20"
-                placeholder="0–100"
+                placeholder={t("scorePlaceholder")}
                 value={score}
                 onChange={(e) => setScore(e.target.value)}
               />
               <Button size="sm" disabled={!score} onClick={() => onGrade(Number(score))}>
-                Grade
+                {t("grade")}
               </Button>
             </div>
           </>
         )}
         {canManage && s.status === "GRADED" && (
           <Button variant="outline" size="sm" onClick={onReturn}>
-            Return to student
+            {t("returnToStudent")}
           </Button>
         )}
       </div>

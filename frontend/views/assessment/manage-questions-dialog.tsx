@@ -1,6 +1,7 @@
 "use client";
 
 import { Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -56,6 +57,7 @@ export function ManageQuestionsDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useTranslations("tests");
   const { data: test } = useGetTest(testId, { query: { enabled: open } });
   const addQuestion = useAddQuestion();
 
@@ -89,7 +91,7 @@ export function ManageQuestionsDialog({
       },
       {
         onSuccess: () => {
-          toast.success("Question added");
+          toast.success(t("questionAdded"));
           form.reset();
         },
       },
@@ -100,8 +102,8 @@ export function ManageQuestionsDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{test?.title ?? "Questions"}</DialogTitle>
-          <DialogDescription>Add questions to this test before publishing.</DialogDescription>
+          <DialogTitle>{test?.title ?? t("questions")}</DialogTitle>
+          <DialogDescription>{t("manageDescription")}</DialogDescription>
         </DialogHeader>
 
         {test && test.questions.length > 0 && (
@@ -111,7 +113,9 @@ export function ManageQuestionsDialog({
                 <span className="text-muted-foreground">{i + 1}.</span>
                 <span className="flex-1">{q.prompt}</span>
                 <Badge variant="outline">{q.type}</Badge>
-                <span className="text-muted-foreground">{q.points} pt</span>
+                <span className="text-muted-foreground">
+                  {q.points} {t("pt")}
+                </span>
               </li>
             ))}
           </ol>
@@ -126,7 +130,7 @@ export function ManageQuestionsDialog({
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Type</FormLabel>
+                  <FormLabel>{t("type")}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
@@ -134,9 +138,9 @@ export function ManageQuestionsDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {Object.values(QuestionType).map((t) => (
-                        <SelectItem key={t} value={t}>
-                          {t}
+                      {Object.values(QuestionType).map((questionType) => (
+                        <SelectItem key={questionType} value={questionType}>
+                          {questionType}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -147,12 +151,12 @@ export function ManageQuestionsDialog({
             <FormField
               control={form.control}
               name="prompt"
-              rules={{ required: "Prompt is required" }}
+              rules={{ required: t("promptRequired") }}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Prompt</FormLabel>
+                  <FormLabel>{t("prompt")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="The question…" {...field} />
+                    <Input placeholder={t("promptPlaceholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -161,10 +165,10 @@ export function ManageQuestionsDialog({
             <FormField
               control={form.control}
               name="points"
-              rules={{ required: true, min: { value: 1, message: "At least 1 point" } }}
+              rules={{ required: true, min: { value: 1, message: t("pointsMin") } }}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Points</FormLabel>
+                  <FormLabel>{t("points")}</FormLabel>
                   <FormControl>
                     <Input type="number" min={1} {...field} />
                   </FormControl>
@@ -175,7 +179,7 @@ export function ManageQuestionsDialog({
 
             {needsOptions && (
               <div className="grid gap-2">
-                <FormLabel>Options (tick the correct ones)</FormLabel>
+                <FormLabel>{t("optionsLabel")}</FormLabel>
                 {fields.map((f, i) => (
                   <div key={f.id} className="flex items-center gap-2">
                     <FormField
@@ -187,7 +191,7 @@ export function ManageQuestionsDialog({
                     />
                     <Input
                       className="flex-1"
-                      placeholder={`Option ${i + 1}`}
+                      placeholder={t("optionPlaceholder", { number: i + 1 })}
                       {...form.register(`options.${i}.text`)}
                     />
                     <Button type="button" variant="ghost" size="icon" onClick={() => remove(i)}>
@@ -202,13 +206,13 @@ export function ManageQuestionsDialog({
                   className="justify-self-start"
                   onClick={() => append({ text: "", correct: false })}
                 >
-                  Add option
+                  {t("addOption")}
                 </Button>
               </div>
             )}
 
             <Button type="submit" disabled={addQuestion.isPending}>
-              {addQuestion.isPending ? "Adding…" : "Add question"}
+              {addQuestion.isPending ? t("adding") : t("addQuestion")}
             </Button>
           </form>
         </Form>

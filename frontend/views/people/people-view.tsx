@@ -1,6 +1,7 @@
 "use client";
 
 import { Search } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { DataState } from "@/components/shared/data-state";
@@ -19,6 +20,7 @@ import { useListProfiles } from "@/lib/api/user/user/user";
 import { useDebounced } from "@/lib/hooks/use-debounced";
 
 export function PeopleView() {
+  const t = useTranslations("people");
   const [query, setQuery] = useState("");
   const debounced = useDebounced(query.trim());
 
@@ -27,13 +29,13 @@ export function PeopleView() {
 
   return (
     <>
-      <PageHeader title="People" description="Local profiles of everyone in the system." />
+      <PageHeader title={t("title")} description={t("description")} />
 
       <div className="relative mb-4 max-w-sm">
         <Search className="-translate-y-1/2 absolute top-1/2 left-2.5 size-4 text-muted-foreground" />
         <Input
           className="pl-8"
-          placeholder="Search by name…"
+          placeholder={t("searchPlaceholder")}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
@@ -45,13 +47,13 @@ export function PeopleView() {
             isLoading={isLoading}
             isError={isError}
             isEmpty={people.length === 0}
-            emptyMessage="No profiles found."
+            emptyMessage={t("empty")}
           >
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Bio</TableHead>
+                  <TableHead>{t("name")}</TableHead>
+                  <TableHead>{t("bio")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

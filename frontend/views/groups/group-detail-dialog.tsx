@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -37,17 +38,18 @@ export function GroupDetailDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useTranslations("groups");
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>{groupName}</DialogTitle>
-          <DialogDescription>Manage members and scheduled lessons.</DialogDescription>
+          <DialogDescription>{t("manageDescription")}</DialogDescription>
         </DialogHeader>
         <Tabs defaultValue="members">
           <TabsList>
-            <TabsTrigger value="members">Members</TabsTrigger>
-            <TabsTrigger value="lessons">Lessons</TabsTrigger>
+            <TabsTrigger value="members">{t("members")}</TabsTrigger>
+            <TabsTrigger value="lessons">{t("lessons")}</TabsTrigger>
           </TabsList>
           <TabsContent value="members">
             <MembersTab groupId={groupId} open={open} />
@@ -62,6 +64,7 @@ export function GroupDetailDialog({
 }
 
 function MembersTab({ groupId, open }: { groupId: string; open: boolean }) {
+  const t = useTranslations("groups");
   const { data } = useListGroupMembers(groupId, { query: { enabled: open } });
   const members = data ?? [];
   const enroll = useEnrollStudent();
@@ -74,7 +77,7 @@ function MembersTab({ groupId, open }: { groupId: string; open: boolean }) {
       { groupId, data: { userId: picked.userId } },
       {
         onSuccess: () => {
-          toast.success("Student enrolled");
+          toast.success(t("studentEnrolled"));
           setPicked(undefined);
         },
       },
@@ -83,7 +86,7 @@ function MembersTab({ groupId, open }: { groupId: string; open: boolean }) {
 
   return (
     <div className="grid gap-3 pt-3">
-      {members.length === 0 && <p className="text-muted-foreground text-sm">No members yet.</p>}
+      {members.length === 0 && <p className="text-muted-foreground text-sm">{t("noMembers")}</p>}
       <ul className="grid gap-1 text-sm">
         {members.map((m) => (
           <li key={m.id} className="rounded border px-3 py-2">
@@ -97,12 +100,12 @@ function MembersTab({ groupId, open }: { groupId: string; open: boolean }) {
           <UserPicker
             value={picked?.userId}
             displayName={picked?.displayName}
-            placeholder="Search students…"
+            placeholder={t("searchStudents")}
             onChange={(userId, displayName) => setPicked({ userId, displayName })}
           />
         </div>
         <Button disabled={enroll.isPending || !picked} onClick={onEnroll}>
-          Enroll
+          {t("enroll")}
         </Button>
       </div>
     </div>
@@ -110,6 +113,7 @@ function MembersTab({ groupId, open }: { groupId: string; open: boolean }) {
 }
 
 function LessonsTab({ groupId, open }: { groupId: string; open: boolean }) {
+  const t = useTranslations("groups");
   const { data } = useListScheduledLessons(groupId, { query: { enabled: open } });
   const lessons = data ?? [];
   const schedule = useScheduleLesson();
@@ -130,7 +134,7 @@ function LessonsTab({ groupId, open }: { groupId: string; open: boolean }) {
       },
       {
         onSuccess: () => {
-          toast.success("Lesson scheduled");
+          toast.success(t("lessonScheduled"));
           setTitle("");
           setScheduledAt("");
           setMeetLink("");
@@ -141,21 +145,25 @@ function LessonsTab({ groupId, open }: { groupId: string; open: boolean }) {
 
   return (
     <div className="grid gap-3 pt-3">
-      {lessons.length === 0 && <p className="text-muted-foreground text-sm">No lessons yet.</p>}
+      {lessons.length === 0 && <p className="text-muted-foreground text-sm">{t("noLessons")}</p>}
       {lessons.map((l) => (
         <LessonRow key={l.id} groupId={groupId} lesson={l} />
       ))}
       <Separator />
       <div className="grid gap-2">
-        <p className="font-medium text-sm">Schedule a lesson</p>
-        <Input placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+        <p className="font-medium text-sm">{t("scheduleLesson")}</p>
+        <Input
+          placeholder={t("lessonTitlePlaceholder")}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
         <Input
           type="datetime-local"
           value={scheduledAt}
           onChange={(e) => setScheduledAt(e.target.value)}
         />
         <Input
-          placeholder="Meet link (optional)"
+          placeholder={t("meetLinkPlaceholder")}
           value={meetLink}
           onChange={(e) => setMeetLink(e.target.value)}
         />
@@ -164,7 +172,7 @@ function LessonsTab({ groupId, open }: { groupId: string; open: boolean }) {
           disabled={schedule.isPending || !title.trim() || !scheduledAt}
           onClick={onSchedule}
         >
-          Schedule
+          {t("schedule")}
         </Button>
       </div>
     </div>
@@ -172,6 +180,7 @@ function LessonsTab({ groupId, open }: { groupId: string; open: boolean }) {
 }
 
 function LessonRow({ groupId, lesson }: { groupId: string; lesson: ScheduledLessonResponse }) {
+  const t = useTranslations("groups");
   const mark = useMarkAttendance();
   const nameOf = useProfileNames();
   // Marking invalidates queries globally (central MutationCache), so this refetches after a mark.
@@ -189,7 +198,7 @@ function LessonRow({ groupId, lesson }: { groupId: string; lesson: ScheduledLess
       },
       {
         onSuccess: () => {
-          toast.success(present ? "Marked present" : "Marked absent");
+          toast.success(present ? t("markedPresent") : t("markedAbsent"));
           setPicked(undefined);
         },
       },
@@ -208,7 +217,7 @@ function LessonRow({ groupId, lesson }: { groupId: string; lesson: ScheduledLess
             target="_blank"
             rel="noreferrer"
           >
-            Join link
+            {t("joinLink")}
           </a>
         )}
       </div>
@@ -218,7 +227,7 @@ function LessonRow({ groupId, lesson }: { groupId: string; lesson: ScheduledLess
             <li key={r.id} className="flex items-center justify-between rounded border px-2 py-1">
               <span>{nameOf(r.userId)}</span>
               <span className={r.present ? "text-green-600" : "text-muted-foreground"}>
-                {r.present ? "Present" : "Absent"}
+                {r.present ? t("present") : t("absent")}
               </span>
             </li>
           ))}
@@ -229,7 +238,7 @@ function LessonRow({ groupId, lesson }: { groupId: string; lesson: ScheduledLess
           <UserPicker
             value={picked?.userId}
             displayName={picked?.displayName}
-            placeholder="Search student…"
+            placeholder={t("searchStudent")}
             onChange={(userId, displayName) => setPicked({ userId, displayName })}
           />
         </div>
@@ -239,7 +248,7 @@ function LessonRow({ groupId, lesson }: { groupId: string; lesson: ScheduledLess
           disabled={mark.isPending}
           onClick={() => setPresence(true)}
         >
-          Present
+          {t("present")}
         </Button>
         <Button
           variant="ghost"
@@ -247,7 +256,7 @@ function LessonRow({ groupId, lesson }: { groupId: string; lesson: ScheduledLess
           disabled={mark.isPending}
           onClick={() => setPresence(false)}
         >
-          Absent
+          {t("absent")}
         </Button>
       </div>
     </div>

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { DataState } from "@/components/shared/data-state";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +13,7 @@ import {
 } from "@/lib/api/notification/notification/notification";
 
 export function NotificationsView() {
+  const t = useTranslations("notifications");
   const { data, isLoading, isError } = useListMyNotifications();
   const markRead = useMarkRead();
 
@@ -20,8 +23,8 @@ export function NotificationsView() {
   return (
     <>
       <PageHeader
-        title="Notifications"
-        description={unread > 0 ? `${unread} unread` : "You're all caught up."}
+        title={t("title")}
+        description={unread > 0 ? t("unread", { count: unread }) : t("allCaughtUp")}
       />
       <DataState isLoading={isLoading} isError={isError} isEmpty={items.length === 0}>
         <div className="grid gap-3">
@@ -31,7 +34,7 @@ export function NotificationsView() {
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="font-medium">{n.title}</span>
-                    {!n.read ? <Badge>new</Badge> : null}
+                    {!n.read ? <Badge>{t("new")}</Badge> : null}
                   </div>
                   {n.body ? <p className="text-muted-foreground mt-1 text-sm">{n.body}</p> : null}
                 </div>
@@ -42,7 +45,7 @@ export function NotificationsView() {
                     disabled={markRead.isPending}
                     onClick={() => markRead.mutate({ notificationId: n.id })}
                   >
-                    Mark read
+                    {t("markRead")}
                   </Button>
                 ) : null}
               </CardContent>

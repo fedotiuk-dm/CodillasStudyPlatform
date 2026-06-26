@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -39,6 +40,7 @@ export function TakeAttemptDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useTranslations("tests");
   const { data: test } = useGetTest(testId, { query: { enabled: open } });
   const start = useStartAttempt();
   const saveAnswer = useSaveAnswer();
@@ -97,7 +99,7 @@ export function TakeAttemptDialog({
       );
       const graded = await submit.mutateAsync({ attemptId: attempt.id });
       setAttempt(graded);
-      toast.success("Submitted");
+      toast.success(t("submitted"));
     } catch {
       /* global toast */
     }
@@ -110,9 +112,7 @@ export function TakeAttemptDialog({
       <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>{testTitle}</DialogTitle>
-          <DialogDescription>
-            {submitted ? "Your result." : "Answer the questions and submit."}
-          </DialogDescription>
+          <DialogDescription>{submitted ? t("result") : t("answerPrompt")}</DialogDescription>
         </DialogHeader>
 
         {submitted ? (
@@ -132,7 +132,7 @@ export function TakeAttemptDialog({
               onClick={onSubmit}
               disabled={!attempt || submit.isPending || saveAnswer.isPending}
             >
-              {submit.isPending ? "Submitting…" : "Submit attempt"}
+              {submit.isPending ? t("submitting") : t("submitAttempt")}
             </Button>
           </div>
         )}
@@ -152,6 +152,7 @@ function QuestionInput({
   draft?: AnswerDraft;
   onChange: (patch: Partial<AnswerDraft>) => void;
 }) {
+  const t = useTranslations("tests");
   const selected = draft?.selectedOptionIds ?? [];
   const single = q.type === "SINGLE_CHOICE" || q.type === "TRUE_FALSE";
 
@@ -159,11 +160,13 @@ function QuestionInput({
     <div className="grid gap-2 rounded-md border p-3">
       <p className="font-medium text-sm">
         {index + 1}. {q.prompt}{" "}
-        <span className="font-normal text-muted-foreground">({q.points} pt)</span>
+        <span className="font-normal text-muted-foreground">
+          ({q.points} {t("pt")})
+        </span>
       </p>
       {q.type === "SHORT_TEXT" ? (
         <Input
-          placeholder="Your answer…"
+          placeholder={t("answerPlaceholder")}
           value={draft?.text ?? ""}
           onChange={(e) => onChange({ text: e.target.value })}
         />
@@ -212,6 +215,7 @@ function ResultPanel({
   test: QuestionResponse[];
   canManage: boolean;
 }) {
+  const t = useTranslations("tests");
   const grade = useGradeAnswer();
   const [scores, setScores] = useState<Record<string, string>>({});
   const promptFor = (questionId: string) => test.find((q) => q.id === questionId)?.prompt ?? "—";
@@ -222,21 +226,25 @@ function ResultPanel({
         <Badge variant={attempt.status === "GRADED" ? "default" : "secondary"}>
           {attempt.status}
         </Badge>
-        <span className="font-medium">Score: {attempt.score}</span>
+        <span className="font-medium">
+          {t("score")}: {attempt.score}
+        </span>
       </div>
       <Separator />
       {attempt.answers.map((ans) => (
         <div key={ans.id} className="grid gap-1 rounded-md border p-3 text-sm">
           <p className="font-medium">{promptFor(ans.questionId)}</p>
           {ans.text && <p className="text-muted-foreground">“{ans.text}”</p>}
-          <p className="text-muted-foreground">Awarded: {ans.awardedPoints ?? "pending"}</p>
+          <p className="text-muted-foreground">
+            {t("awarded")}: {ans.awardedPoints ?? t("pending")}
+          </p>
           {canManage && ans.awardedPoints == null && (
             <div className="flex items-center gap-2">
               <Input
                 type="number"
                 min={0}
                 className="w-24"
-                placeholder="points"
+                placeholder={t("pointsPlaceholder")}
                 value={scores[ans.id] ?? ""}
                 onChange={(e) => setScores((p) => ({ ...p, [ans.id]: e.target.value }))}
               />
@@ -250,11 +258,11 @@ function ResultPanel({
                       answerId: ans.id,
                       data: { awardedPoints: Number(scores[ans.id]) },
                     },
-                    { onSuccess: () => toast.success("Graded") },
+                    { onSuccess: () => toast.success(t("graded")) },
                   )
                 }
               >
-                Grade
+                {t("grade")}
               </Button>
             </div>
           )}

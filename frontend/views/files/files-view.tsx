@@ -1,6 +1,7 @@
 "use client";
 
 import { Download, Trash2, Upload } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -35,6 +36,7 @@ function humanSize(bytes: number) {
 }
 
 export function FilesView() {
+  const t = useTranslations("files");
   // ponytail: session-local list — the Files API has no list endpoint, only by-id.
   const [files, setFiles] = useState<StoredFileResponse[]>([]);
   const [referenceType, setReferenceType] = useState<FileReferenceType>(FileReferenceType.MATERIAL);
@@ -50,7 +52,7 @@ export function FilesView() {
       {
         onSuccess: (stored) => {
           setFiles((prev) => [stored, ...prev]);
-          toast.success(`Uploaded ${stored.originalFilename}`);
+          toast.success(t("uploaded", { name: stored.originalFilename }));
         },
       },
     );
@@ -77,7 +79,7 @@ export function FilesView() {
       {
         onSuccess: () => {
           setFiles((prev) => prev.filter((x) => x.id !== f.id));
-          toast.success("Deleted");
+          toast.success(t("deleted"));
         },
       },
     );
@@ -86,8 +88,8 @@ export function FilesView() {
   return (
     <>
       <PageHeader
-        title="Files"
-        description="Upload and manage files stored in object storage."
+        title={t("title")}
+        description={t("description")}
         action={
           <div className="flex items-center gap-2">
             <Select
@@ -98,9 +100,9 @@ export function FilesView() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {Object.values(FileReferenceType).map((t) => (
-                  <SelectItem key={t} value={t}>
-                    {t}
+                {Object.values(FileReferenceType).map((ref) => (
+                  <SelectItem key={ref} value={ref}>
+                    {ref}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -108,7 +110,7 @@ export function FilesView() {
             <input ref={inputRef} type="file" className="hidden" onChange={onPick} />
             <Button onClick={() => inputRef.current?.click()} disabled={upload.isPending}>
               <Upload className="size-4" />
-              {upload.isPending ? "Uploading…" : "Upload"}
+              {upload.isPending ? t("uploading") : t("upload")}
             </Button>
           </div>
         }
@@ -120,10 +122,10 @@ export function FilesView() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Size</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>{t("name")}</TableHead>
+                  <TableHead>{t("type")}</TableHead>
+                  <TableHead>{t("size")}</TableHead>
+                  <TableHead className="text-right">{t("actions")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
