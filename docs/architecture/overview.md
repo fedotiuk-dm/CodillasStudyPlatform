@@ -186,15 +186,23 @@ a notification or a gradebook update.
 
 - Dedicated **Keycloak** realm `codillas` with realm roles `ADMIN` / `TEACHER` /
   `STUDENT` (`backend/keycloak/realm-export.json`).
-- **No self-registration** (`registrationAllowed: false`) — admin/teacher create
-  accounts. In prod via the platform's admin screen → backend `user` module →
-  `keycloak-admin-client`; in dev, three seed users (admin/teacher/student,
-  password `password`).
-- **Default role is `STUDENT`**, assigned at user creation; promotion to
-  `TEACHER` / `ADMIN` is explicit.
+- **No self-registration** (`registrationAllowed: false`) — accounts are created
+  in the **Keycloak console** (admin-client provisioning from the app is deferred:
+  it can't be verified without a running Keycloak and adds little); in dev, three
+  seed users (admin/teacher/student, password `password`).
+- **Default role is `STUDENT`**, assigned at user creation (realm default-roles);
+  promotion to `TEACHER` / `ADMIN` is explicit, in Keycloak.
 - Roles reach the app as a flat `roles` claim (realm "realm-roles-flat" mapper);
   Spring maps it to `ROLE_*` via config. The resource server validates the JWT;
   method-level `@PreAuthorize` guards endpoints at module API boundaries.
+- **Role gradation** — a `RoleHierarchy` bean defines `ADMIN > TEACHER > STUDENT`
+  (`config/RoleHierarchyConfig`, active in all profiles incl. tests). A higher role
+  satisfies a lower-role guard without holding it explicitly: an ADMIN passes
+  `@RequiresTeacher` / `@RequiresStudent`, a TEACHER passes `@RequiresStudent`.
+  Gating convention: **authoring/management → `@RequiresAdmin` or `@RequiresTeacher`,
+  taking part (submit/attempt) → `@RequiresStudent`, reads → `@RequiresAuthenticated`.**
+- The caller's roles are surfaced on `GET /api/users/me` (`UserProfile.roles`); the
+  frontend mirrors the same hierarchy in `useHasRole` so UI gating matches the backend.
 
 ## 10. Tech stack
 

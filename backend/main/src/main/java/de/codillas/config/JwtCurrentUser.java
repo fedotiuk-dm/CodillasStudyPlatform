@@ -1,8 +1,12 @@
 package de.codillas.config;
 
+import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -38,6 +42,16 @@ public class JwtCurrentUser implements CurrentUser {
       }
     }
     return auth.getName();
+  }
+
+  @Override
+  public Set<String> roles() {
+    return authentication().getAuthorities().stream()
+        .map(GrantedAuthority::getAuthority)
+        .filter(Objects::nonNull)
+        .filter(a -> a.startsWith("ROLE_"))
+        .map(a -> a.substring("ROLE_".length()))
+        .collect(Collectors.toUnmodifiableSet());
   }
 
   private static Authentication authentication() {

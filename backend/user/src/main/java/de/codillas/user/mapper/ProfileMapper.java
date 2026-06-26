@@ -1,5 +1,7 @@
 package de.codillas.user.mapper;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 
 import de.codillas.shared.mapper.CentralMapperConfig;
@@ -17,7 +19,12 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 @Mapper(config = CentralMapperConfig.class)
 public interface ProfileMapper {
 
+  /** List / generic mapping — roles are a per-request concern, not stored on the profile. */
+  @Mapping(target = "roles", ignore = true)
   UserProfile toResponse(Profile entity);
+
+  /** {@code /me} mapping — surfaces the caller's granted roles alongside their profile. */
+  UserProfile toResponse(Profile entity, List<String> roles);
 
   UserProfileListResponse toListResponse(Page<Profile> page);
 

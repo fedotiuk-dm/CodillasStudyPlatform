@@ -1,7 +1,7 @@
 openapi: 3.0.4
 info:
   title: Codillas User schemas
-  version: 0.1.0
+  version: 0.2.0
 paths: {}
 components:
   schemas:
@@ -18,6 +18,11 @@ components:
           type: string
         bio:
           type: string
+        roles:
+          type: array
+          description: The user's platform roles (e.g. ADMIN, TEACHER, STUDENT). Populated on /api/users/me; omitted in list results.
+          items:
+            type: string
         createdAt:
           type: string
           format: date-time

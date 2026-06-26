@@ -174,11 +174,25 @@ export function useRoles(): string[] {
   return useKeycloak().roles;
 }
 
+// Mirrors the backend RoleHierarchy (ADMIN > TEACHER > STUDENT): a higher role satisfies a
+// lower-role gate, so an admin sees teacher/student UI without holding those roles explicitly.
+const ROLE_IMPLIES: Record<string, readonly string[]> = {
+  ADMIN: ["ADMIN", "TEACHER", "STUDENT"],
+  TEACHER: ["TEACHER", "STUDENT"],
+  STUDENT: ["STUDENT"],
+};
+
+function effectiveRoles(held: string[]): Set<string> {
+  const eff = new Set<string>();
+  for (const r of held) for (const implied of ROLE_IMPLIES[r] ?? [r]) eff.add(implied);
+  return eff;
+}
+
 export function useHasRole(role: string): boolean {
-  return useRoles().includes(role);
+  return effectiveRoles(useRoles()).has(role);
 }
 
 export function useHasAnyRole(requiredRoles: string[]): boolean {
-  const roles = useRoles();
-  return requiredRoles.some((role) => roles.includes(role));
+  const eff = effectiveRoles(useRoles());
+  return requiredRoles.some((role) => eff.has(role));
 }

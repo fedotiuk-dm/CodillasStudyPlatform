@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
   public UserProfile getMyProfile() {
     UUID userId = currentUser.id();
     Profile profile = repository.findByUserId(userId).orElseGet(() -> provisionFromToken(userId));
-    return mapper.toResponse(profile);
+    return mapper.toResponse(profile, currentUser.roles().stream().sorted().toList());
   }
 
   /** Creates and persists a profile on first login, seeding the display name from the JWT. */

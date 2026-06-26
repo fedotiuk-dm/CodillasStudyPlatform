@@ -10,11 +10,13 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor;
 import org.springframework.test.web.servlet.MockMvc;
 
 import de.codillas.integration.BaseIntegrationTest;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -59,6 +61,21 @@ class UserControllerIntegrationTest extends BaseIntegrationTest {
         .perform(get("/api/users/me").with(user))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.displayName").value("Bob"));
+  }
+
+  @Test
+  @DisplayName("GET /api/users/me surfaces the caller's granted roles")
+  void getMyProfile_surfacesRoles() throws Exception {
+    UUID userId = UUID.randomUUID();
+    mockMvc
+        .perform(
+            get("/api/users/me")
+                .with(
+                    jwt()
+                        .jwt(j -> j.subject(userId.toString()))
+                        .authorities(new SimpleGrantedAuthority("ROLE_TEACHER"))))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.roles").value(Matchers.contains("TEACHER")));
   }
 
   @Test

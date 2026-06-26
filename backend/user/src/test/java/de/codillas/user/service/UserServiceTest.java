@@ -2,11 +2,13 @@ package de.codillas.user.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -46,8 +48,9 @@ class UserServiceTest {
     Profile profile = Profile.builder().userId(userId).displayName("Ada").build();
     UserProfile dto = new UserProfile(userId, "Ada");
     when(currentUser.id()).thenReturn(userId);
+    when(currentUser.roles()).thenReturn(Set.of("TEACHER"));
     when(repository.findByUserId(userId)).thenReturn(Optional.of(profile));
-    when(mapper.toResponse(profile)).thenReturn(dto);
+    when(mapper.toResponse(profile, List.of("TEACHER"))).thenReturn(dto);
 
     assertThat(service.getMyProfile()).isSameAs(dto);
   }
@@ -59,9 +62,10 @@ class UserServiceTest {
     UserProfile dto = new UserProfile(userId, "Ada Admin");
     when(currentUser.id()).thenReturn(userId);
     when(currentUser.displayName()).thenReturn("Ada Admin");
+    when(currentUser.roles()).thenReturn(Set.of());
     when(repository.findByUserId(userId)).thenReturn(Optional.empty());
     when(repository.save(any(Profile.class))).thenAnswer(i -> i.getArgument(0));
-    when(mapper.toResponse(any(Profile.class))).thenReturn(dto);
+    when(mapper.toResponse(any(Profile.class), anyList())).thenReturn(dto);
 
     assertThat(service.getMyProfile()).isSameAs(dto);
 
