@@ -80,9 +80,9 @@ This is the central missing piece; most of the roadmap below depends on it.
 - [x] Student↔teacher DM rooms — `DIRECT` type + creation + frontend dialog already existed; made creation **idempotent** (one canonical room per pair). Committed `06c670b`. Follow-up (polish): show the other member's name for a nameless DM in the room list (needs the room response to carry members).
 - [~] Per-assignment thread — `ASSIGNMENT_THREAD` room type + `referenceId` exist and are creatable; auto-threading from the homework UI is a nicety, deferred.
 
-### `files` — partial (P2)
-- [ ] Decide if versioning / soft-delete is needed (homework already versions submissions — may not be).
-- [ ] File preview (nice-to-have).
+### `files` — done (no P2 work needed)
+- [~] Versioning / soft-delete — **not needed (YAGNI)**: homework already versions submissions, and files are id-referenced content blobs (a changed material is a new upload + ref swap). Decided against.
+- [~] File preview — nice-to-have, **deferred**. Upload/download/delete work; the reusable `FileUploadField` covers attachment UX everywhere.
 
 ### `homework` / `assessment` — done (polish only)
 - [ ] `assessment`: formalize a metadata-driven `FieldRenderer` (one component per question type) so new question types are cheap. Borrow the *pattern* from the boosting calculator, **not** its FormulaNode engine.
