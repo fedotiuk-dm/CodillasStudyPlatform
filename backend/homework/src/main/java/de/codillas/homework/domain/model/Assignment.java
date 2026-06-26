@@ -45,4 +45,9 @@ public class Assignment extends BaseAuditableEntity {
   @Column(nullable = false, length = 20)
   @Builder.Default
   private AssignmentStatus status = AssignmentStatus.DRAFT;
+
+  /** Guard so the deadline reminder fires at most once per assignment. */
+  @Column(name = "due_reminder_sent", nullable = false)
+  @Builder.Default
+  private boolean dueReminderSent = false;
 }

@@ -17,3 +17,7 @@ databaseChangeLog:
   - include:
       file: changes/0.1.0/0.1.0-seed-homework.yaml
       relativeToChangelogFile: true
+  # 0.2.0 — homework deadline reminders
+  - include:
+      file: changes/0.2.0/0.2.0-add-due-reminder-sent.yaml
+      relativeToChangelogFile: true

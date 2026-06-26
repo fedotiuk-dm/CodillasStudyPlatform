@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.2.0-add-due-reminder-sent
+      author: codillas
+      comment: Add due_reminder_sent guard column to assignments (deadline reminders 0.2.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: assignments
+                columnName: due_reminder_sent
+      changes:
+        - addColumn:
+            tableName: assignments
+            columns:
+              - column:
+                  name: due_reminder_sent
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints: { nullable: false }

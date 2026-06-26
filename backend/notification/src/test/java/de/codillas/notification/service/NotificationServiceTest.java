@@ -19,6 +19,7 @@ import de.codillas.notification.domain.model.NotificationType;
 import de.codillas.notification.domain.repository.NotificationMembershipRepository;
 import de.codillas.notification.domain.repository.NotificationRepository;
 import de.codillas.notification.mapper.NotificationMapper;
+import de.codillas.shared.event.AssignmentDueSoon;
 import de.codillas.shared.event.AssignmentPublished;
 import de.codillas.shared.event.SubmissionGraded;
 
@@ -75,6 +76,29 @@ class NotificationServiceTest {
 
     verify(repository, times(2)).save(any(Notification.class));
     verify(emailNotifier, times(2)).send(any(), anyString(), anyString(), anyString());
+  }
+
+  @Test
+  @DisplayName("onAssignmentDueSoon reminds every group member in-app and by email")
+  void onAssignmentDueSoon_remindsMembers() {
+    UUID groupId = UUID.randomUUID();
+    UUID assignmentId = UUID.randomUUID();
+    AssignmentDueSoon event = new AssignmentDueSoon(assignmentId, groupId, java.time.Instant.now());
+    when(membershipRepository.findByGroupId(groupId))
+        .thenReturn(List.of(member(UUID.randomUUID()), member(UUID.randomUUID())));
+    when(mapper.toNotification(
+            any(),
+            eq(NotificationType.ASSIGNMENT_DUE_SOON),
+            anyString(),
+            anyString(),
+            eq(assignmentId)))
+        .thenReturn(new Notification());
+
+    service.onAssignmentDueSoon(event);
+
+    verify(repository, times(2)).save(any(Notification.class));
+    verify(emailNotifier, times(2))
+        .send(any(), eq("Assignment due soon"), eq("Assignment due soon"), anyString());
   }
 
   @Test

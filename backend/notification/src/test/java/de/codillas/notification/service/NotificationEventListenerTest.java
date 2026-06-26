@@ -4,6 +4,7 @@ import static org.mockito.Mockito.verify;
 
 import java.util.UUID;
 
+import de.codillas.shared.event.AssignmentDueSoon;
 import de.codillas.shared.event.AssignmentPublished;
 import de.codillas.shared.event.AttemptCompleted;
 import de.codillas.shared.event.StudentEnrolled;
@@ -28,6 +29,8 @@ class NotificationEventListenerTest {
   void delegates() {
     StudentEnrolled enrolled = new StudentEnrolled(UUID.randomUUID(), UUID.randomUUID());
     AssignmentPublished published = new AssignmentPublished(UUID.randomUUID(), UUID.randomUUID());
+    AssignmentDueSoon dueSoon =
+        new AssignmentDueSoon(UUID.randomUUID(), UUID.randomUUID(), java.time.Instant.now());
     SubmissionGraded graded =
         new SubmissionGraded(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 7);
     AttemptCompleted completed =
@@ -35,11 +38,13 @@ class NotificationEventListenerTest {
 
     listener.on(enrolled);
     listener.on(published);
+    listener.on(dueSoon);
     listener.on(graded);
     listener.on(completed);
 
     verify(service).onStudentEnrolled(enrolled);
     verify(service).onAssignmentPublished(published);
+    verify(service).onAssignmentDueSoon(dueSoon);
     verify(service).onSubmissionGraded(graded);
     verify(service).onAttemptCompleted(completed);
   }

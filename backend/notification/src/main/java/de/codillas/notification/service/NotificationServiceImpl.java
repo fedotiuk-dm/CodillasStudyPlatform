@@ -13,6 +13,7 @@ import de.codillas.notification.domain.repository.NotificationMembershipReposito
 import de.codillas.notification.domain.repository.NotificationRepository;
 import de.codillas.notification.mapper.NotificationMapper;
 import de.codillas.shared.domain.repository.GenericSpecification;
+import de.codillas.shared.event.AssignmentDueSoon;
 import de.codillas.shared.event.AssignmentPublished;
 import de.codillas.shared.event.AttemptCompleted;
 import de.codillas.shared.event.StudentEnrolled;
@@ -71,6 +72,21 @@ public class NotificationServiceImpl implements NotificationService {
                     NotificationType.ASSIGNMENT_PUBLISHED,
                     "New assignment",
                     "A new assignment was published for your group.",
+                    event.assignmentId()));
+  }
+
+  @Override
+  @Transactional
+  public void onAssignmentDueSoon(AssignmentDueSoon event) {
+    membershipRepository
+        .findByGroupId(event.groupId())
+        .forEach(
+            member ->
+                notify(
+                    member.getStudentId(),
+                    NotificationType.ASSIGNMENT_DUE_SOON,
+                    "Assignment due soon",
+                    "An assignment in your group is due soon.",
                     event.assignmentId()));
   }
 

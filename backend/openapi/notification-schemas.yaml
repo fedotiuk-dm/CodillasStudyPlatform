@@ -9,6 +9,7 @@ components:
       type: string
       enum:
         - ASSIGNMENT_PUBLISHED
+        - ASSIGNMENT_DUE_SOON
         - SUBMISSION_GRADED
         - ATTEMPT_COMPLETED
     NotificationResponse:
