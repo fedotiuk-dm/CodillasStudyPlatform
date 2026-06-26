@@ -66,10 +66,11 @@ This is the central missing piece; most of the roadmap below depends on it.
 - [x] Profile view/edit — GET/PUT `/api/users/me` already done.
 - [ ] (optional) In-app role assignment UI — only if you later want role management in the platform (needs Keycloak write).
 
-### `notification` — partial (P1)
-- [ ] Email channel (currently in-app only).
-- [ ] Deadline reminders (scheduled job off assignment due dates).
-- [ ] Verify all events from overview §7 are consumed: `AssignmentPublished`, `SubmissionGraded`, `AttemptCompleted`, `MessagePosted`.
+### `notification` — P1 done
+- [x] Email channel — already built (`EmailNotifier`: Thymeleaf + `JavaMailSender` via `ObjectProvider` (skips gracefully when no server) + `RecipientEmailResolver`, `@Async`); dev → mailpit. Wired into every event handler.
+- [x] Deadline reminders — `AssignmentDueSoon` event + homework `DueReminderJob` (hourly, fires once via `due_reminder_sent`) → notification fans out in-app + email. Committed `2b280e4`.
+- [x] Events consumed: `AssignmentPublished`, `SubmissionGraded`, `AttemptCompleted` ✅.
+- [~] `MessagePosted` → notification — **deferred**: only group rooms exist today, so notifying per message = spam; "if recipient offline" needs presence we don't track. Revisit with DM chat + presence.
 
 ### `gradebook` — partial (P2)
 - [ ] Confirm read model is populated from `SubmissionGraded` + `AttemptCompleted` + attendance.
