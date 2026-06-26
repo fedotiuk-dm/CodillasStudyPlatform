@@ -17,6 +17,8 @@
   },
   "nav": {
     "courses": "Courses",
+    "myCourses": "My courses",
+    "schedule": "Schedule",
     "groups": "Groups",
     "homework": "Homework",
     "tests": "Tests",
@@ -78,5 +80,17 @@
     "file": "File",
     "chooseFile": "Choose file",
     "uploading": "Uploading…"
+  },
+  "myCourses": {
+    "title": "My courses",
+    "description": "Courses you are enrolled in through your groups.",
+    "group": "Group",
+    "empty": "You are not enrolled in any groups yet."
+  },
+  "schedule": {
+    "title": "My schedule",
+    "description": "Your upcoming lessons across all your groups.",
+    "joinMeeting": "Join meeting",
+    "empty": "No upcoming lessons scheduled."
   }
 }

@@ -60,6 +60,40 @@ paths:
           $ref: "common.yaml#/components/responses/Unauthorized"
         "403":
           $ref: "common.yaml#/components/responses/Forbidden"
+  /api/me/groups:
+    get:
+      tags:
+        - enrollment
+      operationId: listMyGroups
+      summary: List the groups the authenticated user belongs to
+      responses:
+        "200":
+          description: The authenticated user's groups
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "enrollment-schemas.yaml#/components/schemas/GroupResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+  /api/me/schedule:
+    get:
+      tags:
+        - enrollment
+      operationId: listMySchedule
+      summary: The authenticated user's lesson schedule across their groups (earliest first, past and upcoming)
+      responses:
+        "200":
+          description: Scheduled lessons across the user's groups, earliest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "enrollment-schemas.yaml#/components/schemas/ScheduledLessonResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
   /api/groups/{groupId}/members:
     post:
       tags:

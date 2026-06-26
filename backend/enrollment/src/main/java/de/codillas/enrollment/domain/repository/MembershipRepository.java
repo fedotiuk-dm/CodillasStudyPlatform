@@ -12,4 +12,6 @@ import de.codillas.enrollment.domain.model.Membership;
 public interface MembershipRepository extends JpaRepository<Membership, UUID> {
 
   List<Membership> findByGroupId(UUID groupId);
+
+  List<Membership> findByUserId(UUID userId);
 }

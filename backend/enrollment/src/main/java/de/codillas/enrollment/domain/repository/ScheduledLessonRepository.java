@@ -1,5 +1,6 @@
 package de.codillas.enrollment.domain.repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,4 +21,6 @@ public interface ScheduledLessonRepository extends JpaRepository<ScheduledLesson
    * Ordering comes from the {@link Sort} arg, so the method name stays short (no OrderBy chain).
    */
   List<ScheduledLesson> findByGroupId(UUID groupId, Sort sort);
+
+  List<ScheduledLesson> findByGroupIdIn(Collection<UUID> groupIds, Sort sort);
 }

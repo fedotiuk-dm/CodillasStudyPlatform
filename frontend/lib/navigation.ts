@@ -1,10 +1,12 @@
 import {
   BookOpen,
+  CalendarClock,
   ClipboardList,
   Contact,
   FileText,
   FolderOpen,
   GraduationCap,
+  Library,
   type LucideIcon,
   MessageSquare,
   Bell as NotificationIcon,
@@ -27,6 +29,8 @@ export interface NavItem {
 // /{locale} prefix). Labels live in messages/*.json under `nav.<key>`.
 export const NAV_ITEMS: readonly NavItem[] = [
   { key: "courses", href: "/dashboard/courses", icon: BookOpen, roles: [] },
+  { key: "myCourses", href: "/dashboard/my-courses", icon: Library, roles: [] },
+  { key: "schedule", href: "/dashboard/schedule", icon: CalendarClock, roles: [] },
   { key: "groups", href: "/dashboard/groups", icon: Users, roles: [Role.ADMIN, Role.TEACHER] },
   { key: "homework", href: "/dashboard/homework", icon: ClipboardList, roles: [] },
   { key: "tests", href: "/dashboard/tests", icon: FileText, roles: [] },

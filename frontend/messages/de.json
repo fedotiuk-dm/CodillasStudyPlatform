@@ -17,6 +17,8 @@
   },
   "nav": {
     "courses": "Kurse",
+    "myCourses": "Meine Kurse",
+    "schedule": "Zeitplan",
     "groups": "Gruppen",
     "homework": "Hausaufgaben",
     "tests": "Tests",
@@ -78,5 +80,17 @@
     "file": "Datei",
     "chooseFile": "Datei wählen",
     "uploading": "Wird hochgeladen…"
+  },
+  "myCourses": {
+    "title": "Meine Kurse",
+    "description": "Kurse, in die du über deine Gruppen eingeschrieben bist.",
+    "group": "Gruppe",
+    "empty": "Du bist noch in keiner Gruppe eingeschrieben."
+  },
+  "schedule": {
+    "title": "Mein Zeitplan",
+    "description": "Deine anstehenden Lektionen in allen deinen Gruppen.",
+    "joinMeeting": "Meeting beitreten",
+    "empty": "Keine anstehenden Lektionen geplant."
   }
 }

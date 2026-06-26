@@ -21,23 +21,13 @@ import {
 import type { LessonSummary, SectionResponse } from "@/lib/api/course/model";
 import { useHasRole } from "@/lib/auth";
 import { Role } from "@/lib/constants";
+import { safeHref } from "@/lib/utils";
 import { AddMaterialDialog } from "./add-material-dialog";
 import { LessonDialog } from "./lesson-dialog";
 import { SectionDialog } from "./section-dialog";
 
 const bySortOrder = (a: { sortOrder: number }, b: { sortOrder: number }) =>
   a.sortOrder - b.sortOrder;
-
-// Only allow http(s) hrefs — teacher-entered URLs are rendered as links to students,
-// so block javascript:/data: and other schemes before they reach an <a href>.
-function safeHref(url: string): string | undefined {
-  try {
-    const { protocol } = new URL(url);
-    return protocol === "http:" || protocol === "https:" ? url : undefined;
-  } catch {
-    return undefined;
-  }
-}
 
 export function CourseDetailView({ courseId }: { courseId: string }) {
   const t = useTranslations("course");

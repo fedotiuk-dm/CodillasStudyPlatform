@@ -1,5 +1,7 @@
 package de.codillas.enrollment.mapper;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 
 import de.codillas.enrollment.api.dto.CreateGroupRequest;
@@ -16,6 +18,8 @@ import org.mapstruct.ReportingPolicy;
 public interface GroupMapper {
 
   GroupResponse toResponse(Group entity);
+
+  List<GroupResponse> toResponseList(List<Group> entities);
 
   @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
   Group toEntity(CreateGroupRequest request);
