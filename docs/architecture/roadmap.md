@@ -108,7 +108,7 @@ This is the central missing piece; most of the roadmap below depends on it.
 
 - [x] **i18n complete** — all views localized across uk/en/de (9 feature namespaces). Committed `d863d59`.
 - [x] **Role gradation** — `RoleHierarchy` ADMIN > TEACHER > STUDENT + roles on `/me` + graded frontend gating. Committed `662b55b`.
-- [~] **Admin panel** `/admin/*` — **deferred (YAGNI for now)**: every admin capability (create courses, manage groups/members, schedule, attendance) already exists in the role-gated views and an admin sees them through the same nav. A dedicated shell would re-surface existing screens, not add capability. Build it later if you want a consolidated admin home — say the word.
+- [x] **Admin overview** `/dashboard/admin` (ADMIN-only) — consolidated landing: platform totals (courses/groups/people) + quick links. Committed `38c1c48`. The admin *capabilities* already live in the role-gated views; this is just the home.
 - [x] Frontend role-gating is client-side/UX only; the real boundary is backend `@PreAuthorize` + `RoleHierarchy`. Kept that way (documented in overview §9).
 - [~] Master OpenAPI aggregation — **deferred**: a dev-docs convenience (single Swagger UI), not user-facing; per-module specs already drive Orval + generated server interfaces.
 
