@@ -10,20 +10,33 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 /**
- * Resource-server security. Validates Keycloak JWTs; realm roles are mapped to {@code ROLE_*} via
- * config ({@code spring.security.oauth2.resourceserver.jwt.authorities-*} in application.yml), fed
- * by the realm's "realm-roles-flat" protocol mapper that exposes roles as a top-level {@code roles}
- * claim. Authorization is enforced per endpoint via method security at module boundaries.
+ * Resource-server security. Validates Keycloak JWTs; realm roles are read from the standard nested
+ * {@code realm_access.roles} claim and mapped to {@code ROLE_*} by {@link
+ * KeycloakRealmRolesConverter} (see the {@code jwtAuthenticationConverter} bean). Authorization is
+ * enforced per endpoint via method security at module boundaries.
  */
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
+
+  /**
+   * Maps {@code realm_access.roles} → {@code ROLE_*} authorities. Picked up by the HTTP resource
+   * server (this filter chain) and the STOMP auth manager, so both paths share one role source.
+   */
+  @Bean
+  JwtAuthenticationConverter jwtAuthenticationConverter(
+      KeycloakRealmRolesConverter rolesConverter) {
+    JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+    converter.setJwtGrantedAuthoritiesConverter(rolesConverter);
+    return converter;
+  }
 
   @Bean
   SecurityFilterChain filterChain(HttpSecurity http) {
