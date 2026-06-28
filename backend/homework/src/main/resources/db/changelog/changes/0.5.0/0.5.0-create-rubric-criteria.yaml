@@ -1,0 +1,45 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.5.0-create-rubric-criteria
+      author: codillas
+      comment: Create rubric_criteria table — ordered criteria of a rubric (0.5.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: rubric_criteria
+      changes:
+        - createTable:
+            tableName: rubric_criteria
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: rubric_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: label
+                  type: varchar(200)
+                  constraints: { nullable: false }
+              - column:
+                  name: max_points
+                  type: int
+                  constraints: { nullable: false }
+              - column:
+                  name: position
+                  type: int
+                  constraints: { nullable: false }
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }

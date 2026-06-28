@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.2.0-create-recipient-email
+      author: codillas
+      comment: Create recipient_email read model — unique per user (0.2.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: recipient_email
+      changes:
+        - createTable:
+            tableName: recipient_email
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: email
+                  type: varchar(320)
+                  constraints: { nullable: false }
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz
+        - addUniqueConstraint:
+            tableName: recipient_email
+            columnNames: user_id
+            constraintName: uq_recipient_email_user

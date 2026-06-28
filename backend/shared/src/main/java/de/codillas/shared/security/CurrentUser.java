@@ -20,4 +20,24 @@ public interface CurrentUser {
    * STUDENT} hierarchy is applied at authorization time, not reflected here.
    */
   Set<String> roles();
+
+  /** The verified email from the token's {@code email} claim, or {@code null} if absent. */
+  String email();
+
+  /**
+   * True if this request was granted {@code role} (the raw granted role; hierarchy is not applied
+   * here).
+   */
+  default boolean hasRole(Role role) {
+    return roles().contains(role.name());
+  }
+
+  /**
+   * True for staff — {@link Role#TEACHER} or {@link Role#ADMIN}. The object-level authorization
+   * bypass: staff may read and grade any student's work. Tests both raw roles, so no RoleHierarchy
+   * lookup is needed.
+   */
+  default boolean isStaff() {
+    return hasRole(Role.ADMIN) || hasRole(Role.TEACHER);
+  }
 }

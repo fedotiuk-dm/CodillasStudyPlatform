@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.2.0-add-profile-email
+      author: codillas
+      comment: Add email column to user_profiles (0.2.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: user_profiles
+                columnName: email
+      changes:
+        - addColumn:
+            tableName: user_profiles
+            columns:
+              - column:
+                  name: email
+                  type: varchar(320)

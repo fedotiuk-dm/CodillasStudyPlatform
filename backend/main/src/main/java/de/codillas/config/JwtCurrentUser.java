@@ -45,6 +45,14 @@ public class JwtCurrentUser implements CurrentUser {
   }
 
   @Override
+  public String email() {
+    Authentication auth = authentication();
+    return auth instanceof JwtAuthenticationToken token
+        ? token.getToken().getClaimAsString("email")
+        : null;
+  }
+
+  @Override
   public Set<String> roles() {
     return authentication().getAuthorities().stream()
         .map(GrantedAuthority::getAuthority)

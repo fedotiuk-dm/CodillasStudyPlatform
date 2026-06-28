@@ -48,8 +48,28 @@ public class EnrollmentController implements EnrollmentApi {
 
   @Override
   @RequiresAuthenticated
-  public ResponseEntity<GroupListResponse> listGroups(Pageable pageable) {
-    return ResponseEntity.ok(groupService.listGroups(pageable));
+  public ResponseEntity<GroupListResponse> listGroups(
+      de.codillas.enrollment.api.dto.GroupStatus status, Pageable pageable) {
+    return ResponseEntity.ok(groupService.listGroups(status, pageable));
+  }
+
+  @Override
+  @RequiresAdmin
+  public ResponseEntity<GroupResponse> startGroup(UUID groupId) {
+    return ResponseEntity.ok(groupService.startGroup(groupId));
+  }
+
+  @Override
+  @RequiresAdmin
+  public ResponseEntity<GroupResponse> archiveGroup(UUID groupId) {
+    return ResponseEntity.ok(groupService.archiveGroup(groupId));
+  }
+
+  @Override
+  @RequiresAdmin
+  public ResponseEntity<Void> deleteGroup(UUID groupId) {
+    groupService.deleteGroup(groupId);
+    return ResponseEntity.noContent().build();
   }
 
   @Override

@@ -17,6 +17,7 @@ import de.codillas.shared.event.AssignmentDueSoon;
 import de.codillas.shared.event.AssignmentPublished;
 import de.codillas.shared.event.AttemptCompleted;
 import de.codillas.shared.event.DirectMessagePosted;
+import de.codillas.shared.event.GroupDeleted;
 import de.codillas.shared.event.StudentEnrolled;
 import de.codillas.shared.event.SubmissionGraded;
 import de.codillas.shared.exception.NotFoundException;
@@ -51,6 +52,12 @@ public class NotificationServiceImpl implements NotificationService {
             .orElseThrow(() -> new NotFoundException("Notification", notificationId));
     notification.setRead(true);
     repository.save(notification);
+  }
+
+  @Override
+  @Transactional
+  public void onGroupDeleted(GroupDeleted event) {
+    membershipRepository.deleteByGroupId(event.groupId());
   }
 
   @Override
@@ -98,7 +105,7 @@ public class NotificationServiceImpl implements NotificationService {
         event.studentId(),
         NotificationType.SUBMISSION_GRADED,
         "Homework graded",
-        "Your submission was graded: " + event.score() + " points.",
+        "Your submission was graded: " + event.awarded() + " points.",
         event.submissionId());
   }
 
@@ -109,7 +116,7 @@ public class NotificationServiceImpl implements NotificationService {
         event.studentId(),
         NotificationType.ATTEMPT_COMPLETED,
         "Test scored",
-        "Your test attempt scored " + event.score() + " points.",
+        "Your test attempt scored " + event.awarded() + " points.",
         event.attemptId());
   }
 

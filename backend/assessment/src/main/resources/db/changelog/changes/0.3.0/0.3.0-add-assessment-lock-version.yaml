@@ -1,0 +1,77 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.3.0-add-tests-lock-version
+      author: codillas
+      comment: Add optimistic-lock version column to tests (0.3.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: tests
+                columnName: lock_version
+      changes:
+        - addColumn:
+            tableName: tests
+            columns:
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }
+  - changeSet:
+      id: 0.3.0-add-questions-lock-version
+      author: codillas
+      comment: Add optimistic-lock version column to questions (0.3.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: questions
+                columnName: lock_version
+      changes:
+        - addColumn:
+            tableName: questions
+            columns:
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }
+  - changeSet:
+      id: 0.3.0-add-options-lock-version
+      author: codillas
+      comment: Add optimistic-lock version column to options (0.3.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: options
+                columnName: lock_version
+      changes:
+        - addColumn:
+            tableName: options
+            columns:
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }
+  - changeSet:
+      id: 0.3.0-add-answers-lock-version
+      author: codillas
+      comment: Add optimistic-lock version column to answers (0.3.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: answers
+                columnName: lock_version
+      changes:
+        - addColumn:
+            tableName: answers
+            columns:
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }

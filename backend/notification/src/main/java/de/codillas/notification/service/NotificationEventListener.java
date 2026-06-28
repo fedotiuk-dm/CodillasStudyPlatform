@@ -7,8 +7,10 @@ import de.codillas.shared.event.AssignmentDueSoon;
 import de.codillas.shared.event.AssignmentPublished;
 import de.codillas.shared.event.AttemptCompleted;
 import de.codillas.shared.event.DirectMessagePosted;
+import de.codillas.shared.event.GroupDeleted;
 import de.codillas.shared.event.StudentEnrolled;
 import de.codillas.shared.event.SubmissionGraded;
+import de.codillas.shared.event.UserEmailChanged;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 class NotificationEventListener {
 
   private final NotificationService service;
+  private final DbRecipientEmailResolver recipientEmail;
 
   @ApplicationModuleListener
   void on(StudentEnrolled event) {
@@ -47,5 +50,15 @@ class NotificationEventListener {
   @ApplicationModuleListener
   void on(DirectMessagePosted event) {
     service.onDirectMessage(event);
+  }
+
+  @ApplicationModuleListener
+  void on(GroupDeleted event) {
+    service.onGroupDeleted(event);
+  }
+
+  @ApplicationModuleListener
+  void on(UserEmailChanged event) {
+    recipientEmail.record(event);
   }
 }

@@ -14,3 +14,7 @@ databaseChangeLog:
   - include:
       file: changes/0.1.0/0.1.0-seed-chat.yaml
       relativeToChangelogFile: true
+  # 0.2.0 — lock_version on all tables (lock lives on BaseAuditableEntity)
+  - include:
+      file: changes/0.2.0/0.2.0-add-chat-lock-version.yaml
+      relativeToChangelogFile: true

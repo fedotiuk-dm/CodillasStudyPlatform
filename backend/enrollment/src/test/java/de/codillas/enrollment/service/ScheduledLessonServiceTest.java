@@ -6,11 +6,15 @@ import static org.mockito.Mockito.when;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import de.codillas.enrollment.api.dto.ScheduleLessonRequest;
 import de.codillas.enrollment.api.dto.ScheduledLessonResponse;
+import de.codillas.enrollment.domain.GroupStateMachine;
+import de.codillas.enrollment.domain.model.Group;
 import de.codillas.enrollment.domain.model.ScheduledLesson;
+import de.codillas.enrollment.domain.repository.GroupRepository;
 import de.codillas.enrollment.domain.repository.ScheduledLessonRepository;
 import de.codillas.enrollment.mapper.ScheduledLessonMapper;
 
@@ -26,6 +30,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class ScheduledLessonServiceTest {
 
   @Mock private ScheduledLessonRepository repository;
+  @Mock private GroupRepository groupRepository;
+  @Mock private GroupStateMachine groupStateMachine;
   @Mock private ScheduledLessonMapper mapper;
   @InjectMocks private ScheduledLessonServiceImpl service;
 
@@ -38,6 +44,7 @@ class ScheduledLessonServiceTest {
     ScheduledLesson saved = ScheduledLesson.builder().groupId(groupId).title("Intro").build();
     ScheduledLessonResponse dto =
         new ScheduledLessonResponse(UUID.randomUUID(), groupId, "Intro", Instant.now());
+    when(groupRepository.findById(groupId)).thenReturn(Optional.of(Group.builder().build()));
     when(mapper.toEntity(request, groupId)).thenReturn(toSave);
     when(repository.save(toSave)).thenReturn(saved);
     when(mapper.toResponse(saved)).thenReturn(dto);

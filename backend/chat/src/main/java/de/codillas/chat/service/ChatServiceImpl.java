@@ -135,15 +135,33 @@ public class ChatServiceImpl implements ChatService {
     addMember(room.getId(), userId);
   }
 
+  @Override
+  @Transactional
+  public void onGroupDeleted(UUID groupId) {
+    roomRepository
+        .findByTypeAndReferenceId(ChatRoomType.GROUP, groupId)
+        .ifPresent(
+            room -> {
+              messageRepository.deleteByRoomId(room.getId());
+              memberRepository.deleteByRoomId(room.getId());
+              roomRepository.delete(room);
+            });
+  }
+
   private void addMember(UUID roomId, UUID userId) {
     if (!memberRepository.existsByRoomIdAndUserId(roomId, userId)) {
       memberRepository.save(mapper.toMember(roomId, userId));
     }
   }
 
+  @Override
+  public boolean isMember(UUID roomId, UUID userId) {
+    return memberRepository.existsByRoomIdAndUserId(roomId, userId);
+  }
+
   /** Membership is the access control — non-members are told the room does not exist. */
   private void requireMember(UUID roomId, UUID userId) {
-    if (!memberRepository.existsByRoomIdAndUserId(roomId, userId)) {
+    if (!isMember(roomId, userId)) {
       throw new NotFoundException("Room", roomId);
     }
   }

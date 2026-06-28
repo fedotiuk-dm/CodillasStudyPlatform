@@ -14,12 +14,15 @@ import de.codillas.homework.api.dto.AssignmentResponse;
 import de.codillas.homework.api.dto.CreateAssignmentRequest;
 import de.codillas.homework.api.dto.CreateGradeRequest;
 import de.codillas.homework.api.dto.CreateReviewRequest;
+import de.codillas.homework.api.dto.CreateRubricRequest;
 import de.codillas.homework.api.dto.CreateSubmissionRequest;
 import de.codillas.homework.api.dto.GradeResponse;
 import de.codillas.homework.api.dto.ReviewResponse;
+import de.codillas.homework.api.dto.RubricResponse;
 import de.codillas.homework.api.dto.SubmissionResponse;
 import de.codillas.homework.api.dto.UpdateSubmissionRequest;
 import de.codillas.homework.service.AssignmentService;
+import de.codillas.homework.service.RubricService;
 import de.codillas.homework.service.SubmissionService;
 import de.codillas.shared.security.RequiresAuthenticated;
 import de.codillas.shared.security.RequiresStudent;
@@ -34,6 +37,7 @@ public class HomeworkController implements HomeworkApi {
 
   private final AssignmentService assignmentService;
   private final SubmissionService submissionService;
+  private final RubricService rubricService;
 
   @Override
   @RequiresTeacher
@@ -103,5 +107,19 @@ public class HomeworkController implements HomeworkApi {
   @RequiresTeacher
   public ResponseEntity<SubmissionResponse> returnSubmission(UUID submissionId) {
     return ResponseEntity.ok(submissionService.returnSubmission(submissionId));
+  }
+
+  @Override
+  @RequiresTeacher
+  public ResponseEntity<RubricResponse> createRubric(
+      UUID assignmentId, CreateRubricRequest createRubricRequest) {
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .body(rubricService.createRubric(assignmentId, createRubricRequest));
+  }
+
+  @Override
+  @RequiresAuthenticated
+  public ResponseEntity<RubricResponse> getRubric(UUID assignmentId) {
+    return ResponseEntity.ok(rubricService.getRubric(assignmentId));
   }
 }

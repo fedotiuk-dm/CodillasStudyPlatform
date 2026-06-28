@@ -23,5 +23,10 @@ public interface ProgressEntryRepository extends JpaRepository<ProgressEntry, UU
 
   List<ProgressEntry> findByStudentIdIn(Collection<UUID> studentIds, Sort sort);
 
+  List<ProgressEntry> findByStudentIdAndGroupId(UUID studentId, UUID groupId, Sort sort);
+
   Optional<ProgressEntry> findBySourceAndSourceId(GradeSource source, UUID sourceId);
+
+  Optional<ProgressEntry> findBySourceAndReferenceIdAndStudentId(
+      GradeSource source, UUID referenceId, UUID studentId);
 }

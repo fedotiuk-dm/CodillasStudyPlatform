@@ -9,10 +9,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import de.codillas.enrollment.api.dto.EnrollStudentRequest;
 import de.codillas.enrollment.api.dto.MembershipResponse;
+import de.codillas.enrollment.domain.GroupStateMachine;
+import de.codillas.enrollment.domain.model.Group;
 import de.codillas.enrollment.domain.model.Membership;
+import de.codillas.enrollment.domain.repository.GroupRepository;
 import de.codillas.enrollment.domain.repository.MembershipRepository;
 import de.codillas.enrollment.mapper.MembershipMapper;
 import de.codillas.shared.event.StudentEnrolled;
+import de.codillas.shared.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,12 +26,19 @@ import lombok.RequiredArgsConstructor;
 public class MembershipServiceImpl implements MembershipService {
 
   private final MembershipRepository repository;
+  private final GroupRepository groupRepository;
+  private final GroupStateMachine groupStateMachine;
   private final MembershipMapper mapper;
   private final ApplicationEventPublisher events;
 
   @Override
   @Transactional
   public MembershipResponse enrollStudent(UUID groupId, EnrollStudentRequest request) {
+    Group group =
+        groupRepository
+            .findById(groupId)
+            .orElseThrow(() -> new NotFoundException("Group", groupId));
+    groupStateMachine.assertWritable(group);
     Membership saved = repository.save(mapper.toEntity(request, groupId));
     events.publishEvent(new StudentEnrolled(groupId, request.getUserId()));
     return mapper.toResponse(saved);

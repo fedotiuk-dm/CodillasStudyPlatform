@@ -27,9 +27,10 @@ class GradebookEventListenerTest {
   void delegates() {
     StudentEnrolled enrolled = new StudentEnrolled(UUID.randomUUID(), UUID.randomUUID());
     SubmissionGraded graded =
-        new SubmissionGraded(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 10);
+        new SubmissionGraded(
+            UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 10, 100, UUID.randomUUID());
     AttemptCompleted completed =
-        new AttemptCompleted(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 20);
+        new AttemptCompleted(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 20, 25, null);
 
     listener.on(enrolled);
     listener.on(graded);

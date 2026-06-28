@@ -11,6 +11,7 @@ import jakarta.persistence.UniqueConstraint;
 
 import de.codillas.shared.domain.BaseAuditableEntity;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -45,4 +46,11 @@ public class ProgressEntry extends BaseAuditableEntity {
 
   @Column(nullable = false)
   private int score;
+
+  @Column(name = "max_points", nullable = false)
+  @Builder.Default
+  private int maxPoints = 100;
+
+  @Column(name = "group_id")
+  private UUID groupId;
 }

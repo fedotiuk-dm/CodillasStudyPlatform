@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.5.0-create-rubrics
+      author: codillas
+      comment: Create rubrics table — one optional rubric per assignment (0.5.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: rubrics
+      changes:
+        - createTable:
+            tableName: rubrics
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: assignment_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }

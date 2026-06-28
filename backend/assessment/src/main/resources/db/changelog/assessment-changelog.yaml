@@ -20,3 +20,18 @@ databaseChangeLog:
   - include:
       file: changes/0.1.0/0.1.0-seed-assessment.yaml
       relativeToChangelogFile: true
+  # 0.2.0 — optimistic locking
+  - include:
+      file: changes/0.2.0/0.2.0-add-attempt-lock-version.yaml
+      relativeToChangelogFile: true
+  # 0.3.0 — lock_version on remaining tables (lock lives on BaseAuditableEntity)
+  - include:
+      file: changes/0.3.0/0.3.0-add-assessment-lock-version.yaml
+      relativeToChangelogFile: true
+  # 0.3.0 — assessment depth (attempt cap, timer, window, shuffle)
+  - include:
+      file: changes/0.3.0/0.3.0-add-test-config.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/0.3.0/0.3.0-attempt-number.yaml
+      relativeToChangelogFile: true

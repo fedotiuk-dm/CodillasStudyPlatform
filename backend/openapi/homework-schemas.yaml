@@ -1,7 +1,7 @@
 openapi: 3.0.4
 info:
   title: Codillas Homework schemas
-  version: 0.1.0
+  version: 0.3.0
 paths: {}
 components:
   schemas:
@@ -40,6 +40,16 @@ components:
         dueAt:
           type: string
           format: date-time
+        latePenaltyPctPerDay:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Percent deducted from the raw score per day late. Omit to disable.
+        maxLatePenaltyPct:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Cap on the cumulative late penalty.
     AssignmentResponse:
       type: object
       required:
@@ -66,6 +76,19 @@ components:
           format: date-time
         status:
           $ref: "#/components/schemas/AssignmentStatus"
+        latePenaltyPctPerDay:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Percent deducted from the raw score per day late. Omit to disable.
+        maxLatePenaltyPct:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Cap on the cumulative late penalty.
+        rubricId:
+          type: string
+          format: uuid
         createdAt:
           type: string
           format: date-time
@@ -121,6 +144,9 @@ components:
           $ref: "#/components/schemas/SubmissionStatus"
         content:
           type: string
+        late:
+          type: boolean
+          description: True when this submission was submitted after the assignment's due date.
         createdAt:
           type: string
           format: date-time
@@ -154,21 +180,50 @@ components:
         createdAt:
           type: string
           format: date-time
-    CreateGradeRequest:
+    CriterionScoreInput:
       type: object
       required:
-        - score
+        - criterionId
+        - points
+      properties:
+        criterionId:
+          type: string
+          format: uuid
+        points:
+          type: integer
+          minimum: 0
+    CriterionScoreResponse:
+      type: object
+      required:
+        - criterionId
+        - points
+      properties:
+        criterionId:
+          type: string
+          format: uuid
+        points:
+          type: integer
+    CreateGradeRequest:
+      type: object
       properties:
         score:
           type: integer
           minimum: 0
           maximum: 100
+          description: Free-form score; ignored when the assignment has a rubric.
+        criterionScores:
+          type: array
+          items:
+            $ref: "#/components/schemas/CriterionScoreInput"
+          description: Required when the assignment has a rubric; one entry per criterion.
     GradeResponse:
       type: object
       required:
         - id
         - submissionId
         - score
+        - effectiveScore
+        - maxPoints
         - gradedBy
       properties:
         id:
@@ -179,9 +234,74 @@ components:
           format: uuid
         score:
           type: integer
+          description: The raw score before any late penalty (Σ criterion points when a rubric is used).
+        effectiveScore:
+          type: integer
+          description: The score after the late penalty is applied.
+        maxPoints:
+          type: integer
+          description: The denominator — 100 for a flat grade, Σ criterion maxPoints for a rubric.
         gradedBy:
           type: string
           format: uuid
+        criterionScores:
+          type: array
+          items:
+            $ref: "#/components/schemas/CriterionScoreResponse"
         createdAt:
           type: string
           format: date-time
+    CreateRubricCriterionRequest:
+      type: object
+      required:
+        - label
+        - maxPoints
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 200
+        maxPoints:
+          type: integer
+          minimum: 1
+    CreateRubricRequest:
+      type: object
+      required:
+        - criteria
+      properties:
+        criteria:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/CreateRubricCriterionRequest"
+    RubricCriterionResponse:
+      type: object
+      required:
+        - id
+        - label
+        - maxPoints
+      properties:
+        id:
+          type: string
+          format: uuid
+        label:
+          type: string
+        maxPoints:
+          type: integer
+    RubricResponse:
+      type: object
+      required:
+        - id
+        - assignmentId
+        - criteria
+      properties:
+        id:
+          type: string
+          format: uuid
+        assignmentId:
+          type: string
+          format: uuid
+        criteria:
+          type: array
+          items:
+            $ref: "#/components/schemas/RubricCriterionResponse"

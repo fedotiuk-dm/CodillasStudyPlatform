@@ -183,6 +183,15 @@ class ChatServiceTest {
   }
 
   @Test
+  @DisplayName("isMember reflects the membership row")
+  void isMember_reflectsMembership() {
+    UUID roomId = UUID.randomUUID();
+    UUID userId = UUID.randomUUID();
+    when(memberRepository.existsByRoomIdAndUserId(roomId, userId)).thenReturn(true);
+    assertThat(service.isMember(roomId, userId)).isTrue();
+  }
+
+  @Test
   @DisplayName("onStudentEnrolled is idempotent for an existing membership")
   void onStudentEnrolled_existingMember_skips() {
     UUID groupId = UUID.randomUUID();

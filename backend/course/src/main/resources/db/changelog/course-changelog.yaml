@@ -19,3 +19,15 @@ databaseChangeLog:
   - include:
       file: changes/0.2.0/0.2.0-create-materials.yaml
       relativeToChangelogFile: true
+  # 0.3.0 — intra-module FK cascade + course delete
+  - include:
+      file: changes/0.3.0/0.3.0-add-course-fk-cascade.yaml
+      relativeToChangelogFile: true
+  # 0.3.0 — course lifecycle status
+  - include:
+      file: changes/0.3.0/0.3.0-add-course-status.yaml
+      relativeToChangelogFile: true
+  # 0.4.0 — lock_version on all tables (lock lives on BaseAuditableEntity)
+  - include:
+      file: changes/0.4.0/0.4.0-add-course-lock-version.yaml
+      relativeToChangelogFile: true

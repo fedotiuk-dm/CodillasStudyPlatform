@@ -46,7 +46,9 @@ class NotificationServiceTest {
   void onSubmissionGraded_notifiesStudent() {
     UUID submissionId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
-    SubmissionGraded event = new SubmissionGraded(submissionId, UUID.randomUUID(), studentId, 80);
+    SubmissionGraded event =
+        new SubmissionGraded(
+            submissionId, UUID.randomUUID(), studentId, 80, 100, UUID.randomUUID());
     when(mapper.toNotification(
             eq(studentId),
             eq(NotificationType.SUBMISSION_GRADED),

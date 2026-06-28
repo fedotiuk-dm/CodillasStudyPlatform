@@ -150,4 +150,72 @@ class AssessmentControllerIntegrationTest extends BaseIntegrationTest {
         .andExpect(jsonPath("$.id").value(firstAttemptId.toString()))
         .andExpect(jsonPath("$.status").value("IN_PROGRESS"));
   }
+
+  @Test
+  @DisplayName("a second attempt past the cap is rejected (409)")
+  void startAttempt_overCap_conflict() throws Exception {
+    UUID teacher = UUID.randomUUID();
+    UUID student = UUID.randomUUID();
+
+    String test =
+        mockMvc
+            .perform(
+                post("/api/tests")
+                    .with(as(teacher, "TEACHER"))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"title\":\"Capped\",\"maxAttempts\":1}"))
+            .andExpect(status().isCreated())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    UUID testId = UUID.fromString(JsonPath.read(test, "$.id"));
+    mockMvc
+        .perform(post("/api/tests/{testId}/publish", testId).with(as(teacher, "TEACHER")))
+        .andExpect(status().isOk());
+
+    String attempt =
+        mockMvc
+            .perform(post("/api/tests/{testId}/attempts", testId).with(as(student, "STUDENT")))
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.attemptNumber").value(1))
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    UUID attemptId = UUID.fromString(JsonPath.read(attempt, "$.id"));
+    mockMvc
+        .perform(post("/api/attempts/{attemptId}/submit", attemptId).with(as(student, "STUDENT")))
+        .andExpect(status().isOk());
+
+    // Cap reached → no new attempt.
+    mockMvc
+        .perform(post("/api/tests/{testId}/attempts", testId).with(as(student, "STUDENT")))
+        .andExpect(status().isConflict());
+  }
+
+  @Test
+  @DisplayName("starting an attempt after the availability window closes is rejected (409)")
+  void startAttempt_afterWindow_conflict() throws Exception {
+    UUID teacher = UUID.randomUUID();
+    UUID student = UUID.randomUUID();
+
+    String test =
+        mockMvc
+            .perform(
+                post("/api/tests")
+                    .with(as(teacher, "TEACHER"))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"title\":\"Closed\",\"availableUntil\":\"2000-01-01T00:00:00Z\"}"))
+            .andExpect(status().isCreated())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    UUID testId = UUID.fromString(JsonPath.read(test, "$.id"));
+    mockMvc
+        .perform(post("/api/tests/{testId}/publish", testId).with(as(teacher, "TEACHER")))
+        .andExpect(status().isOk());
+
+    mockMvc
+        .perform(post("/api/tests/{testId}/attempts", testId).with(as(student, "STUDENT")))
+        .andExpect(status().isConflict());
+  }
 }

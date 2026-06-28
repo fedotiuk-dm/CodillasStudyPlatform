@@ -160,17 +160,29 @@ MapStruct.
 
 The glue. Publishers don't know their consumers.
 
-| Event                 | Published by | Consumed by                                      |
-|-----------------------|--------------|--------------------------------------------------|
-| `StudentEnrolled`     | enrollment   | chat (add to channel), gradebook (init progress) |
-| `AssignmentPublished` | homework     | notification                                     |
-| `SubmissionGraded`    | homework     | gradebook, notification                          |
-| `AttemptCompleted`    | assessment   | gradebook, notification                          |
-| `MessagePosted`       | chat         | notification (if recipient offline)              |
+| Event                 | Published by | Consumed by                                                |
+|-----------------------|--------------|------------------------------------------------------------|
+| `StudentEnrolled`     | enrollment   | chat (add to channel), gradebook (init progress)           |
+| `AssignmentPublished` | homework     | notification                                               |
+| `SubmissionGraded`    | homework     | gradebook, notification                                    |
+| `AttemptCompleted`    | assessment   | gradebook, notification                                    |
+| `MessagePosted`       | chat         | notification (if recipient offline)                        |
+| `CoursePublished`     | course       | enrollment (course-status read model → group-create guard) |
+| `CourseArchived`      | course       | enrollment (course-status read model)                      |
+| `CourseDeleted`       | course       | enrollment (cascade-delete its cohorts)                    |
+| `GroupDeleted`        | enrollment   | chat, gradebook, homework, notification (purge read models)|
 
 Events are persisted via Spring Modulith's event publication registry
 (at-least-once, retried on restart) so a consumer failure never silently drops
 a notification or a gradebook update.
+
+**Decoupling note (P2c lifecycle):** `enrollment` validates "a group may only be
+created against a `PUBLISHED` course" **without depending on `course`** — no
+`codillas-course` Maven dependency and no `de.codillas.course.*` import. It keeps a
+local `course_status_view` read model, fed by `CoursePublished` / `CourseArchived`
+/ `CourseDeleted`, and checks that by id. A synchronous `CourseCatalog` read port
+was considered and **removed** in favour of this event-fed model, per the
+events + by-id rule (§6).
 
 ## 8. Persistence
 

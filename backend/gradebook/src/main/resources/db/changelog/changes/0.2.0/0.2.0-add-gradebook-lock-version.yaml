@@ -1,0 +1,39 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.2.0-add-progress_entries-lock-version
+      author: codillas
+      comment: Add optimistic-lock version column to progress_entries (0.2.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: progress_entries
+                columnName: lock_version
+      changes:
+        - addColumn:
+            tableName: progress_entries
+            columns:
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }
+  - changeSet:
+      id: 0.2.0-add-gradebook_memberships-lock-version
+      author: codillas
+      comment: Add optimistic-lock version column to gradebook_memberships (0.2.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: gradebook_memberships
+                columnName: lock_version
+      changes:
+        - addColumn:
+            tableName: gradebook_memberships
+            columns:
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }

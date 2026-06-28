@@ -21,10 +21,12 @@ import de.codillas.homework.api.dto.GradeResponse;
 import de.codillas.homework.api.dto.ReviewResponse;
 import de.codillas.homework.api.dto.SubmissionResponse;
 import de.codillas.homework.domain.SubmissionStateMachine;
+import de.codillas.homework.domain.model.Assignment;
 import de.codillas.homework.domain.model.Grade;
 import de.codillas.homework.domain.model.Review;
 import de.codillas.homework.domain.model.Submission;
 import de.codillas.homework.domain.model.SubmissionStatus;
+import de.codillas.homework.domain.repository.AssignmentRepository;
 import de.codillas.homework.domain.repository.GradeRepository;
 import de.codillas.homework.domain.repository.ReviewRepository;
 import de.codillas.homework.domain.repository.SubmissionRepository;
@@ -48,6 +50,16 @@ class SubmissionServiceTest {
   @Mock private SubmissionRepository repository;
   @Mock private ReviewRepository reviewRepository;
   @Mock private GradeRepository gradeRepository;
+  @Mock private AssignmentRepository assignmentRepository;
+
+  @Mock
+  private de.codillas.homework.domain.repository.RubricCriterionRepository
+      rubricCriterionRepository;
+
+  @Mock
+  private de.codillas.homework.domain.repository.GradeCriterionRepository gradeCriterionRepository;
+
+  @Mock private de.codillas.homework.domain.GradeCalculator gradeCalculator;
   @Mock private SubmissionMapper mapper;
   @Mock private ReviewMapper reviewMapper;
   @Mock private GradeMapper gradeMapper;
@@ -102,6 +114,9 @@ class SubmissionServiceTest {
     Submission submission = Submission.builder().version(1).build();
     SubmissionResponse dto = mock(SubmissionResponse.class);
     when(repository.findById(submissionId)).thenReturn(Optional.of(submission));
+    when(currentUser.isStaff()).thenReturn(true);
+    when(assignmentRepository.findById(any()))
+        .thenReturn(Optional.of(Assignment.builder().build()));
     when(repository.save(submission)).thenReturn(submission);
     when(mapper.toResponse(submission)).thenReturn(dto);
 
@@ -118,6 +133,7 @@ class SubmissionServiceTest {
     var request = mock(de.codillas.homework.api.dto.UpdateSubmissionRequest.class);
     when(request.getContent()).thenReturn("new text");
     when(repository.findById(submissionId)).thenReturn(Optional.of(submission));
+    when(currentUser.isStaff()).thenReturn(true);
     when(repository.save(submission)).thenReturn(submission);
     when(mapper.toResponse(submission)).thenReturn(dto);
 
@@ -137,6 +153,7 @@ class SubmissionServiceTest {
         Review.builder().submissionId(submissionId).reviewerId(reviewerId).comment("ok").build();
     ReviewResponse dto = mock(ReviewResponse.class);
     when(repository.findById(submissionId)).thenReturn(Optional.of(submission));
+    when(currentUser.isStaff()).thenReturn(true);
     when(currentUser.id()).thenReturn(reviewerId);
     when(reviewMapper.toEntity(request, submissionId, reviewerId)).thenReturn(review);
     when(reviewRepository.save(review)).thenReturn(review);
@@ -153,20 +170,54 @@ class SubmissionServiceTest {
     UUID assignmentId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
     UUID teacherId = UUID.randomUUID();
+    UUID groupId = UUID.randomUUID();
     Submission submission =
         Submission.builder().assignmentId(assignmentId).studentId(studentId).version(1).build();
-    CreateGradeRequest request = mock(CreateGradeRequest.class);
-    Grade grade = Grade.builder().submissionId(submissionId).score(90).gradedBy(teacherId).build();
     GradeResponse dto = mock(GradeResponse.class);
     when(repository.findById(submissionId)).thenReturn(Optional.of(submission));
+    when(currentUser.isStaff()).thenReturn(true);
     when(currentUser.id()).thenReturn(teacherId);
-    when(gradeMapper.toEntity(request, submissionId, teacherId)).thenReturn(grade);
-    when(gradeRepository.save(grade)).thenReturn(grade);
-    when(gradeMapper.toResponse(grade)).thenReturn(dto);
+    when(assignmentRepository.findById(assignmentId))
+        .thenReturn(Optional.of(Assignment.builder().groupId(groupId).title("HW").build()));
+    when(gradeRepository.findBySubmissionId(submissionId)).thenReturn(Optional.empty());
+    when(gradeRepository.save(any(Grade.class))).thenAnswer(inv -> inv.getArgument(0));
+    when(gradeCalculator.effectiveScore(eq(90), eq(0L), any(), any())).thenReturn(90);
+    when(gradeMapper.toResponse(any(Grade.class), any())).thenReturn(dto);
 
-    assertThat(service.gradeSubmission(submissionId, request)).isSameAs(dto);
+    assertThat(service.gradeSubmission(submissionId, new CreateGradeRequest().score(90)))
+        .isSameAs(dto);
     verify(stateMachine).transitionTo(submission, SubmissionStatus.GRADED);
-    verify(events).publishEvent(new SubmissionGraded(submissionId, assignmentId, studentId, 90));
+    verify(events)
+        .publishEvent(
+            new SubmissionGraded(submissionId, assignmentId, studentId, 90, 100, groupId));
+  }
+
+  @Test
+  @DisplayName(
+      "gradeSubmission tolerates a missing assignment row: flat score, null group (flag, don't"
+          + " block)")
+  void gradeSubmission_missingAssignment_flatScoreNullGroup() {
+    UUID submissionId = UUID.randomUUID();
+    UUID assignmentId = UUID.randomUUID();
+    UUID studentId = UUID.randomUUID();
+    UUID teacherId = UUID.randomUUID();
+    Submission submission =
+        Submission.builder().assignmentId(assignmentId).studentId(studentId).version(1).build();
+    GradeResponse dto = mock(GradeResponse.class);
+    when(repository.findById(submissionId)).thenReturn(Optional.of(submission));
+    when(currentUser.isStaff()).thenReturn(true);
+    when(currentUser.id()).thenReturn(teacherId);
+    when(assignmentRepository.findById(assignmentId)).thenReturn(Optional.empty());
+    when(gradeRepository.findBySubmissionId(submissionId)).thenReturn(Optional.empty());
+    when(gradeRepository.save(any(Grade.class))).thenAnswer(inv -> inv.getArgument(0));
+    when(gradeCalculator.effectiveScore(eq(91), eq(0L), any(), any())).thenReturn(91);
+    when(gradeMapper.toResponse(any(Grade.class), any())).thenReturn(dto);
+
+    assertThat(service.gradeSubmission(submissionId, new CreateGradeRequest().score(91)))
+        .isSameAs(dto);
+    verify(stateMachine).transitionTo(submission, SubmissionStatus.GRADED);
+    verify(events)
+        .publishEvent(new SubmissionGraded(submissionId, assignmentId, studentId, 91, 100, null));
   }
 
   @Test
@@ -176,11 +227,46 @@ class SubmissionServiceTest {
     Submission submission = Submission.builder().version(1).build();
     SubmissionResponse dto = mock(SubmissionResponse.class);
     when(repository.findById(submissionId)).thenReturn(Optional.of(submission));
+    when(currentUser.isStaff()).thenReturn(true);
     when(repository.save(submission)).thenReturn(submission);
     when(mapper.toResponse(submission)).thenReturn(dto);
 
     assertThat(service.returnSubmission(submissionId)).isSameAs(dto);
     verify(stateMachine).transitionTo(submission, SubmissionStatus.RETURNED);
+  }
+
+  @Test
+  @DisplayName("the owner may submit their own submission (non-staff)")
+  void submit_owner_allowed() {
+    UUID submissionId = UUID.randomUUID();
+    UUID owner = UUID.randomUUID();
+    Submission submission = Submission.builder().studentId(owner).version(1).build();
+    SubmissionResponse dto = mock(SubmissionResponse.class);
+    when(repository.findById(submissionId)).thenReturn(Optional.of(submission));
+    when(currentUser.isStaff()).thenReturn(false);
+    when(currentUser.id()).thenReturn(owner);
+    when(assignmentRepository.findById(any()))
+        .thenReturn(Optional.of(Assignment.builder().build()));
+    when(repository.save(submission)).thenReturn(submission);
+    when(mapper.toResponse(submission)).thenReturn(dto);
+
+    assertThat(service.submitSubmission(submissionId)).isSameAs(dto);
+    verify(stateMachine).transitionTo(submission, SubmissionStatus.SUBMITTED);
+  }
+
+  @Test
+  @DisplayName("a different student gets 404 (not 403) and never transitions the submission")
+  void submit_otherStudent_notFound() {
+    UUID submissionId = UUID.randomUUID();
+    Submission submission = Submission.builder().studentId(UUID.randomUUID()).version(1).build();
+    when(repository.findById(submissionId)).thenReturn(Optional.of(submission));
+    when(currentUser.isStaff()).thenReturn(false);
+    when(currentUser.id()).thenReturn(UUID.randomUUID());
+
+    org.assertj.core.api.Assertions.assertThatExceptionOfType(
+            de.codillas.shared.exception.NotFoundException.class)
+        .isThrownBy(() -> service.submitSubmission(submissionId));
+    verify(stateMachine, org.mockito.Mockito.never()).transitionTo(any(), any());
   }
 
   @Test

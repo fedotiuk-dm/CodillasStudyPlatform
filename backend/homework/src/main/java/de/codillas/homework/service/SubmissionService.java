@@ -26,4 +26,7 @@ public interface SubmissionService {
   GradeResponse gradeSubmission(UUID submissionId, CreateGradeRequest request);
 
   SubmissionResponse returnSubmission(UUID submissionId);
+
+  /** Delete the group's assignments and their submissions/reviews/grades (fed by GroupDeleted). */
+  void onGroupDeleted(UUID groupId);
 }

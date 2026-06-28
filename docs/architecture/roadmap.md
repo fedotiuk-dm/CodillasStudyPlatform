@@ -27,6 +27,31 @@ Deliberately deferred (YAGNI / your call): admin-panel shell, master OpenAPI agg
 file versioning/preview, assessment metadata-FieldRenderer + code question type, `MessagePosted`
 notifications (needs presence). **Future vision** (multi-tenant + payments) is separate, below.
 
+## ⚠️ Hardening to production (2026-06-28 backend audit)
+
+"Core complete" above means *feature-broad and architecturally sound* — **not yet production-grade**.
+A four-thread backend audit (2026-06-28) found the feature surface sits on three gaps that block
+real use. Master design spec: [`specs/2026-06-28-lms-hardening-design.md`](../superpowers/specs/2026-06-28-lms-hardening-design.md).
+Executable plans (run in this order):
+
+1. **P0 — object-level authorization** ([plan](../superpowers/plans/2026-06-28-p0-object-authz.md)) —
+   **security blocker.** Role gates exist; *ownership* checks don't. Five IDOR/auth-bypass holes
+   (read/modify another student's submission, attempt, grades; download any file by id; subscribe to
+   any chat room). Fix = apply `chat`'s existing `requireMember` discipline everywhere + a file-access
+   SPI + a WS subscription interceptor.
+2. **P1 — correctness & integrity** ([plan](../superpowers/plans/2026-06-28-p1-correctness.md)) —
+   optimistic locking (attempt-submit race), late-flag, grade upsert, file size/type limits, delete
+   endpoints + FK cascades + cleanup events, and **wiring the dead email channel** (`RecipientEmailResolver`
+   is a no-op stub today — zero emails send).
+3. **P2a — assessment depth** ([plan](../superpowers/plans/2026-06-28-p2a-assessment-depth.md)) —
+   attempt limits, timer + control window, partial credit, deterministic shuffle.
+4. **P2b — grading model** ([plan](../superpowers/plans/2026-06-28-p2b-grading-model.md)) —
+   late penalties, rubrics, final course grade (points-weighted percent).
+5. **P2c — course/cohort lifecycle** ([plan](../superpowers/plans/2026-06-28-p2c-lifecycle.md)) —
+   Course DRAFT/PUBLISHED/ARCHIVED + Group DRAFT/RUNNING/ARCHIVED state machines.
+
+The per-module table below predates this audit; treat the spec as the source of truth for the gaps.
+
 ## Legend
 
 - **stub** — scaffold only (entity + CRUD plumbing), no real domain logic.

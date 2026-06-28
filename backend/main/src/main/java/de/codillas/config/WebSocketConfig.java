@@ -32,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
   private final StompAuthInterceptor stompAuthInterceptor;
+  private final ChatSubscriptionInterceptor chatSubscriptionInterceptor;
 
   @Override
   public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -47,7 +48,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
   @Override
   public void configureClientInboundChannel(ChannelRegistration registration) {
-    registration.interceptors(stompAuthInterceptor);
+    registration.interceptors(stompAuthInterceptor, chatSubscriptionInterceptor);
   }
 
   @Bean

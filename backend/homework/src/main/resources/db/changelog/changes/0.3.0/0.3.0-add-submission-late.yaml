@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.3.0-add-submission-late
+      author: codillas
+      comment: Add submitted_at + late flag to submissions (0.3.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: submissions
+                columnName: late
+      changes:
+        - addColumn:
+            tableName: submissions
+            columns:
+              - column:
+                  name: submitted_at
+                  type: timestamptz
+              - column:
+                  name: late
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints: { nullable: false }

@@ -1,0 +1,49 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.3.0-fk-sections-course
+      author: codillas
+      comment: FK sections.course_id -> courses.id ON DELETE CASCADE (0.3.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - foreignKeyConstraintExists: { foreignKeyName: fk_sections_course }
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_sections_course
+            baseTableName: sections
+            baseColumnNames: course_id
+            referencedTableName: courses
+            referencedColumnNames: id
+            onDelete: CASCADE
+  - changeSet:
+      id: 0.3.0-fk-lessons-section
+      author: codillas
+      comment: FK lessons.section_id -> sections.id ON DELETE CASCADE (0.3.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - foreignKeyConstraintExists: { foreignKeyName: fk_lessons_section }
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_lessons_section
+            baseTableName: lessons
+            baseColumnNames: section_id
+            referencedTableName: sections
+            referencedColumnNames: id
+            onDelete: CASCADE
+  - changeSet:
+      id: 0.3.0-fk-materials-lesson
+      author: codillas
+      comment: FK materials.lesson_id -> lessons.id ON DELETE CASCADE (0.3.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - foreignKeyConstraintExists: { foreignKeyName: fk_materials_lesson }
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_materials_lesson
+            baseTableName: materials
+            baseColumnNames: lesson_id
+            referencedTableName: lessons
+            referencedColumnNames: id
+            onDelete: CASCADE

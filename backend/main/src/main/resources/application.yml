@@ -6,10 +6,18 @@ spring:
     problemdetails:
       enabled: true            # RFC 9457 ProblemDetail for framework exceptions
 
+  servlet:
+    multipart:
+      max-file-size: 25MB
+      max-request-size: 25MB
+
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/codillas}
     username: ${DB_USER:codillas}
     password: ${DB_PASSWORD:codillas}
+    # Boot 4.1: take a pooled connection only when a statement actually runs (not at
+    # @Transactional entry) via LazyConnectionDataSourceProxy. Effective because open-in-view=false.
+    connection-fetch: lazy
 
   jpa:
     hibernate:
@@ -41,6 +49,17 @@ codillas:
     region: ${FILES_REGION:us-east-1}
     access-key: ${FILES_ACCESS_KEY:minioadmin}
     secret-key: ${FILES_SECRET_KEY:minioadmin}
+    allowed-content-types:
+      - application/pdf
+      - image/png
+      - image/jpeg
+      - image/gif
+      - text/plain
+      - application/zip
+      - application/msword
+      - application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      - application/vnd.openxmlformats-officedocument.presentationml.presentation
+      - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
 
 server:
   port: ${SERVER_PORT:8081}

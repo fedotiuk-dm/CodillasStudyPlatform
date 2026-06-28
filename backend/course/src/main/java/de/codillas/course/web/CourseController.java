@@ -43,14 +43,34 @@ public class CourseController implements CourseApi {
 
   @Override
   @RequiresAuthenticated
-  public ResponseEntity<CourseListResponse> listCourses(Pageable pageable) {
-    return ResponseEntity.ok(service.listCourses(pageable));
+  public ResponseEntity<CourseListResponse> listCourses(
+      de.codillas.course.api.dto.CourseStatus status, Pageable pageable) {
+    return ResponseEntity.ok(service.listCourses(status, pageable));
+  }
+
+  @Override
+  @RequiresAdmin
+  public ResponseEntity<CourseResponse> publishCourse(UUID courseId) {
+    return ResponseEntity.ok(service.publishCourse(courseId));
+  }
+
+  @Override
+  @RequiresAdmin
+  public ResponseEntity<CourseResponse> archiveCourse(UUID courseId) {
+    return ResponseEntity.ok(service.archiveCourse(courseId));
   }
 
   @Override
   @RequiresAuthenticated
   public ResponseEntity<CourseDetailResponse> getCourse(UUID courseId) {
     return ResponseEntity.ok(service.getCourse(courseId));
+  }
+
+  @Override
+  @RequiresAdmin
+  public ResponseEntity<Void> deleteCourse(UUID courseId) {
+    service.deleteCourse(courseId);
+    return ResponseEntity.noContent().build();
   }
 
   @Override

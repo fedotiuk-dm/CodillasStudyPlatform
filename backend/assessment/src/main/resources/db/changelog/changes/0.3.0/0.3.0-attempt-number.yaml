@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.3.0-attempt-number
+      author: codillas
+      comment: Multiple attempts — attempt_number + started_at; re-key the unique constraint (0.3.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: attempts
+                columnName: attempt_number
+      changes:
+        - addColumn:
+            tableName: attempts
+            columns:
+              - column:
+                  name: attempt_number
+                  type: int
+                  defaultValueNumeric: 1
+                  constraints: { nullable: false }
+              - column:
+                  name: started_at
+                  type: timestamptz
+        - update:
+            tableName: attempts
+            columns:
+              - column: { name: started_at, valueComputed: created_at }
+            where: started_at IS NULL
+        - dropUniqueConstraint:
+            tableName: attempts
+            constraintName: uq_attempts_test_student
+        - addUniqueConstraint:
+            tableName: attempts
+            columnNames: test_id, student_id, attempt_number
+            constraintName: uq_attempts_test_student_number

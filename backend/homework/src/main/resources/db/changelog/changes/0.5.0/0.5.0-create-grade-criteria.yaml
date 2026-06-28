@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.5.0-create-grade-criteria
+      author: codillas
+      comment: Create grade_criteria table — per-criterion breakdown of a grade (0.5.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: grade_criteria
+      changes:
+        - createTable:
+            tableName: grade_criteria
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: grade_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: criterion_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: points
+                  type: int
+                  constraints: { nullable: false }
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }

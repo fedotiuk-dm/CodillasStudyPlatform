@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.2.0-add-attempt-lock-version
+      author: codillas
+      comment: Add optimistic-lock version column to attempts (0.2.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: attempts
+                columnName: lock_version
+      changes:
+        - addColumn:
+            tableName: attempts
+            columns:
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }

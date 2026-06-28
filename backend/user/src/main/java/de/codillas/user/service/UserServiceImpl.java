@@ -2,10 +2,12 @@ package de.codillas.user.service;
 
 import java.util.UUID;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import de.codillas.shared.event.UserEmailChanged;
 import de.codillas.shared.security.CurrentUser;
 import de.codillas.user.api.dto.UpdateProfileRequest;
 import de.codillas.user.api.dto.UserProfile;
@@ -26,6 +28,7 @@ public class UserServiceImpl implements UserService {
   private final ProfileRepository repository;
   private final ProfileMapper mapper;
   private final CurrentUser currentUser;
+  private final ApplicationEventPublisher events;
 
   /**
    * Returns the caller's profile, provisioning one on first access (i.e. right after a Keycloak
@@ -41,9 +44,17 @@ public class UserServiceImpl implements UserService {
 
   /** Creates and persists a profile on first login, seeding the display name from the JWT. */
   private Profile provisionFromToken(UUID userId) {
+    String email = currentUser.email();
     Profile profile =
         repository.save(
-            Profile.builder().userId(userId).displayName(currentUser.displayName()).build());
+            Profile.builder()
+                .userId(userId)
+                .displayName(currentUser.displayName())
+                .email(email)
+                .build());
+    if (email != null) {
+      events.publishEvent(new UserEmailChanged(userId, email));
+    }
     log.info("Auto-created profile for user {} on first access", userId);
     return profile;
   }

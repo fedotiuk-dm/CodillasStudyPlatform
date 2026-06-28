@@ -11,3 +11,11 @@ databaseChangeLog:
   - include:
       file: changes/0.1.0/0.1.0-seed-gradebook.yaml
       relativeToChangelogFile: true
+  # 0.2.0 — lock_version on all tables (lock lives on BaseAuditableEntity)
+  - include:
+      file: changes/0.2.0/0.2.0-add-gradebook-lock-version.yaml
+      relativeToChangelogFile: true
+  # 0.2.0 — weighting denominator + group scope on progress entries
+  - include:
+      file: changes/0.2.0/0.2.0-add-progress-weighting.yaml
+      relativeToChangelogFile: true

@@ -18,11 +18,14 @@ import de.codillas.assessment.api.dto.QuestionResponse;
 import de.codillas.assessment.api.dto.QuestionType;
 import de.codillas.assessment.api.dto.TestListResponse;
 import de.codillas.assessment.api.dto.TestResponse;
+import de.codillas.assessment.domain.ShuffleOrder;
 import de.codillas.assessment.domain.TestStateMachine;
+import de.codillas.assessment.domain.model.Attempt;
 import de.codillas.assessment.domain.model.Option;
 import de.codillas.assessment.domain.model.Question;
 import de.codillas.assessment.domain.model.Test;
 import de.codillas.assessment.domain.model.TestStatus;
+import de.codillas.assessment.domain.repository.AttemptRepository;
 import de.codillas.assessment.domain.repository.OptionRepository;
 import de.codillas.assessment.domain.repository.QuestionRepository;
 import de.codillas.assessment.domain.repository.TestRepository;
@@ -30,6 +33,7 @@ import de.codillas.assessment.mapper.QuestionMapper;
 import de.codillas.assessment.mapper.TestMapper;
 import de.codillas.shared.exception.BadRequestException;
 import de.codillas.shared.exception.NotFoundException;
+import de.codillas.shared.security.CurrentUser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -44,6 +48,8 @@ public class TestServiceImpl implements TestService {
   private final TestMapper mapper;
   private final QuestionMapper questionMapper;
   private final TestStateMachine stateMachine;
+  private final CurrentUser currentUser;
+  private final AttemptRepository attemptRepository;
 
   @Override
   @Transactional
@@ -57,7 +63,7 @@ public class TestServiceImpl implements TestService {
   public TestResponse publishTest(UUID testId) {
     Test test = findByIdOrThrow(testId);
     stateMachine.transitionTo(test, TestStatus.PUBLISHED);
-    return toTestResponse(repository.save(test));
+    return toTestResponse(repository.save(test), null);
   }
 
   @Override
@@ -87,7 +93,13 @@ public class TestServiceImpl implements TestService {
 
   @Override
   public TestResponse getTest(UUID testId) {
-    return toTestResponse(findByIdOrThrow(testId));
+    Test test = findByIdOrThrow(testId);
+    UUID seed =
+        attemptRepository
+            .findFirstByTestIdAndStudentIdOrderByAttemptNumberDesc(testId, currentUser.id())
+            .map(Attempt::getId)
+            .orElse(null);
+    return toTestResponse(test, seed);
   }
 
   @Override
@@ -98,9 +110,12 @@ public class TestServiceImpl implements TestService {
             : repository.findByLessonId(lessonId, pageable));
   }
 
-  private TestResponse toTestResponse(Test test) {
+  private TestResponse toTestResponse(Test test, UUID shuffleSeed) {
     List<Question> questions =
         questionRepository.findByTestId(test.getId(), QuestionRepository.BY_ORDER);
+    if (shuffleSeed != null && test.isShuffleQuestions()) {
+      questions = ShuffleOrder.seededBy(shuffleSeed).apply(questions);
+    }
     Map<UUID, List<Option>> optionsByQuestion =
         questions.isEmpty()
             ? Map.of()
@@ -113,11 +128,13 @@ public class TestServiceImpl implements TestService {
     List<QuestionResponse> questionResponses =
         questions.stream()
             .map(
-                q ->
-                    questionMapper.toResponse(
-                        q,
-                        questionMapper.toOptionResponses(
-                            optionsByQuestion.getOrDefault(q.getId(), List.of()))))
+                q -> {
+                  List<Option> options = optionsByQuestion.getOrDefault(q.getId(), List.of());
+                  if (shuffleSeed != null && test.isShuffleOptions()) {
+                    options = ShuffleOrder.seededBy(shuffleSeed).combine(q.getId()).apply(options);
+                  }
+                  return questionMapper.toResponse(q, questionMapper.toOptionResponses(options));
+                })
             .toList();
     return mapper.toResponse(test, questionResponses);
   }

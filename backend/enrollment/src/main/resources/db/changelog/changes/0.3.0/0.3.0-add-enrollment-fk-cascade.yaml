@@ -1,0 +1,49 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.3.0-fk-group-members-group
+      author: codillas
+      comment: FK group_members.group_id -> study_groups.id ON DELETE CASCADE (0.3.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - foreignKeyConstraintExists: { foreignKeyName: fk_group_members_group }
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_group_members_group
+            baseTableName: group_members
+            baseColumnNames: group_id
+            referencedTableName: study_groups
+            referencedColumnNames: id
+            onDelete: CASCADE
+  - changeSet:
+      id: 0.3.0-fk-scheduled-lessons-group
+      author: codillas
+      comment: FK scheduled_lessons.group_id -> study_groups.id ON DELETE CASCADE (0.3.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - foreignKeyConstraintExists: { foreignKeyName: fk_scheduled_lessons_group }
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_scheduled_lessons_group
+            baseTableName: scheduled_lessons
+            baseColumnNames: group_id
+            referencedTableName: study_groups
+            referencedColumnNames: id
+            onDelete: CASCADE
+  - changeSet:
+      id: 0.3.0-fk-attendance-scheduled-lesson
+      author: codillas
+      comment: FK attendance.scheduled_lesson_id -> scheduled_lessons.id ON DELETE CASCADE (0.3.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - foreignKeyConstraintExists: { foreignKeyName: fk_attendance_scheduled_lesson }
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_attendance_scheduled_lesson
+            baseTableName: attendance
+            baseColumnNames: scheduled_lesson_id
+            referencedTableName: scheduled_lessons
+            referencedColumnNames: id
+            onDelete: CASCADE

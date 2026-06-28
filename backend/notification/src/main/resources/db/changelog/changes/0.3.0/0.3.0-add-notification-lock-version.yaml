@@ -1,0 +1,58 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.3.0-add-notifications-lock-version
+      author: codillas
+      comment: Add optimistic-lock version column to notifications (0.3.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: notifications
+                columnName: lock_version
+      changes:
+        - addColumn:
+            tableName: notifications
+            columns:
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }
+  - changeSet:
+      id: 0.3.0-add-notification_memberships-lock-version
+      author: codillas
+      comment: Add optimistic-lock version column to notification_memberships (0.3.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: notification_memberships
+                columnName: lock_version
+      changes:
+        - addColumn:
+            tableName: notification_memberships
+            columns:
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }
+  - changeSet:
+      id: 0.3.0-add-recipient_email-lock-version
+      author: codillas
+      comment: Add optimistic-lock version column to recipient_email (0.3.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: recipient_email
+                columnName: lock_version
+      changes:
+        - addColumn:
+            tableName: recipient_email
+            columns:
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }

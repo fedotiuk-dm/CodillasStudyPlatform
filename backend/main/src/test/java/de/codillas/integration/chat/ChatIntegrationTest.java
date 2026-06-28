@@ -1,5 +1,6 @@
 package de.codillas.integration.chat;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -16,6 +17,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor;
 import org.springframework.test.web.servlet.MockMvc;
 
+import de.codillas.enrollment.domain.model.CourseStatusView;
+import de.codillas.enrollment.domain.repository.CourseStatusViewRepository;
 import de.codillas.integration.BaseIntegrationTest;
 
 import com.jayway.jsonpath.JsonPath;
@@ -26,11 +29,43 @@ import org.junit.jupiter.api.Test;
 class ChatIntegrationTest extends BaseIntegrationTest {
 
   @Autowired private MockMvc mockMvc;
+  @Autowired private CourseStatusViewRepository courseStatus;
 
   private static JwtRequestPostProcessor as(UUID userId, String role) {
     return jwt()
         .jwt(j -> j.subject(userId.toString()))
         .authorities(new SimpleGrantedAuthority("ROLE_" + role));
+  }
+
+  /**
+   * Create a DRAFT course, publish it, and await enrollment's local read model catching up via the
+   * {@code CoursePublished} event — a group can only be created against a PUBLISHED course.
+   */
+  private UUID createPublishedCourse() throws Exception {
+    String course =
+        mockMvc
+            .perform(
+                post("/api/courses")
+                    .with(as(UUID.randomUUID(), "ADMIN"))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"name\":\"Course %s\"}".formatted(UUID.randomUUID())))
+            .andExpect(status().isCreated())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    UUID courseId = UUID.fromString(JsonPath.read(course, "$.id"));
+    mockMvc
+        .perform(post("/api/courses/{id}/publish", courseId).with(as(UUID.randomUUID(), "ADMIN")))
+        .andExpect(status().isOk());
+    await()
+        .atMost(Duration.ofSeconds(15))
+        .untilAsserted(
+            () ->
+                assertThat(courseStatus.findById(courseId))
+                    .get()
+                    .extracting(CourseStatusView::getStatus)
+                    .isEqualTo("PUBLISHED"));
+    return courseId;
   }
 
   @Test
@@ -79,7 +114,22 @@ class ChatIntegrationTest extends BaseIntegrationTest {
   void enrolment_createsGroupChannel() throws Exception {
     UUID admin = UUID.randomUUID();
     UUID student = UUID.randomUUID();
-    UUID groupId = UUID.randomUUID();
+
+    // Persist a real study_group first — group_members now FKs to study_groups.
+    String group =
+        mockMvc
+            .perform(
+                post("/api/groups")
+                    .with(as(admin, "ADMIN"))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(
+                        "{\"name\":\"Cohort\",\"courseId\":\"%s\",\"teacherId\":\"%s\"}"
+                            .formatted(createPublishedCourse(), UUID.randomUUID())))
+            .andExpect(status().isCreated())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    UUID groupId = UUID.fromString(JsonPath.read(group, "$.id"));
 
     mockMvc
         .perform(

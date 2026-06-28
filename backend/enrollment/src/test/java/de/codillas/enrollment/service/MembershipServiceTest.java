@@ -6,13 +6,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.context.ApplicationEventPublisher;
 
 import de.codillas.enrollment.api.dto.EnrollStudentRequest;
 import de.codillas.enrollment.api.dto.MembershipResponse;
+import de.codillas.enrollment.domain.GroupStateMachine;
+import de.codillas.enrollment.domain.model.Group;
 import de.codillas.enrollment.domain.model.Membership;
+import de.codillas.enrollment.domain.repository.GroupRepository;
 import de.codillas.enrollment.domain.repository.MembershipRepository;
 import de.codillas.enrollment.mapper.MembershipMapper;
 import de.codillas.shared.event.StudentEnrolled;
@@ -29,6 +33,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class MembershipServiceTest {
 
   @Mock private MembershipRepository repository;
+  @Mock private GroupRepository groupRepository;
+  @Mock private GroupStateMachine groupStateMachine;
   @Mock private MembershipMapper mapper;
   @Mock private ApplicationEventPublisher events;
   @InjectMocks private MembershipServiceImpl service;
@@ -43,6 +49,7 @@ class MembershipServiceTest {
     Membership toSave = Membership.builder().groupId(groupId).userId(userId).build();
     Membership saved = Membership.builder().groupId(groupId).userId(userId).build();
     MembershipResponse dto = new MembershipResponse(UUID.randomUUID(), groupId, userId);
+    when(groupRepository.findById(groupId)).thenReturn(Optional.of(Group.builder().build()));
     when(mapper.toEntity(request, groupId)).thenReturn(toSave);
     when(repository.save(toSave)).thenReturn(saved);
     when(mapper.toResponse(saved)).thenReturn(dto);

@@ -2,7 +2,7 @@ openapi: 3.0.4
 info:
   title: Codillas Enrollment API
   description: Cohorts (groups) running a course on a schedule.
-  version: 0.2.0
+  version: 0.3.0
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -27,6 +27,11 @@ paths:
         - $ref: "common.yaml#/components/parameters/PageNumber"
         - $ref: "common.yaml#/components/parameters/PageSize"
         - $ref: "common.yaml#/components/parameters/Sort"
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: "enrollment-schemas.yaml#/components/schemas/GroupStatus"
       responses:
         "200":
           description: Paginated groups
@@ -60,6 +65,84 @@ paths:
           $ref: "common.yaml#/components/responses/Unauthorized"
         "403":
           $ref: "common.yaml#/components/responses/Forbidden"
+        "409":
+          $ref: "common.yaml#/components/responses/Conflict"
+  /api/groups/{groupId}/start:
+    post:
+      tags:
+        - enrollment
+      operationId: startGroup
+      summary: Start a draft group (mark the cohort RUNNING)
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Running
+          content:
+            application/json:
+              schema:
+                $ref: "enrollment-schemas.yaml#/components/schemas/GroupResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "common.yaml#/components/responses/Conflict"
+  /api/groups/{groupId}/archive:
+    post:
+      tags:
+        - enrollment
+      operationId: archiveGroup
+      summary: Archive a group (retire the cohort; read-only thereafter)
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Archived
+          content:
+            application/json:
+              schema:
+                $ref: "enrollment-schemas.yaml#/components/schemas/GroupResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "common.yaml#/components/responses/Conflict"
+  /api/groups/{groupId}:
+    delete:
+      tags:
+        - enrollment
+      operationId: deleteGroup
+      summary: Delete a group and its memberships, schedule and attendance
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Deleted
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
   /api/me/groups:
     get:
       tags:

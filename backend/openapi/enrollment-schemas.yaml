@@ -1,10 +1,17 @@
 openapi: 3.0.4
 info:
   title: Codillas Enrollment schemas
-  version: 0.2.0
+  version: 0.3.0
 paths: {}
 components:
   schemas:
+    GroupStatus:
+      type: string
+      description: DRAFT is being set up; RUNNING is an active cohort; ARCHIVED is historical (read-only).
+      enum:
+        - DRAFT
+        - RUNNING
+        - ARCHIVED
     GroupResponse:
       type: object
       required:
@@ -12,6 +19,7 @@ components:
         - name
         - courseId
         - teacherId
+        - status
       properties:
         id:
           type: string
@@ -26,6 +34,8 @@ components:
         teacherId:
           type: string
           format: uuid
+        status:
+          $ref: "#/components/schemas/GroupStatus"
         startDate:
           type: string
           format: date

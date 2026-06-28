@@ -9,12 +9,17 @@ import jakarta.persistence.UniqueConstraint;
 
 import de.codillas.shared.domain.BaseAuditableEntity;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-/** The numeric grade (0–100) a teacher gives a submission. One grade per submission. */
+/**
+ * The grade a teacher gives a submission. One grade per submission. {@code score} is the raw score;
+ * {@code effectiveScore} is what remains after the assignment's late penalty; {@code maxPoints} is
+ * the denominator (100 for a flat grade, Σ criterion maxPoints for a rubric).
+ */
 @Entity
 @Table(name = "grades", uniqueConstraints = @UniqueConstraint(columnNames = {"submission_id"}))
 @Getter
@@ -28,6 +33,13 @@ public class Grade extends BaseAuditableEntity {
 
   @Column(nullable = false)
   private int score;
+
+  @Column(name = "effective_score", nullable = false)
+  private int effectiveScore;
+
+  @Column(name = "max_points", nullable = false)
+  @Builder.Default
+  private int maxPoints = 100;
 
   @Column(name = "graded_by", nullable = false)
   private UUID gradedBy;

@@ -2,7 +2,7 @@ openapi: 3.0.4
 info:
   title: Codillas Gradebook API
   description: Read-only progress journal, fed by domain events.
-  version: 0.1.0
+  version: 0.2.0
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -37,6 +37,8 @@ paths:
                 $ref: "gradebook-schemas.yaml#/components/schemas/StudentGradebookResponse"
         "401":
           $ref: "common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
   /api/gradebook/groups/{groupId}:
     get:
       tags: [gradebook]
@@ -60,3 +62,5 @@ paths:
           $ref: "common.yaml#/components/responses/Unauthorized"
         "403":
           $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"

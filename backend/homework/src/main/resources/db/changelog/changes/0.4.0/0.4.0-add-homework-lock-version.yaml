@@ -1,0 +1,58 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.4.0-add-assignments-lock-version
+      author: codillas
+      comment: Add optimistic-lock version column to assignments (0.4.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: assignments
+                columnName: lock_version
+      changes:
+        - addColumn:
+            tableName: assignments
+            columns:
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }
+  - changeSet:
+      id: 0.4.0-add-reviews-lock-version
+      author: codillas
+      comment: Add optimistic-lock version column to reviews (0.4.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: reviews
+                columnName: lock_version
+      changes:
+        - addColumn:
+            tableName: reviews
+            columns:
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }
+  - changeSet:
+      id: 0.4.0-add-grades-lock-version
+      author: codillas
+      comment: Add optimistic-lock version column to grades (0.4.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: grades
+                columnName: lock_version
+      changes:
+        - addColumn:
+            tableName: grades
+            columns:
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }

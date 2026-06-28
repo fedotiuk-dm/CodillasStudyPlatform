@@ -1,5 +1,6 @@
 package de.codillas.assessment.mapper;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,7 +29,7 @@ public interface AttemptMapper {
   List<AnswerResponse> toAnswerResponses(List<Answer> answers);
 
   @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
-  Attempt toEntity(UUID testId, UUID studentId);
+  Attempt toEntity(UUID testId, UUID studentId, int attemptNumber, Instant startedAt);
 
   @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
   Answer toAnswer(SaveAnswerRequest request, UUID attemptId);
