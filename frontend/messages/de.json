@@ -365,7 +365,21 @@
     "answered": "Beantwortet",
     "unanswered": "Nicht beantwortet",
     "reviewAnswers": "Überprüfen Sie Ihre Antworten vor dem Absenden.",
-    "questionProgress": "Frage {current} / {total}"
+    "questionProgress": "Frage {current} / {total}",
+    "configTitle": "Durchführungseinstellungen",
+    "maxAttemptsLabel": "Max. Versuche",
+    "durationLabel": "Zeitlimit (Minuten)",
+    "availableFromLabel": "Verfügbar ab",
+    "availableUntilLabel": "Verfügbar bis",
+    "unlimited": "Unbegrenzt",
+    "untimed": "Ohne Zeitlimit",
+    "anytime": "Jederzeit",
+    "shuffleQuestions": "Fragen mischen",
+    "shuffleOptions": "Optionen mischen",
+    "attemptNumber": "Versuch #{number}",
+    "timeUp": "Die Zeit ist um — dein Versuch wird abgegeben.",
+    "availableUntilNote": "Verfügbar bis {date}",
+    "availableFromNote": "Verfügbar ab {date}"
   },
   "admin": {
     "title": "Admin-Übersicht",

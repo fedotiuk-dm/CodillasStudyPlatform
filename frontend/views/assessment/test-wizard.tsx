@@ -16,6 +16,7 @@ import {
 } from "@/lib/api/assessment/assessment/assessment";
 import { type DraftQuestion, QuestionListEditor } from "./question-list-editor";
 import { getTestTemplates, type TestTemplate } from "./templates";
+import { EMPTY_TEST_CONFIG, type TestConfig, TestConfigFields } from "./test-config-fields";
 
 type Step = 0 | 1 | 2;
 
@@ -41,6 +42,7 @@ export function TestWizard({
   const [step, setStep] = useState<Step>(0);
   const [title, setTitle] = useState("");
   const [questions, setQuestions] = useState<DraftQuestion[]>([]);
+  const [config, setConfig] = useState<TestConfig>(EMPTY_TEST_CONFIG);
   const [publishNow, setPublishNow] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -48,6 +50,7 @@ export function TestWizard({
     setStep(0);
     setTitle("");
     setQuestions([]);
+    setConfig(EMPTY_TEST_CONFIG);
     setPublishNow(false);
     setSubmitting(false);
   }
@@ -74,7 +77,7 @@ export function TestWizard({
     }
     setSubmitting(true);
     try {
-      const test = await createTest.mutateAsync({ data: { title: title.trim() } });
+      const test = await createTest.mutateAsync({ data: { title: title.trim(), ...config } });
       const requests = toRequests(questions);
       for (let i = 0; i < requests.length; i++) {
         try {
@@ -178,6 +181,10 @@ export function TestWizard({
               </li>
             ))}
           </ol>
+          <TestConfigFields
+            value={config}
+            onChange={(patch) => setConfig((c) => ({ ...c, ...patch }))}
+          />
           <label htmlFor="publish-now" className="flex items-center gap-2 text-sm">
             <Checkbox
               id="publish-now"

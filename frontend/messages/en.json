@@ -365,7 +365,21 @@
     "answered": "Answered",
     "unanswered": "Not answered",
     "reviewAnswers": "Review your answers before submitting.",
-    "questionProgress": "Question {current} / {total}"
+    "questionProgress": "Question {current} / {total}",
+    "configTitle": "Delivery settings",
+    "maxAttemptsLabel": "Max attempts",
+    "durationLabel": "Time limit (minutes)",
+    "availableFromLabel": "Available from",
+    "availableUntilLabel": "Available until",
+    "unlimited": "Unlimited",
+    "untimed": "Untimed",
+    "anytime": "Anytime",
+    "shuffleQuestions": "Shuffle questions",
+    "shuffleOptions": "Shuffle options",
+    "attemptNumber": "Attempt #{number}",
+    "timeUp": "Time is up — submitting your attempt.",
+    "availableUntilNote": "Available until {date}",
+    "availableFromNote": "Available from {date}"
   },
   "admin": {
     "title": "Admin overview",

@@ -12,6 +12,7 @@ import {
   useSubmitAttempt,
 } from "@/lib/api/assessment/assessment/assessment";
 import type { AttemptResponse } from "@/lib/api/assessment/model";
+import { AttemptHeader } from "./attempt-header";
 import { type AnswerDraft, QuestionAnswerInput } from "./question-answer-input";
 import { ResultPanel } from "./result-panel";
 
@@ -65,6 +66,12 @@ export function AttemptWizard({
   const onReview = step === questions.length;
   const submitted = attempt.status !== "IN_PROGRESS";
 
+  // Timed tests count down from the attempt's start; auto-submit when the clock hits zero.
+  const deadline =
+    test?.durationMinutes && attempt.startedAt
+      ? new Date(attempt.startedAt).getTime() + test.durationMinutes * 60_000
+      : undefined;
+
   function setAnswer(questionId: string, patch: Partial<AnswerDraft>) {
     setAnswers((prev) => {
       const base: AnswerDraft = prev[questionId] ?? { selectedOptionIds: [], text: "" };
@@ -95,6 +102,12 @@ export function AttemptWizard({
       }
     }
     setStep((s) => Math.min(questions.length, s + 1));
+  }
+
+  function onAutoSubmit() {
+    if (submitted) return;
+    toast.warning(t("timeUp"));
+    void onSubmit();
   }
 
   async function onSubmit() {
@@ -132,6 +145,15 @@ export function AttemptWizard({
       submitLabel={submitted ? t("wizardBack") : t("submitAttempt")}
       submittingLabel={t("submitting")}
     >
+      {!submitted && (
+        <AttemptHeader
+          attemptNumber={attempt.attemptNumber}
+          deadline={deadline}
+          availableFrom={test?.availableFrom}
+          availableUntil={test?.availableUntil}
+          onExpire={onAutoSubmit}
+        />
+      )}
       {!test ? (
         <p className="text-muted-foreground text-sm">{tc("loading")}</p>
       ) : submitted ? (

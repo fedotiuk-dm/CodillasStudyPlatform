@@ -365,7 +365,21 @@
     "answered": "Відповідь надано",
     "unanswered": "Без відповіді",
     "reviewAnswers": "Перевірте відповіді перед надсиланням.",
-    "questionProgress": "Питання {current} / {total}"
+    "questionProgress": "Питання {current} / {total}",
+    "configTitle": "Налаштування проходження",
+    "maxAttemptsLabel": "Макс. спроб",
+    "durationLabel": "Ліміт часу (хвилини)",
+    "availableFromLabel": "Доступно з",
+    "availableUntilLabel": "Доступно до",
+    "unlimited": "Без обмежень",
+    "untimed": "Без обмеження часу",
+    "anytime": "Будь-коли",
+    "shuffleQuestions": "Перемішувати питання",
+    "shuffleOptions": "Перемішувати варіанти",
+    "attemptNumber": "Спроба №{number}",
+    "timeUp": "Час вийшов — надсилаємо вашу спробу.",
+    "availableUntilNote": "Доступно до {date}",
+    "availableFromNote": "Доступно з {date}"
   },
   "admin": {
     "title": "Огляд адміністратора",
