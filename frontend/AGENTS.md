@@ -55,6 +55,34 @@ messages/<locale>.json  Translations.   proxy.ts  next-intl middleware (Next 16 
 - **Chat.** `useChatRoom(roomId)` subscribes to `/topic/chat/{roomId}` and sends via STOMP; seed it
   with REST history from the generated hook.
 
+## Design system
+
+The look is **tokens, not values** — refine the existing identity (violet primary, Geist), never
+hardcode. The whole palette lives as CSS variables in `styles/globals.css` (light + `.dark`).
+
+- **Color.** Use the semantic token utilities only: `bg-primary`/`text-primary`,
+  `bg-card`, `text-muted-foreground`, `border-border`, and `success`/`warning`/`info`/`destructive`.
+  **Never** a raw Tailwind palette (`text-green-600`) or hex — both themes break. Sidebar has its own
+  `sidebar-*` tokens.
+- **Type.** One font: **Geist**, wired in `app/layout.tsx` via `next/font` and mapped to
+  `--font-sans`/`--font-mono` in `@theme inline`. Don't add another font. Headings use the Tailwind
+  scale (`text-2xl…3xl`, `tracking-tight`) — see `components/shared/page-header.tsx`.
+- **Elevation & radius.** Elevated surfaces are `<Card>` (`components/ui/card.tsx`) — don't hand-roll
+  `shadow-[…]`. Radius comes from the `--radius` scale (`rounded-md/lg/xl`).
+- **Status.** Any lifecycle status renders through `components/shared/status-badge.tsx` (central
+  tone map) — never color a status inline.
+- **States.** Every query-backed view wraps its body in `components/shared/data-state.tsx`: pass
+  `isLoading`/`isError`/`isEmpty`, a `variant` (`list`/`table`/`cards`/`detail`) matching the content
+  shape, and `onRetry={refetch}`. It also error-boundaries `children`, so a thrown child shows the
+  error state, not a blank page. Empty/error copy comes from the `common` i18n namespace.
+- **Shared atoms** (reuse, don't rebuild): `PageHeader`, `DataState`, `StatusBadge`, `ConfirmDialog`,
+  `FormDialog`, `WizardShell`, `FileUploadField`, `DateTimeField`, `UserPicker` in `components/shared/`.
+- **No suppression.** No `biome-ignore` / `@ts-ignore` / `suppressHydrationWarning` to hush a warning
+  — fix the cause (stable `_key`s over array-index keys, `<label htmlFor>` over a11y ignores, real
+  types). The **one** allowed exception is next-themes' mandated `suppressHydrationWarning` on `<html>`.
+- **Motion/a11y.** Transitions are short and respect `prefers-reduced-motion` (see `globals.css`).
+  Focus rings come from the primitives — keep `focus-visible` intact.
+
 ## Commands
 
 ```bash
