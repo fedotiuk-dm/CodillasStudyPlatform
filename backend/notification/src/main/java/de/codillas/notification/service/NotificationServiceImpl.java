@@ -56,6 +56,12 @@ public class NotificationServiceImpl implements NotificationService {
 
   @Override
   @Transactional
+  public void markAllRead(UUID userId) {
+    repository.markAllReadByRecipientId(userId);
+  }
+
+  @Override
+  @Transactional
   public void onGroupDeleted(GroupDeleted event) {
     membershipRepository.deleteByGroupId(event.groupId());
   }

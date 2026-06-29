@@ -8,6 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Link } from "@/i18n/navigation";
 import {
   useListMyNotifications,
+  useMarkAllRead,
   useMarkRead,
 } from "@/lib/api/notification/notification/notification";
 
@@ -19,17 +20,10 @@ export function NotificationBell() {
   const t = useTranslations("notifications");
   const { data } = useListMyNotifications({ size: 8 }, { query: { refetchInterval: 30_000 } });
   const markRead = useMarkRead();
+  const markAll = useMarkAllRead();
 
   const items = data?.content ?? [];
   const unread = data?.unread ?? 0;
-
-  // ponytail: no bulk "mark all read" endpoint — loop per unread item. Fine at LMS volume; add a
-  // bulk endpoint if a user ever has hundreds of unread notifications.
-  function markAllRead() {
-    for (const n of items) {
-      if (!n.read) markRead.mutate({ notificationId: n.id });
-    }
-  }
 
   return (
     <Popover>
@@ -47,7 +41,12 @@ export function NotificationBell() {
         <div className="flex items-center justify-between border-b px-4 py-2">
           <span className="font-medium text-sm">{t("title")}</span>
           {unread > 0 && (
-            <Button variant="ghost" size="sm" className="h-auto px-1 text-xs" onClick={markAllRead}>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-auto px-1 text-xs"
+              onClick={() => markAll.mutate()}
+            >
               {t("markAllRead")}
             </Button>
           )}

@@ -19,6 +19,8 @@ public interface NotificationService {
 
   void markRead(UUID userId, UUID notificationId);
 
+  void markAllRead(UUID userId);
+
   void onStudentEnrolled(StudentEnrolled event);
 
   void onGroupDeleted(GroupDeleted event);

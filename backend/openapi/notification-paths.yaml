@@ -2,7 +2,7 @@ openapi: 3.0.4
 info:
   title: Codillas Notification API
   description: In-app notifications (also delivered by email), fed by domain events.
-  version: 0.1.0
+  version: 0.2.0
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -54,3 +54,13 @@ paths:
           $ref: "common.yaml#/components/responses/Unauthorized"
         "404":
           $ref: "common.yaml#/components/responses/NotFound"
+  /api/notifications/read-all:
+    post:
+      tags: [notification]
+      operationId: markAllRead
+      summary: Mark all the current user's notifications as read
+      responses:
+        "204":
+          description: All marked read
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
