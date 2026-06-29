@@ -2,6 +2,7 @@
 
 import { Bell } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useEffect, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -11,6 +12,7 @@ import {
   useMarkAllRead,
   useMarkRead,
 } from "@/lib/api/notification/notification/notification";
+import { useNotificationSound } from "@/lib/hooks/use-notification-sound";
 
 /**
  * Header notification bell: an unread-count badge + a popover of recent items. Polled every 30s for
@@ -24,6 +26,14 @@ export function NotificationBell() {
 
   const items = data?.content ?? [];
   const unread = data?.unread ?? 0;
+
+  // Chime when the unread count rises (a new notification arrived between polls), like boosting.
+  const { playNotification } = useNotificationSound();
+  const prevUnread = useRef(unread);
+  useEffect(() => {
+    if (unread > prevUnread.current) playNotification();
+    prevUnread.current = unread;
+  }, [unread, playNotification]);
 
   return (
     <Popover>

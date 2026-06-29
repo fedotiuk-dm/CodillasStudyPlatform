@@ -133,7 +133,7 @@ public class NotificationServiceImpl implements NotificationService {
         event.recipientId(),
         NotificationType.DIRECT_MESSAGE,
         "New message",
-        "You have a new direct message.",
+        "You have a new chat message.",
         event.roomId());
   }
 
