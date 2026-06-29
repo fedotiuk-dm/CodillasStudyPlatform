@@ -1,6 +1,7 @@
 package de.codillas.gradebook.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 
 import java.util.List;
 
@@ -20,8 +21,8 @@ class WeightedGradeCalculatorTest {
   }
 
   @Test
-  @DisplayName("sums Σawarded/Σmax across types and breaks the totals down per type")
-  void weightedTotalsAndBreakdown() {
+  @DisplayName("weights Σawarded/Σmax across types and breaks the percent down per type")
+  void weightedPercentAndBreakdown() {
     WeightedGrade grade =
         calculator.compute(
             List.of(
@@ -31,27 +32,29 @@ class WeightedGradeCalculatorTest {
 
     assertThat(grade.awarded()).isEqualTo(52);
     assertThat(grade.maxPoints()).isEqualTo(60);
+    assertThat(grade.percent()).isCloseTo(86.667, within(0.01));
     assertThat(grade.byType())
         .anySatisfy(
             t -> {
               assertThat(t.source()).isEqualTo(GradeSource.HOMEWORK);
               assertThat(t.awarded()).isEqualTo(34);
               assertThat(t.maxPoints()).isEqualTo(40);
+              assertThat(t.percent()).isCloseTo(85.0, within(0.01));
             })
         .anySatisfy(
             t -> {
               assertThat(t.source()).isEqualTo(GradeSource.TEST);
-              assertThat(t.awarded()).isEqualTo(18);
-              assertThat(t.maxPoints()).isEqualTo(20);
+              assertThat(t.percent()).isCloseTo(90.0, within(0.01));
             });
   }
 
   @Test
-  @DisplayName("empty entries yield a zero grade")
+  @DisplayName("empty entries yield a zero grade with no division by zero")
   void empty() {
     WeightedGrade grade = calculator.compute(List.of());
     assertThat(grade.awarded()).isZero();
     assertThat(grade.maxPoints()).isZero();
+    assertThat(grade.percent()).isZero();
     assertThat(grade.byType()).isEmpty();
   }
 }

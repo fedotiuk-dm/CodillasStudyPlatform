@@ -2,6 +2,7 @@ package de.codillas.integration.gradebook;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.closeTo;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -198,6 +199,8 @@ class CourseGradeIntegrationTest extends BaseIntegrationTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.students[0].courseGrade.awarded").value(98))
                     .andExpect(jsonPath("$.students[0].courseGrade.maxPoints").value(110))
+                    .andExpect(
+                        jsonPath("$.students[0].courseGrade.percent", closeTo(89.0909, 0.001)))
                     .andExpect(jsonPath("$.students[0].courseGrade.byType.length()").value(2)));
 
     // re-grade the SAME homework submission with a lower score: 50 / 100.
@@ -223,6 +226,8 @@ class CourseGradeIntegrationTest extends BaseIntegrationTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.students[0].courseGrade.awarded").value(60))
                     .andExpect(jsonPath("$.students[0].courseGrade.maxPoints").value(110))
+                    .andExpect(
+                        jsonPath("$.students[0].courseGrade.percent", closeTo(54.5454, 0.001)))
                     .andExpect(jsonPath("$.students[0].courseGrade.byType.length()").value(2)));
   }
 }

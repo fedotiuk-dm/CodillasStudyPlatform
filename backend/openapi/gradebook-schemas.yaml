@@ -43,11 +43,11 @@ components:
           format: date-time
     TypeGradeResponse:
       type: object
-      description: Raw points for one source type; the client derives any percentage.
       required:
         - source
         - awarded
         - maxPoints
+        - percent
       properties:
         source:
           $ref: "#/components/schemas/GradeSource"
@@ -55,18 +55,24 @@ components:
           type: integer
         maxPoints:
           type: integer
+        percent:
+          type: number
+          format: double
     CourseGradeResponse:
       type: object
-      description: Raw points-weighted totals; the client derives any percentage.
       required:
         - awarded
         - maxPoints
+        - percent
         - byType
       properties:
         awarded:
           type: integer
         maxPoints:
           type: integer
+        percent:
+          type: number
+          format: double
         byType:
           type: array
           items:

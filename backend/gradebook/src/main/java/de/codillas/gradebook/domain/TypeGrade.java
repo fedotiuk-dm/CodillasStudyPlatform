@@ -2,5 +2,10 @@ package de.codillas.gradebook.domain;
 
 import de.codillas.gradebook.domain.model.GradeSource;
 
-/** Points-weighted totals for a single source type (homework or test). */
-public record TypeGrade(GradeSource source, int awarded, int maxPoints) {}
+/** Points-weighted grade for a single source type (homework or test). */
+public record TypeGrade(GradeSource source, int awarded, int maxPoints) {
+
+  public double percent() {
+    return maxPoints == 0 ? 0.0 : awarded * 100.0 / maxPoints;
+  }
+}
