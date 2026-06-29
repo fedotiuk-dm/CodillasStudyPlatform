@@ -109,7 +109,11 @@
     "namePlaceholder": "e.g. Java Fundamentals",
     "descriptionPlaceholder": "What the course covers…",
     "statusLabel": "Status",
-    "status": { "DRAFT": "Draft", "PUBLISHED": "Published", "ARCHIVED": "Archived" },
+    "status": {
+      "DRAFT": "Draft",
+      "PUBLISHED": "Published",
+      "ARCHIVED": "Archived"
+    },
     "filterAll": "All statuses",
     "actions": "Actions",
     "publish": "Publish",
@@ -153,7 +157,21 @@
     "markedAbsent": "Marked absent",
     "searchStudent": "Search student…",
     "present": "Present",
-    "absent": "Absent"
+    "absent": "Absent",
+    "statusLabel": "Status",
+    "filterAll": "All statuses",
+    "status": {
+      "DRAFT": "Draft",
+      "RUNNING": "Running",
+      "ARCHIVED": "Archived"
+    },
+    "start": "Start",
+    "archive": "Archive",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "confirmDeleteTitle": "Delete group?",
+    "confirmDelete": "This deletes the group with its members, schedule and attendance. This cannot be undone.",
+    "manageReadOnlyDescription": "This group is archived — read-only."
   },
   "homework": {
     "title": "Homework",

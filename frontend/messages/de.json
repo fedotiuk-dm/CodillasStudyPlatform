@@ -109,7 +109,11 @@
     "namePlaceholder": "z. B. Java-Grundlagen",
     "descriptionPlaceholder": "Worum es im Kurs geht…",
     "statusLabel": "Status",
-    "status": { "DRAFT": "Entwurf", "PUBLISHED": "Veröffentlicht", "ARCHIVED": "Archiviert" },
+    "status": {
+      "DRAFT": "Entwurf",
+      "PUBLISHED": "Veröffentlicht",
+      "ARCHIVED": "Archiviert"
+    },
     "filterAll": "Alle Status",
     "actions": "Aktionen",
     "publish": "Veröffentlichen",
@@ -153,7 +157,21 @@
     "markedAbsent": "Als abwesend markiert",
     "searchStudent": "Schüler suchen…",
     "present": "Anwesend",
-    "absent": "Abwesend"
+    "absent": "Abwesend",
+    "statusLabel": "Status",
+    "filterAll": "Alle Status",
+    "status": {
+      "DRAFT": "Entwurf",
+      "RUNNING": "Laufend",
+      "ARCHIVED": "Archiviert"
+    },
+    "start": "Starten",
+    "archive": "Archivieren",
+    "delete": "Löschen",
+    "cancel": "Abbrechen",
+    "confirmDeleteTitle": "Gruppe löschen?",
+    "confirmDelete": "Dies löscht die Gruppe mit ihren Mitgliedern, dem Zeitplan und der Anwesenheit. Dies kann nicht rückgängig gemacht werden.",
+    "manageReadOnlyDescription": "Diese Gruppe ist archiviert — schreibgeschützt."
   },
   "homework": {
     "title": "Hausaufgaben",

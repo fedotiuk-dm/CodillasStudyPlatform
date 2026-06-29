@@ -109,7 +109,11 @@
     "namePlaceholder": "напр. Основи Java",
     "descriptionPlaceholder": "Про що цей курс…",
     "statusLabel": "Статус",
-    "status": { "DRAFT": "Чернетка", "PUBLISHED": "Опубліковано", "ARCHIVED": "Архів" },
+    "status": {
+      "DRAFT": "Чернетка",
+      "PUBLISHED": "Опубліковано",
+      "ARCHIVED": "Архів"
+    },
     "filterAll": "Усі статуси",
     "actions": "Дії",
     "publish": "Опублікувати",
@@ -153,7 +157,21 @@
     "markedAbsent": "Відмічено як відсутній",
     "searchStudent": "Пошук студента…",
     "present": "Присутній",
-    "absent": "Відсутній"
+    "absent": "Відсутній",
+    "statusLabel": "Статус",
+    "filterAll": "Усі статуси",
+    "status": {
+      "DRAFT": "Чернетка",
+      "RUNNING": "Активна",
+      "ARCHIVED": "Архівована"
+    },
+    "start": "Запустити",
+    "archive": "Архівувати",
+    "delete": "Видалити",
+    "cancel": "Скасувати",
+    "confirmDeleteTitle": "Видалити групу?",
+    "confirmDelete": "Це видалить групу разом з її учасниками, розкладом і відвідуваністю. Дію не можна скасувати.",
+    "manageReadOnlyDescription": "Група архівована — лише перегляд."
   },
   "homework": {
     "title": "Домашні завдання",
