@@ -13,6 +13,9 @@ import java.util.UUID;
  */
 public final class ShuffleOrder {
 
+  /** FNV-1a 64-bit prime — mixes the parent seed before folding in a child id. */
+  private static final long FNV_PRIME = 1099511628211L;
+
   private final long seed;
 
   private ShuffleOrder(long seed) {
@@ -25,7 +28,7 @@ public final class ShuffleOrder {
 
   /** A child order keyed by {@code id} (e.g. a question id) — distinct from the parent. */
   public ShuffleOrder combine(UUID id) {
-    return new ShuffleOrder(seed * 1099511628211L ^ mix(id));
+    return new ShuffleOrder(seed * FNV_PRIME ^ mix(id));
   }
 
   /** A new list holding {@code items} in this order; the input is never mutated. */

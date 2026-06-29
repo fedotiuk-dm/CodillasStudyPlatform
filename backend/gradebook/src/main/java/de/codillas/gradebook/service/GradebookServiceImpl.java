@@ -1,7 +1,9 @@
 package de.codillas.gradebook.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -105,15 +107,20 @@ public class GradebookServiceImpl implements GradebookService {
             .distinct()
             .toList();
 
-    // Scope each member's course grade to this group so it is per-(student, group).
+    // Scope each member's course grade to this group so it is per-(student, group). One query for
+    // all members, grouped in memory — never a per-student query in the loop.
+    Map<UUID, List<ProgressEntry>> byStudent =
+        studentIds.isEmpty()
+            ? Map.of()
+            : repository
+                .findByStudentIdInAndGroupId(
+                    studentIds, groupId, ProgressEntryRepository.BY_RECORDED)
+                .stream()
+                .collect(Collectors.groupingBy(ProgressEntry::getStudentId));
+
     List<StudentGradebookResponse> students =
         studentIds.stream()
-            .map(
-                id ->
-                    studentGradebook(
-                        id,
-                        repository.findByStudentIdAndGroupId(
-                            id, groupId, ProgressEntryRepository.BY_RECORDED)))
+            .map(id -> studentGradebook(id, byStudent.getOrDefault(id, List.of())))
             .toList();
     return mapper.toGroupGradebook(groupId, students);
   }

@@ -125,13 +125,16 @@ public class TestServiceImpl implements TestService {
                 .sorted(Comparator.comparingInt(Option::getPosition))
                 .collect(Collectors.groupingBy(Option::getQuestionId));
 
+    // Seed once outside the loop — the per-question option order is a child of this parent.
+    ShuffleOrder optionOrder =
+        shuffleSeed != null && test.isShuffleOptions() ? ShuffleOrder.seededBy(shuffleSeed) : null;
     List<QuestionResponse> questionResponses =
         questions.stream()
             .map(
                 q -> {
                   List<Option> options = optionsByQuestion.getOrDefault(q.getId(), List.of());
-                  if (shuffleSeed != null && test.isShuffleOptions()) {
-                    options = ShuffleOrder.seededBy(shuffleSeed).combine(q.getId()).apply(options);
+                  if (optionOrder != null) {
+                    options = optionOrder.combine(q.getId()).apply(options);
                   }
                   return questionMapper.toResponse(q, questionMapper.toOptionResponses(options));
                 })
