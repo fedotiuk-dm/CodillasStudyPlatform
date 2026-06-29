@@ -61,6 +61,63 @@ codillas:
       - application/vnd.openxmlformats-officedocument.presentationml.presentation
       - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
 
+notification:
+  # i18n message templates (the "boosting" pattern): notification titles/bodies live here per
+  # locale, not hardcoded in Java. `default-locale` renders both the stored in-app text and the
+  # email; `{placeholder}` tokens are substituted at render time. Per-recipient locale is a future
+  # follow-up — for now everyone gets `default-locale`.
+  default-locale: ${NOTIFICATION_DEFAULT_LOCALE:uk}
+  from: ${NOTIFICATION_EMAIL_FROM:noreply@codillas.de}
+  templates:
+    en:
+      assignment-published:
+        title: "New assignment"
+        body: "A new assignment was published for your group."
+      assignment-due-soon:
+        title: "Assignment due soon"
+        body: "An assignment in your group is due soon."
+      submission-graded:
+        title: "Homework graded"
+        body: "Your submission was graded: {points} points."
+      attempt-completed:
+        title: "Test scored"
+        body: "Your test attempt scored {points} points."
+      direct-message:
+        title: "New message"
+        body: "You have a new chat message."
+    uk:
+      assignment-published:
+        title: "Нове завдання"
+        body: "У вашій групі опубліковано нове завдання."
+      assignment-due-soon:
+        title: "Скоро дедлайн"
+        body: "У вашій групі скоро дедлайн завдання."
+      submission-graded:
+        title: "Роботу оцінено"
+        body: "Вашу роботу оцінено: {points} балів."
+      attempt-completed:
+        title: "Тест оцінено"
+        body: "Ваша спроба тесту: {points} балів."
+      direct-message:
+        title: "Нове повідомлення"
+        body: "У вас нове повідомлення в чаті."
+    de:
+      assignment-published:
+        title: "Neue Aufgabe"
+        body: "In deiner Gruppe wurde eine neue Aufgabe veröffentlicht."
+      assignment-due-soon:
+        title: "Abgabe bald fällig"
+        body: "Eine Aufgabe in deiner Gruppe ist bald fällig."
+      submission-graded:
+        title: "Hausaufgabe bewertet"
+        body: "Deine Abgabe wurde bewertet: {points} Punkte."
+      attempt-completed:
+        title: "Test bewertet"
+        body: "Dein Testversuch: {points} Punkte."
+      direct-message:
+        title: "Neue Nachricht"
+        body: "Du hast eine neue Chat-Nachricht."
+
 server:
   port: ${SERVER_PORT:8081}
 

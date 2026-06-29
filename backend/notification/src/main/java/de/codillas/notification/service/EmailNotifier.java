@@ -11,6 +11,8 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import de.codillas.notification.config.NotificationProperties;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,12 +29,12 @@ import org.thymeleaf.context.Context;
 @Slf4j
 public class EmailNotifier {
 
-  private static final String FROM = "noreply@codillas.de";
   private static final String TEMPLATE = "email/notification";
 
   private final ObjectProvider<JavaMailSender> mailSenderProvider;
   private final TemplateEngine templateEngine;
   private final RecipientEmailResolver emailResolver;
+  private final NotificationProperties notificationProperties;
 
   // Off the caller's thread so blocking SMTP never holds the event-listener's DB transaction open.
   @Async
@@ -55,7 +57,7 @@ public class EmailNotifier {
 
       MimeMessage message = mailSender.createMimeMessage();
       MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
-      helper.setFrom(FROM);
+      helper.setFrom(notificationProperties.getFrom());
       helper.setTo(address.get());
       helper.setSubject(subject);
       helper.setText(html, true);

@@ -10,9 +10,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import de.codillas.notification.config.NotificationProperties;
+import de.codillas.notification.config.NotificationProperties.Template;
 import de.codillas.notification.domain.model.Notification;
 import de.codillas.notification.domain.model.NotificationMembership;
 import de.codillas.notification.domain.model.NotificationType;
@@ -24,10 +27,10 @@ import de.codillas.shared.event.AssignmentPublished;
 import de.codillas.shared.event.DirectMessagePosted;
 import de.codillas.shared.event.SubmissionGraded;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -39,10 +42,39 @@ class NotificationServiceTest {
   @Mock private NotificationMembershipRepository membershipRepository;
   @Mock private NotificationMapper mapper;
   @Mock private EmailNotifier emailNotifier;
-  @InjectMocks private NotificationServiceImpl service;
+
+  private NotificationServiceImpl service;
+
+  @BeforeEach
+  void setUp() {
+    service =
+        new NotificationServiceImpl(
+            repository, membershipRepository, mapper, emailNotifier, resolver());
+  }
+
+  // Real resolver rendering English templates, so the asserted text exercises substitution too.
+  private static NotificationTemplateResolver resolver() {
+    NotificationProperties properties = new NotificationProperties();
+    properties.setDefaultLocale("en");
+    properties.setTemplates(
+        Map.of(
+            "en",
+            Map.of(
+                NotificationType.ASSIGNMENT_PUBLISHED,
+                new Template("New assignment", "A new assignment was published for your group."),
+                NotificationType.ASSIGNMENT_DUE_SOON,
+                new Template("Assignment due soon", "An assignment in your group is due soon."),
+                NotificationType.SUBMISSION_GRADED,
+                new Template("Homework graded", "Your submission was graded: {points} points."),
+                NotificationType.ATTEMPT_COMPLETED,
+                new Template("Test scored", "Your test attempt scored {points} points."),
+                NotificationType.DIRECT_MESSAGE,
+                new Template("New message", "You have a new chat message."))));
+    return new NotificationTemplateResolver(properties);
+  }
 
   @Test
-  @DisplayName("onSubmissionGraded notifies the student in-app and by email")
+  @DisplayName("onSubmissionGraded notifies the student in-app and by email with the rendered text")
   void onSubmissionGraded_notifiesStudent() {
     UUID submissionId = UUID.randomUUID();
     UUID studentId = UUID.randomUUID();
@@ -52,8 +84,8 @@ class NotificationServiceTest {
     when(mapper.toNotification(
             eq(studentId),
             eq(NotificationType.SUBMISSION_GRADED),
-            anyString(),
-            anyString(),
+            eq("Homework graded"),
+            eq("Your submission was graded: 80 points."),
             eq(submissionId)))
         .thenReturn(new Notification());
 
@@ -61,7 +93,11 @@ class NotificationServiceTest {
 
     verify(repository).save(any(Notification.class));
     verify(emailNotifier)
-        .send(eq(studentId), eq("Homework graded"), eq("Homework graded"), anyString());
+        .send(
+            eq(studentId),
+            eq("Homework graded"),
+            eq("Homework graded"),
+            eq("Your submission was graded: 80 points."));
   }
 
   @Test
@@ -78,7 +114,12 @@ class NotificationServiceTest {
     service.onAssignmentPublished(event);
 
     verify(repository, times(2)).save(any(Notification.class));
-    verify(emailNotifier, times(2)).send(any(), anyString(), anyString(), anyString());
+    verify(emailNotifier, times(2))
+        .send(
+            any(),
+            eq("New assignment"),
+            eq("New assignment"),
+            eq("A new assignment was published for your group."));
   }
 
   @Test
@@ -92,8 +133,8 @@ class NotificationServiceTest {
     when(mapper.toNotification(
             any(),
             eq(NotificationType.ASSIGNMENT_DUE_SOON),
-            anyString(),
-            anyString(),
+            eq("Assignment due soon"),
+            eq("An assignment in your group is due soon."),
             eq(assignmentId)))
         .thenReturn(new Notification());
 
@@ -101,7 +142,11 @@ class NotificationServiceTest {
 
     verify(repository, times(2)).save(any(Notification.class));
     verify(emailNotifier, times(2))
-        .send(any(), eq("Assignment due soon"), eq("Assignment due soon"), anyString());
+        .send(
+            any(),
+            eq("Assignment due soon"),
+            eq("Assignment due soon"),
+            eq("An assignment in your group is due soon."));
   }
 
   @Test
@@ -114,15 +159,20 @@ class NotificationServiceTest {
     when(mapper.toNotification(
             eq(recipientId),
             eq(NotificationType.DIRECT_MESSAGE),
-            anyString(),
-            anyString(),
+            eq("New message"),
+            eq("You have a new chat message."),
             eq(roomId)))
         .thenReturn(new Notification());
 
     service.onDirectMessage(event);
 
     verify(repository).save(any(Notification.class));
-    verify(emailNotifier).send(eq(recipientId), eq("New message"), eq("New message"), anyString());
+    verify(emailNotifier)
+        .send(
+            eq(recipientId),
+            eq("New message"),
+            eq("New message"),
+            eq("You have a new chat message."));
   }
 
   @Test

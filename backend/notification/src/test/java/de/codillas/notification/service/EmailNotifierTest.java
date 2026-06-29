@@ -15,6 +15,8 @@ import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.mail.javamail.JavaMailSender;
 
+import de.codillas.notification.config.NotificationProperties;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +34,9 @@ class EmailNotifierTest {
   @Mock private RecipientEmailResolver emailResolver;
 
   private EmailNotifier notifier() {
-    return new EmailNotifier(mailSenderProvider, templateEngine, emailResolver);
+    NotificationProperties properties = new NotificationProperties();
+    properties.setFrom("noreply@codillas.de");
+    return new EmailNotifier(mailSenderProvider, templateEngine, emailResolver, properties);
   }
 
   @Test

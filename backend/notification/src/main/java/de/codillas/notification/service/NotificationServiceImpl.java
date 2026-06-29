@@ -1,5 +1,6 @@
 package de.codillas.notification.service;
 
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.data.domain.Pageable;
@@ -12,6 +13,7 @@ import de.codillas.notification.domain.model.NotificationType;
 import de.codillas.notification.domain.repository.NotificationMembershipRepository;
 import de.codillas.notification.domain.repository.NotificationRepository;
 import de.codillas.notification.mapper.NotificationMapper;
+import de.codillas.notification.service.NotificationTemplateResolver.Rendered;
 import de.codillas.shared.domain.repository.GenericSpecification;
 import de.codillas.shared.event.AssignmentDueSoon;
 import de.codillas.shared.event.AssignmentPublished;
@@ -33,6 +35,7 @@ public class NotificationServiceImpl implements NotificationService {
   private final NotificationMembershipRepository membershipRepository;
   private final NotificationMapper mapper;
   private final EmailNotifier emailNotifier;
+  private final NotificationTemplateResolver templateResolver;
 
   @Override
   public NotificationListResponse listMyNotifications(UUID userId, Pageable pageable) {
@@ -84,8 +87,7 @@ public class NotificationServiceImpl implements NotificationService {
                 notify(
                     member.getStudentId(),
                     NotificationType.ASSIGNMENT_PUBLISHED,
-                    "New assignment",
-                    "A new assignment was published for your group.",
+                    Map.of(),
                     event.assignmentId()));
   }
 
@@ -99,8 +101,7 @@ public class NotificationServiceImpl implements NotificationService {
                 notify(
                     member.getStudentId(),
                     NotificationType.ASSIGNMENT_DUE_SOON,
-                    "Assignment due soon",
-                    "An assignment in your group is due soon.",
+                    Map.of(),
                     event.assignmentId()));
   }
 
@@ -110,8 +111,7 @@ public class NotificationServiceImpl implements NotificationService {
     notify(
         event.studentId(),
         NotificationType.SUBMISSION_GRADED,
-        "Homework graded",
-        "Your submission was graded: " + event.awarded() + " points.",
+        Map.of("points", String.valueOf(event.awarded())),
         event.submissionId());
   }
 
@@ -121,25 +121,21 @@ public class NotificationServiceImpl implements NotificationService {
     notify(
         event.studentId(),
         NotificationType.ATTEMPT_COMPLETED,
-        "Test scored",
-        "Your test attempt scored " + event.awarded() + " points.",
+        Map.of("points", String.valueOf(event.awarded())),
         event.attemptId());
   }
 
   @Override
   @Transactional
   public void onDirectMessage(DirectMessagePosted event) {
-    notify(
-        event.recipientId(),
-        NotificationType.DIRECT_MESSAGE,
-        "New message",
-        "You have a new chat message.",
-        event.roomId());
+    notify(event.recipientId(), NotificationType.DIRECT_MESSAGE, Map.of(), event.roomId());
   }
 
   private void notify(
-      UUID recipientId, NotificationType type, String title, String body, UUID referenceId) {
-    repository.save(mapper.toNotification(recipientId, type, title, body, referenceId));
-    emailNotifier.send(recipientId, title, title, body);
+      UUID recipientId, NotificationType type, Map<String, String> params, UUID referenceId) {
+    Rendered rendered = templateResolver.render(type, params);
+    repository.save(
+        mapper.toNotification(recipientId, type, rendered.title(), rendered.body(), referenceId));
+    emailNotifier.send(recipientId, rendered.title(), rendered.title(), rendered.body());
   }
 }

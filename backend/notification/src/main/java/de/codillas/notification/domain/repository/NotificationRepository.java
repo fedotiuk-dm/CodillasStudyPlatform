@@ -29,6 +29,7 @@ public interface NotificationRepository extends JpaRepository<Notification, UUID
 
   /** Bulk mark-all-read for one recipient — one UPDATE, no per-row load. */
   @Modifying
-  @Query("update Notification n set n.read = true where n.recipientId = :recipientId and n.read = false")
+  @Query(
+      "update Notification n set n.read = true where n.recipientId = :recipientId and n.read = false")
   void markAllReadByRecipientId(@Param("recipientId") UUID recipientId);
 }
