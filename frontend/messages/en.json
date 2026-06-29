@@ -21,6 +21,9 @@
     "loadError": "Could not load the data",
     "loadErrorHint": "Check your connection and try again.",
     "retry": "Try again",
+    "signingIn": "Signing in…",
+    "redirectingToSignIn": "Redirecting to sign in…",
+    "noAccess": "You don't have access to this page.",
     "changeLanguage": "Change language",
     "toggleTheme": "Toggle theme",
     "userMenu": "User menu"

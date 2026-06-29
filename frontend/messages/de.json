@@ -21,6 +21,9 @@
     "loadError": "Daten konnten nicht geladen werden",
     "loadErrorHint": "Prüfen Sie die Verbindung und versuchen Sie es erneut.",
     "retry": "Erneut versuchen",
+    "signingIn": "Anmeldung…",
+    "redirectingToSignIn": "Weiterleitung zur Anmeldung…",
+    "noAccess": "Sie haben keinen Zugriff auf diese Seite.",
     "changeLanguage": "Sprache ändern",
     "toggleTheme": "Design wechseln",
     "userMenu": "Benutzermenü"

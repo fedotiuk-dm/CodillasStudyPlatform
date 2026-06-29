@@ -2,8 +2,11 @@ import { ArrowRight, BookOpenCheck, MessagesSquare, TrendingUp } from "lucide-re
 import { useTranslations } from "next-intl";
 
 import { AppBrand } from "@/components/brand/app-brand";
+import { LanguageSwitcher } from "@/components/dashboard/language-switcher";
+import { ThemeToggle } from "@/components/dashboard/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
+import { SITE_NAME } from "@/lib/constants";
 
 export default function Home() {
   const t = useTranslations("app");
@@ -18,9 +21,13 @@ export default function Home() {
       <div className="relative mx-auto flex min-h-screen max-w-7xl flex-col px-5 sm:px-8">
         <header className="flex h-20 items-center justify-between">
           <AppBrand />
-          <Button asChild variant="outline" className="rounded-xl bg-card/70">
-            <Link href="/login">{tc("signIn")}</Link>
-          </Button>
+          <div className="flex items-center gap-1.5">
+            <LanguageSwitcher />
+            <ThemeToggle />
+            <Button asChild variant="outline" className="ml-1 rounded-xl bg-card/70">
+              <Link href="/login">{tc("signIn")}</Link>
+            </Button>
+          </div>
         </header>
 
         <section className="grid flex-1 items-center gap-12 py-16 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">
@@ -93,6 +100,13 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        <footer className="flex flex-col items-center justify-between gap-2 border-t py-6 text-muted-foreground text-sm sm:flex-row">
+          <span>
+            © {new Date().getFullYear()} {SITE_NAME}
+          </span>
+          <span>{t("tagline")}</span>
+        </footer>
       </div>
     </main>
   );
