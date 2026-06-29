@@ -2,7 +2,7 @@ openapi: 3.0.4
 info:
   title: Codillas Notification API
   description: In-app notifications (also delivered by email), fed by domain events.
-  version: 0.2.0
+  version: 0.3.0
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT

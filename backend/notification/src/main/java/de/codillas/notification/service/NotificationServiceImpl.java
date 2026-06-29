@@ -135,7 +135,8 @@ public class NotificationServiceImpl implements NotificationService {
       UUID recipientId, NotificationType type, Map<String, String> params, UUID referenceId) {
     Rendered rendered = templateResolver.render(type, params);
     repository.save(
-        mapper.toNotification(recipientId, type, rendered.title(), rendered.body(), referenceId));
+        mapper.toNotification(
+            recipientId, type, rendered.title(), rendered.body(), params, referenceId));
     emailNotifier.send(recipientId, rendered.title(), rendered.title(), rendered.body());
   }
 }

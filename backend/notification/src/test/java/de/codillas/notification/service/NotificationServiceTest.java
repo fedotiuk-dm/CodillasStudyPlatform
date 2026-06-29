@@ -1,6 +1,8 @@
 package de.codillas.notification.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -31,6 +33,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -81,17 +84,21 @@ class NotificationServiceTest {
     SubmissionGraded event =
         new SubmissionGraded(
             submissionId, UUID.randomUUID(), studentId, 80, 100, UUID.randomUUID());
+    Notification saved = Notification.builder().params(Map.of("points", "80")).build();
     when(mapper.toNotification(
             eq(studentId),
             eq(NotificationType.SUBMISSION_GRADED),
             eq("Homework graded"),
             eq("Your submission was graded: 80 points."),
+            eq(Map.of("points", "80")),
             eq(submissionId)))
-        .thenReturn(new Notification());
+        .thenReturn(saved);
 
     service.onSubmissionGraded(event);
 
-    verify(repository).save(any(Notification.class));
+    ArgumentCaptor<Notification> captor = ArgumentCaptor.forClass(Notification.class);
+    verify(repository).save(captor.capture());
+    assertThat(captor.getValue().getParams()).containsExactly(entry("points", "80"));
     verify(emailNotifier)
         .send(
             eq(studentId),
@@ -108,7 +115,7 @@ class NotificationServiceTest {
     AssignmentPublished event = new AssignmentPublished(assignmentId, groupId);
     when(membershipRepository.findByGroupId(groupId))
         .thenReturn(List.of(member(UUID.randomUUID()), member(UUID.randomUUID())));
-    when(mapper.toNotification(any(), any(), anyString(), anyString(), any()))
+    when(mapper.toNotification(any(), any(), anyString(), anyString(), any(), any()))
         .thenReturn(new Notification());
 
     service.onAssignmentPublished(event);
@@ -135,6 +142,7 @@ class NotificationServiceTest {
             eq(NotificationType.ASSIGNMENT_DUE_SOON),
             eq("Assignment due soon"),
             eq("An assignment in your group is due soon."),
+            eq(Map.of()),
             eq(assignmentId)))
         .thenReturn(new Notification());
 
@@ -161,6 +169,7 @@ class NotificationServiceTest {
             eq(NotificationType.DIRECT_MESSAGE),
             eq("New message"),
             eq("You have a new chat message."),
+            eq(Map.of()),
             eq(roomId)))
         .thenReturn(new Notification());
 

@@ -1,5 +1,6 @@
 package de.codillas.notification.mapper;
 
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -26,7 +27,12 @@ public interface NotificationMapper {
 
   @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
   Notification toNotification(
-      UUID recipientId, NotificationType type, String title, String body, UUID referenceId);
+      UUID recipientId,
+      NotificationType type,
+      String title,
+      String body,
+      Map<String, String> params,
+      UUID referenceId);
 
   @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
   @Mapping(target = "studentId", source = "userId")

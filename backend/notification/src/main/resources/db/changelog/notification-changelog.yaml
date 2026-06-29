@@ -19,3 +19,7 @@ databaseChangeLog:
   - include:
       file: changes/0.3.0/0.3.0-add-notification-lock-version.yaml
       relativeToChangelogFile: true
+  # 0.4.0 — structured render params (jsonb) on notifications
+  - include:
+      file: changes/0.4.0/0.4.0-add-notification-params.yaml
+      relativeToChangelogFile: true
