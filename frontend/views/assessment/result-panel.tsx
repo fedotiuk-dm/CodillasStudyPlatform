@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -29,9 +29,7 @@ export function ResultPanel({
   return (
     <div className="grid gap-3">
       <div className="flex items-center gap-2">
-        <Badge variant={attempt.status === "GRADED" ? "default" : "secondary"}>
-          {attempt.status}
-        </Badge>
+        <StatusBadge status={attempt.status} label={t(`attemptStatus.${attempt.status}`)} />
         <span className="font-medium">
           {t("score")}: {attempt.score} / {totalPoints}
         </span>

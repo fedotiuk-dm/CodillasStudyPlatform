@@ -1,7 +1,13 @@
 {
   "app": {
     "name": "Codillas Study Platform",
-    "tagline": "Навчальна платформа IT-школи Codillas"
+    "tagline": "Навчальна платформа IT-школи Codillas",
+    "eyebrow": "Навчання без зайвого хаосу",
+    "heroTitle": "Усе навчання в одному зрозумілому просторі",
+    "heroDescription": "Курси, заняття, домашні роботи, тести та спілкування завжди під рукою.",
+    "featureLearning": "Курси та завдання",
+    "featureProgress": "Прозорий прогрес",
+    "featureCommunication": "Живе спілкування"
   },
   "common": {
     "loading": "Завантаження…",
@@ -9,13 +15,21 @@
     "cancel": "Скасувати",
     "delete": "Видалити",
     "signIn": "Увійти",
-    "signOut": "Вийти"
+    "signOut": "Вийти",
+    "emptyTitle": "Тут поки що порожньо",
+    "emptyHint": "Нові дані з’являться тут, щойно їх буде додано.",
+    "loadError": "Не вдалося завантажити дані",
+    "loadErrorHint": "Перевірте з’єднання та спробуйте ще раз.",
+    "changeLanguage": "Змінити мову",
+    "toggleTheme": "Змінити тему",
+    "userMenu": "Меню користувача"
   },
   "auth": {
     "sessionExpired": "Сесія завершилася",
     "sessionExpiredHint": "Будь ласка, увійдіть знову."
   },
   "nav": {
+    "dashboard": "Огляд",
     "courses": "Курси",
     "myCourses": "Мої курси",
     "schedule": "Розклад",
@@ -27,7 +41,49 @@
     "notifications": "Сповіщення",
     "files": "Файли",
     "people": "Люди",
-    "admin": "Адмін"
+    "admin": "Адмін",
+    "openMenu": "Відкрити меню",
+    "menu": "Навігація",
+    "menuDescription": "Основна навігація платформи",
+    "sections": {
+      "learning": "Навчання",
+      "communication": "Спілкування",
+      "management": "Керування"
+    },
+    "roles": {
+      "ADMIN": "Адміністратор",
+      "TEACHER": "Викладач",
+      "STUDENT": "Студент"
+    }
+  },
+  "dashboard": {
+    "eyebrow": "Ваш навчальний простір",
+    "welcome": "Вітаємо, {name}",
+    "learner": "друже",
+    "studentIntro": "Слідкуйте за заняттями, завданнями та прогресом в одному місці.",
+    "staffIntro": "Керуйте навчанням, перевіряйте роботи та залишайтеся на зв’язку з групами.",
+    "overview": "Короткий огляд",
+    "myCourses": "Мої курси",
+    "upcomingLessons": "Заняття в розкладі",
+    "unreadNotifications": "Непрочитані",
+    "groups": "Групи",
+    "messages": "Повідомлення",
+    "nextUp": "Далі",
+    "nextLesson": "Наступне заняття",
+    "joinLesson": "Приєднатися",
+    "viewSchedule": "Переглянути розклад",
+    "noUpcoming": "Найближчих занять немає",
+    "noUpcomingHint": "Нові заняття з’являться тут після планування викладачем.",
+    "quickActions": "Швидкі дії",
+    "reviewHomework": "Перевірити домашні роботи",
+    "manageGroups": "Керувати групами",
+    "openSchedule": "Відкрити розклад",
+    "openHomework": "Перейти до завдань",
+    "openTests": "Перейти до тестів",
+    "openChat": "Відкрити чат",
+    "schoolOverview": "Школа",
+    "courses": "Курси",
+    "people": "Користувачі"
   },
   "course": {
     "course": "Курс",
@@ -94,6 +150,7 @@
     "description": "Курси, на які ви зараховані через свої групи.",
     "group": "Група",
     "empty": "Ви ще не зараховані до жодної групи.",
+    "startNotSet": "Дата початку не вказана",
     "statusLabel": "Статус",
     "status": {
       "DRAFT": "Чернетка",
@@ -105,6 +162,7 @@
     "title": "Мій розклад",
     "description": "Ваші майбутні уроки в усіх ваших групах.",
     "joinMeeting": "Приєднатися до зустрічі",
+    "linkPending": "Посилання з’явиться пізніше",
     "empty": "Немає запланованих уроків."
   },
   "courses": {
@@ -305,6 +363,8 @@
     "newRoom": "Нова кімната",
     "noRooms": "Поки що немає кімнат.",
     "selectRoom": "Виберіть кімнату, щоб почати спілкування.",
+    "backToRooms": "Назад до чатів",
+    "conversation": "Розмова",
     "loading": "Завантаження…",
     "noMessages": "Поки що немає повідомлень — привітайтеся.",
     "messagePlaceholder": "Введіть повідомлення…",
@@ -323,7 +383,26 @@
     "new": "нове",
     "markRead": "Позначити прочитаним",
     "markAllRead": "Прочитати всі",
-    "seeAll": "Усі сповіщення"
+    "seeAll": "Усі сповіщення",
+    "types": {
+      "ASSIGNMENT_PUBLISHED": {
+        "title": "Нове завдання",
+        "body": "У вашій групі опубліковано нове завдання."
+      },
+      "ASSIGNMENT_DUE_SOON": {
+        "title": "Скоро дедлайн",
+        "body": "У вашій групі скоро дедлайн завдання."
+      },
+      "SUBMISSION_GRADED": {
+        "title": "Роботу оцінено",
+        "body": "Вашу роботу оцінено: {points} балів."
+      },
+      "ATTEMPT_COMPLETED": {
+        "title": "Тест оцінено",
+        "body": "Ваша спроба тесту: {points} балів."
+      },
+      "DIRECT_MESSAGE": { "title": "Нове повідомлення", "body": "У вас нове повідомлення в чаті." }
+    }
   },
   "tests": {
     "title": "Тести",
@@ -399,7 +478,16 @@
     "attemptNumber": "Спроба №{number}",
     "timeUp": "Час вийшов — надсилаємо вашу спробу.",
     "availableUntilNote": "Доступно до {date}",
-    "availableFromNote": "Доступно з {date}"
+    "availableFromNote": "Доступно з {date}",
+    "testStatus": {
+      "DRAFT": "Чернетка",
+      "PUBLISHED": "Опубліковано"
+    },
+    "attemptStatus": {
+      "IN_PROGRESS": "В процесі",
+      "SUBMITTED": "Надіслано",
+      "GRADED": "Оцінено"
+    }
   },
   "admin": {
     "title": "Огляд адміністратора",

@@ -1,44 +1,136 @@
 "use client";
 
-import { GraduationCap } from "lucide-react";
+import { Menu } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
+import { AppBrand } from "@/components/brand/app-brand";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Link, usePathname } from "@/i18n/navigation";
-import { SITE_NAME } from "@/lib/constants";
-import { useNavItems } from "@/lib/navigation";
+import { useKeycloak } from "@/lib/auth";
+import { Role } from "@/lib/constants";
+import { useNavGroups } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
-export function Sidebar() {
+function isActivePath(pathname: string, href: string) {
+  return pathname === href || (href !== "/dashboard" && pathname.startsWith(`${href}/`));
+}
+
+function NavigationContent({ onNavigate }: { onNavigate?: () => void }) {
   const t = useTranslations("nav");
+  const groups = useNavGroups();
   const pathname = usePathname();
-  const items = useNavItems();
 
   return (
-    <aside className="bg-card hidden w-60 shrink-0 flex-col border-r md:flex">
-      <Link href="/dashboard" className="flex h-14 items-center gap-2 border-b px-5 font-semibold">
-        <GraduationCap className="size-5" />
-        <span className="truncate text-sm">{SITE_NAME}</span>
+    <nav className="flex-1 overflow-y-auto px-3 py-4">
+      {groups.map((group) => (
+        <div key={group.key} className="mb-5 last:mb-0">
+          <p className="mb-1.5 px-3 font-semibold text-[0.68rem] text-sidebar-muted uppercase tracking-[0.14em]">
+            {t(`sections.${group.key}`)}
+          </p>
+          <div className="grid gap-1">
+            {group.items.map((item) => {
+              const active = isActivePath(pathname, item.href);
+              return (
+                <Link
+                  key={item.key}
+                  href={item.href}
+                  onClick={onNavigate}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "group relative flex min-h-10 items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all",
+                    active
+                      ? "bg-sidebar-accent text-primary shadow-[inset_0_0_0_1px_color-mix(in_oklch,var(--primary)_12%,transparent)]"
+                      : "text-sidebar-muted hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "grid size-7 shrink-0 place-items-center rounded-lg transition-colors",
+                      active ? "bg-primary/12 text-primary" : "group-hover:bg-background/70",
+                    )}
+                  >
+                    <item.icon className="size-4" />
+                  </span>
+                  <span className="truncate">{t(item.key)}</span>
+                  {active && <span className="ml-auto size-1.5 rounded-full bg-primary" />}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </nav>
+  );
+}
+
+function SidebarFooter() {
+  const t = useTranslations("nav");
+  const { name, roles } = useKeycloak();
+  const role = roles.includes(Role.ADMIN)
+    ? Role.ADMIN
+    : roles.includes(Role.TEACHER)
+      ? Role.TEACHER
+      : Role.STUDENT;
+
+  return (
+    <div className="m-3 rounded-xl border border-sidebar-border bg-background/55 p-3">
+      <p className="truncate font-medium text-sidebar-foreground text-sm">{name ?? "—"}</p>
+      <p className="mt-1 text-sidebar-muted text-xs">{t(`roles.${role}`)}</p>
+    </div>
+  );
+}
+
+function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
+  return (
+    <>
+      <Link
+        href="/dashboard"
+        onClick={onNavigate}
+        className="flex h-18 items-center border-sidebar-border border-b px-5"
+      >
+        <AppBrand />
       </Link>
-      <nav className="flex flex-1 flex-col gap-0.5 p-3">
-        {items.map((item) => {
-          const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
-          return (
-            <Link
-              key={item.key}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                active
-                  ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground hover:bg-accent/60 hover:text-foreground",
-              )}
-            >
-              <item.icon className="size-4" />
-              {t(item.key)}
-            </Link>
-          );
-        })}
-      </nav>
+      <NavigationContent onNavigate={onNavigate} />
+      <SidebarFooter />
+    </>
+  );
+}
+
+export function Sidebar() {
+  return (
+    <aside className="sticky top-0 hidden h-screen w-68 shrink-0 flex-col border-sidebar-border border-r bg-sidebar text-sidebar-foreground lg:flex">
+      <SidebarBody />
     </aside>
+  );
+}
+
+export function MobileSidebar() {
+  const t = useTranslations("nav");
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        <Button variant="ghost" size="icon" className="lg:hidden" aria-label={t("openMenu")}>
+          <Menu className="size-5" />
+        </Button>
+      </SheetTrigger>
+      <SheetContent
+        side="left"
+        className="w-[19rem] gap-0 border-sidebar-border bg-sidebar p-0 text-sidebar-foreground sm:max-w-[19rem]"
+      >
+        <SheetTitle className="sr-only">{t("menu")}</SheetTitle>
+        <SheetDescription className="sr-only">{t("menuDescription")}</SheetDescription>
+        <SidebarBody onNavigate={() => setOpen(false)} />
+      </SheetContent>
+    </Sheet>
   );
 }

@@ -1,23 +1,17 @@
 import type { ReactNode } from "react";
 
-import { LanguageSwitcher } from "@/components/dashboard/language-switcher";
-import { NotificationBell } from "@/components/dashboard/notification-bell";
+import { DashboardTopbar } from "@/components/dashboard/dashboard-topbar";
 import { Sidebar } from "@/components/dashboard/sidebar";
-import { ThemeToggle } from "@/components/dashboard/theme-toggle";
-import { UserMenu } from "@/components/dashboard/user-menu";
 
 export function DashboardShell({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <div className="flex min-h-screen">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="bg-card/80 sticky top-0 z-30 flex h-14 items-center justify-end gap-1 border-b px-4 backdrop-blur">
-          <LanguageSwitcher />
-          <ThemeToggle />
-          <NotificationBell />
-          <UserMenu />
-        </header>
-        <main className="flex-1 p-6">{children}</main>
+        <DashboardTopbar />
+        <main className="flex-1 px-4 py-5 sm:px-6 sm:py-6">
+          <div className="mx-auto w-full max-w-[96rem]">{children}</div>
+        </main>
       </div>
     </div>
   );

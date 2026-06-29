@@ -1,7 +1,13 @@
 {
   "app": {
     "name": "Codillas Study Platform",
-    "tagline": "Lernplattform der Codillas IT-Schule"
+    "tagline": "Lernplattform der Codillas IT-Schule",
+    "eyebrow": "Lernen ohne unnötiges Chaos",
+    "heroTitle": "Der gesamte Lernweg in einem übersichtlichen Bereich",
+    "heroDescription": "Kurse, Unterricht, Hausaufgaben, Tests und Kommunikation sind immer griffbereit.",
+    "featureLearning": "Kurse und Aufgaben",
+    "featureProgress": "Klarer Fortschritt",
+    "featureCommunication": "Direkte Kommunikation"
   },
   "common": {
     "loading": "Wird geladen…",
@@ -9,13 +15,21 @@
     "cancel": "Abbrechen",
     "delete": "Löschen",
     "signIn": "Anmelden",
-    "signOut": "Abmelden"
+    "signOut": "Abmelden",
+    "emptyTitle": "Hier ist noch nichts",
+    "emptyHint": "Neue Informationen erscheinen hier, sobald sie hinzugefügt wurden.",
+    "loadError": "Daten konnten nicht geladen werden",
+    "loadErrorHint": "Prüfen Sie die Verbindung und versuchen Sie es erneut.",
+    "changeLanguage": "Sprache ändern",
+    "toggleTheme": "Design wechseln",
+    "userMenu": "Benutzermenü"
   },
   "auth": {
     "sessionExpired": "Sitzung abgelaufen",
     "sessionExpiredHint": "Bitte melden Sie sich erneut an."
   },
   "nav": {
+    "dashboard": "Übersicht",
     "courses": "Kurse",
     "myCourses": "Meine Kurse",
     "schedule": "Zeitplan",
@@ -27,7 +41,49 @@
     "notifications": "Benachrichtigungen",
     "files": "Dateien",
     "people": "Personen",
-    "admin": "Verwaltung"
+    "admin": "Verwaltung",
+    "openMenu": "Menü öffnen",
+    "menu": "Navigation",
+    "menuDescription": "Hauptnavigation der Plattform",
+    "sections": {
+      "learning": "Lernen",
+      "communication": "Kommunikation",
+      "management": "Verwaltung"
+    },
+    "roles": {
+      "ADMIN": "Administrator",
+      "TEACHER": "Lehrkraft",
+      "STUDENT": "Student"
+    }
+  },
+  "dashboard": {
+    "eyebrow": "Ihr Lernbereich",
+    "welcome": "Willkommen, {name}",
+    "learner": "Lernende",
+    "studentIntro": "Behalten Sie Unterricht, Aufgaben und Fortschritt an einem Ort im Blick.",
+    "staffIntro": "Organisieren Sie das Lernen, prüfen Sie Arbeiten und bleiben Sie mit Gruppen verbunden.",
+    "overview": "Auf einen Blick",
+    "myCourses": "Meine Kurse",
+    "upcomingLessons": "Geplante Lektionen",
+    "unreadNotifications": "Ungelesen",
+    "groups": "Gruppen",
+    "messages": "Nachrichten",
+    "nextUp": "Als Nächstes",
+    "nextLesson": "Nächste Lektion",
+    "joinLesson": "Teilnehmen",
+    "viewSchedule": "Zeitplan ansehen",
+    "noUpcoming": "Keine anstehenden Lektionen",
+    "noUpcomingHint": "Neue Lektionen erscheinen hier, sobald sie geplant wurden.",
+    "quickActions": "Schnellzugriff",
+    "reviewHomework": "Hausaufgaben prüfen",
+    "manageGroups": "Gruppen verwalten",
+    "openSchedule": "Zeitplan öffnen",
+    "openHomework": "Hausaufgaben öffnen",
+    "openTests": "Tests öffnen",
+    "openChat": "Chat öffnen",
+    "schoolOverview": "Schulübersicht",
+    "courses": "Kurse",
+    "people": "Personen"
   },
   "course": {
     "course": "Kurs",
@@ -94,6 +150,7 @@
     "description": "Kurse, in die du über deine Gruppen eingeschrieben bist.",
     "group": "Gruppe",
     "empty": "Du bist noch in keiner Gruppe eingeschrieben.",
+    "startNotSet": "Startdatum nicht festgelegt",
     "statusLabel": "Status",
     "status": {
       "DRAFT": "Entwurf",
@@ -105,6 +162,7 @@
     "title": "Mein Zeitplan",
     "description": "Deine anstehenden Lektionen in allen deinen Gruppen.",
     "joinMeeting": "Meeting beitreten",
+    "linkPending": "Link wird später hinzugefügt",
     "empty": "Keine anstehenden Lektionen geplant."
   },
   "courses": {
@@ -305,6 +363,8 @@
     "newRoom": "Neuer Raum",
     "noRooms": "Noch keine Räume.",
     "selectRoom": "Wähle einen Raum, um zu chatten.",
+    "backToRooms": "Zurück zu Chats",
+    "conversation": "Unterhaltung",
     "loading": "Wird geladen…",
     "noMessages": "Noch keine Nachrichten — sag Hallo.",
     "messagePlaceholder": "Nachricht eingeben…",
@@ -323,7 +383,26 @@
     "new": "neu",
     "markRead": "Als gelesen markieren",
     "markAllRead": "Alle als gelesen markieren",
-    "seeAll": "Alle anzeigen"
+    "seeAll": "Alle anzeigen",
+    "types": {
+      "ASSIGNMENT_PUBLISHED": {
+        "title": "Neue Aufgabe",
+        "body": "In deiner Gruppe wurde eine neue Aufgabe veröffentlicht."
+      },
+      "ASSIGNMENT_DUE_SOON": {
+        "title": "Abgabe bald fällig",
+        "body": "Eine Aufgabe in deiner Gruppe ist bald fällig."
+      },
+      "SUBMISSION_GRADED": {
+        "title": "Hausaufgabe bewertet",
+        "body": "Deine Abgabe wurde bewertet: {points} Punkte."
+      },
+      "ATTEMPT_COMPLETED": {
+        "title": "Test bewertet",
+        "body": "Dein Testversuch: {points} Punkte."
+      },
+      "DIRECT_MESSAGE": { "title": "Neue Nachricht", "body": "Du hast eine neue Chat-Nachricht." }
+    }
   },
   "tests": {
     "title": "Tests",
@@ -399,7 +478,16 @@
     "attemptNumber": "Versuch #{number}",
     "timeUp": "Die Zeit ist um — dein Versuch wird abgegeben.",
     "availableUntilNote": "Verfügbar bis {date}",
-    "availableFromNote": "Verfügbar ab {date}"
+    "availableFromNote": "Verfügbar ab {date}",
+    "testStatus": {
+      "DRAFT": "Entwurf",
+      "PUBLISHED": "Veröffentlicht"
+    },
+    "attemptStatus": {
+      "IN_PROGRESS": "In Bearbeitung",
+      "SUBMITTED": "Eingereicht",
+      "GRADED": "Bewertet"
+    }
   },
   "admin": {
     "title": "Admin-Übersicht",

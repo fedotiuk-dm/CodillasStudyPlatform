@@ -11,11 +11,13 @@ import {
   useListMyNotifications,
   useMarkRead,
 } from "@/lib/api/notification/notification/notification";
+import { useLocalizedNotification } from "@/lib/hooks/use-localized-notification";
 
 export function NotificationsView() {
   const t = useTranslations("notifications");
   const { data, isLoading, isError } = useListMyNotifications();
   const markRead = useMarkRead();
+  const localize = useLocalizedNotification();
 
   const items = data?.content ?? [];
   const unread = data?.unread ?? 0;
@@ -28,29 +30,32 @@ export function NotificationsView() {
       />
       <DataState isLoading={isLoading} isError={isError} isEmpty={items.length === 0}>
         <div className="grid gap-3">
-          {items.map((n) => (
-            <Card key={n.id} className={n.read ? "opacity-70" : undefined}>
-              <CardContent className="flex items-start justify-between gap-4 pt-6">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">{n.title}</span>
-                    {!n.read ? <Badge>{t("new")}</Badge> : null}
+          {items.map((n) => {
+            const { title, body } = localize(n);
+            return (
+              <Card key={n.id} className={n.read ? "opacity-70" : undefined}>
+                <CardContent className="flex items-start justify-between gap-4 pt-6">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{title}</span>
+                      {!n.read ? <Badge>{t("new")}</Badge> : null}
+                    </div>
+                    {body ? <p className="text-muted-foreground mt-1 text-sm">{body}</p> : null}
                   </div>
-                  {n.body ? <p className="text-muted-foreground mt-1 text-sm">{n.body}</p> : null}
-                </div>
-                {!n.read ? (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={markRead.isPending}
-                    onClick={() => markRead.mutate({ notificationId: n.id })}
-                  >
-                    {t("markRead")}
-                  </Button>
-                ) : null}
-              </CardContent>
-            </Card>
-          ))}
+                  {!n.read ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={markRead.isPending}
+                      onClick={() => markRead.mutate({ notificationId: n.id })}
+                    >
+                      {t("markRead")}
+                    </Button>
+                  ) : null}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </DataState>
     </>

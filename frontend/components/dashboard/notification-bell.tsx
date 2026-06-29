@@ -13,6 +13,7 @@ import {
   useMarkAllRead,
   useMarkRead,
 } from "@/lib/api/notification/notification/notification";
+import { useLocalizedNotification } from "@/lib/hooks/use-localized-notification";
 import { useNotificationSound } from "@/lib/hooks/use-notification-sound";
 
 /** Where clicking a notification takes you — a chat notification opens that specific room. */
@@ -39,6 +40,7 @@ export function NotificationBell() {
   const { data } = useListMyNotifications({ size: 8 }, { query: { refetchInterval: 30_000 } });
   const markRead = useMarkRead();
   const markAll = useMarkAllRead();
+  const localize = useLocalizedNotification();
 
   const items = data?.content ?? [];
   const unread = data?.unread ?? 0;
@@ -84,26 +86,29 @@ export function NotificationBell() {
               {t("allCaughtUp")}
             </p>
           ) : (
-            items.map((n) => (
-              <button
-                key={n.id}
-                type="button"
-                onClick={() => {
-                  if (!n.read) markRead.mutate({ notificationId: n.id });
-                  setOpen(false);
-                  router.push(notificationHref(n.type, n.referenceId));
-                }}
-                className={`flex w-full flex-col items-start gap-0.5 border-b px-4 py-3 text-left last:border-b-0 hover:bg-muted/50 ${
-                  n.read ? "opacity-60" : ""
-                }`}
-              >
-                <span className="flex items-center gap-2 font-medium text-sm">
-                  {!n.read && <span className="h-2 w-2 shrink-0 rounded-full bg-primary" />}
-                  {n.title}
-                </span>
-                {n.body && <span className="text-muted-foreground text-xs">{n.body}</span>}
-              </button>
-            ))
+            items.map((n) => {
+              const { title, body } = localize(n);
+              return (
+                <button
+                  key={n.id}
+                  type="button"
+                  onClick={() => {
+                    if (!n.read) markRead.mutate({ notificationId: n.id });
+                    setOpen(false);
+                    router.push(notificationHref(n.type, n.referenceId));
+                  }}
+                  className={`flex w-full flex-col items-start gap-0.5 border-b px-4 py-3 text-left last:border-b-0 hover:bg-muted/50 ${
+                    n.read ? "opacity-60" : ""
+                  }`}
+                >
+                  <span className="flex items-center gap-2 font-medium text-sm">
+                    {!n.read && <span className="h-2 w-2 shrink-0 rounded-full bg-primary" />}
+                    {title}
+                  </span>
+                  {body && <span className="text-muted-foreground text-xs">{body}</span>}
+                </button>
+              );
+            })
           )}
         </div>
 

@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { StatusBadge } from "@/components/shared/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,14 +19,6 @@ import type { RubricResponse, SubmissionResponse } from "@/lib/api/homework/mode
 import { SubmissionStatus } from "@/lib/api/homework/model";
 
 import { GradeForm } from "./grade-form";
-
-const STATUS_VARIANT: Record<string, "default" | "secondary" | "outline"> = {
-  DRAFT: "secondary",
-  SUBMITTED: "outline",
-  IN_REVIEW: "outline",
-  GRADED: "default",
-  RETURNED: "secondary",
-};
 
 /** One submission card: student draft editing, teacher review/grade/return, and a late marker. */
 export function SubmissionRow({
@@ -54,9 +47,7 @@ export function SubmissionRow({
   return (
     <div className="grid gap-2 rounded-md border p-3 text-sm">
       <div className="flex items-center gap-2">
-        <Badge variant={STATUS_VARIANT[s.status] ?? "outline"}>
-          {t(`submissionStatus.${s.status}`)}
-        </Badge>
+        <StatusBadge status={s.status} label={t(`submissionStatus.${s.status}`)} />
         {s.late && <Badge variant="destructive">{t("late")}</Badge>}
         <span className="text-muted-foreground">v{s.version}</span>
       </div>

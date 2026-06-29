@@ -1,7 +1,13 @@
 {
   "app": {
     "name": "Codillas Study Platform",
-    "tagline": "Learning platform for the Codillas IT school"
+    "tagline": "Learning platform for the Codillas IT school",
+    "eyebrow": "Learning without the clutter",
+    "heroTitle": "Your entire learning journey in one clear workspace",
+    "heroDescription": "Courses, lessons, homework, tests and communication are always within reach.",
+    "featureLearning": "Courses and homework",
+    "featureProgress": "Clear progress",
+    "featureCommunication": "Live communication"
   },
   "common": {
     "loading": "Loading…",
@@ -9,13 +15,21 @@
     "cancel": "Cancel",
     "delete": "Delete",
     "signIn": "Sign in",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "emptyTitle": "Nothing here yet",
+    "emptyHint": "New information will appear here once it is added.",
+    "loadError": "Could not load the data",
+    "loadErrorHint": "Check your connection and try again.",
+    "changeLanguage": "Change language",
+    "toggleTheme": "Toggle theme",
+    "userMenu": "User menu"
   },
   "auth": {
     "sessionExpired": "Session expired",
     "sessionExpiredHint": "Please log in again to continue."
   },
   "nav": {
+    "dashboard": "Overview",
     "courses": "Courses",
     "myCourses": "My courses",
     "schedule": "Schedule",
@@ -27,7 +41,49 @@
     "notifications": "Notifications",
     "files": "Files",
     "people": "People",
-    "admin": "Admin"
+    "admin": "Admin",
+    "openMenu": "Open menu",
+    "menu": "Navigation",
+    "menuDescription": "Main platform navigation",
+    "sections": {
+      "learning": "Learning",
+      "communication": "Communication",
+      "management": "Management"
+    },
+    "roles": {
+      "ADMIN": "Administrator",
+      "TEACHER": "Teacher",
+      "STUDENT": "Student"
+    }
+  },
+  "dashboard": {
+    "eyebrow": "Your learning workspace",
+    "welcome": "Welcome, {name}",
+    "learner": "learner",
+    "studentIntro": "Keep track of lessons, assignments and progress in one place.",
+    "staffIntro": "Manage learning, review work and stay connected with your groups.",
+    "overview": "At a glance",
+    "myCourses": "My courses",
+    "upcomingLessons": "Scheduled lessons",
+    "unreadNotifications": "Unread",
+    "groups": "Groups",
+    "messages": "Messages",
+    "nextUp": "Next up",
+    "nextLesson": "Next lesson",
+    "joinLesson": "Join lesson",
+    "viewSchedule": "View schedule",
+    "noUpcoming": "No upcoming lessons",
+    "noUpcomingHint": "New lessons will appear here once a teacher schedules them.",
+    "quickActions": "Quick actions",
+    "reviewHomework": "Review homework",
+    "manageGroups": "Manage groups",
+    "openSchedule": "Open schedule",
+    "openHomework": "Open homework",
+    "openTests": "Open tests",
+    "openChat": "Open chat",
+    "schoolOverview": "School overview",
+    "courses": "Courses",
+    "people": "People"
   },
   "course": {
     "course": "Course",
@@ -94,6 +150,7 @@
     "description": "Courses you are enrolled in through your groups.",
     "group": "Group",
     "empty": "You are not enrolled in any groups yet.",
+    "startNotSet": "Start date not set",
     "statusLabel": "Status",
     "status": {
       "DRAFT": "Draft",
@@ -105,6 +162,7 @@
     "title": "My schedule",
     "description": "Your upcoming lessons across all your groups.",
     "joinMeeting": "Join meeting",
+    "linkPending": "Link will be added later",
     "empty": "No upcoming lessons scheduled."
   },
   "courses": {
@@ -305,6 +363,8 @@
     "newRoom": "New room",
     "noRooms": "No rooms yet.",
     "selectRoom": "Select a room to start chatting.",
+    "backToRooms": "Back to chats",
+    "conversation": "Conversation",
     "loading": "Loading…",
     "noMessages": "No messages yet — say hello.",
     "messagePlaceholder": "Type a message…",
@@ -323,7 +383,26 @@
     "new": "new",
     "markRead": "Mark read",
     "markAllRead": "Mark all read",
-    "seeAll": "See all"
+    "seeAll": "See all",
+    "types": {
+      "ASSIGNMENT_PUBLISHED": {
+        "title": "New assignment",
+        "body": "A new assignment was published for your group."
+      },
+      "ASSIGNMENT_DUE_SOON": {
+        "title": "Assignment due soon",
+        "body": "An assignment in your group is due soon."
+      },
+      "SUBMISSION_GRADED": {
+        "title": "Homework graded",
+        "body": "Your submission was graded: {points} points."
+      },
+      "ATTEMPT_COMPLETED": {
+        "title": "Test scored",
+        "body": "Your test attempt scored {points} points."
+      },
+      "DIRECT_MESSAGE": { "title": "New message", "body": "You have a new chat message." }
+    }
   },
   "tests": {
     "title": "Tests",
@@ -399,7 +478,16 @@
     "attemptNumber": "Attempt #{number}",
     "timeUp": "Time is up — submitting your attempt.",
     "availableUntilNote": "Available until {date}",
-    "availableFromNote": "Available from {date}"
+    "availableFromNote": "Available from {date}",
+    "testStatus": {
+      "DRAFT": "Draft",
+      "PUBLISHED": "Published"
+    },
+    "attemptStatus": {
+      "IN_PROGRESS": "In progress",
+      "SUBMITTED": "Submitted",
+      "GRADED": "Graded"
+    }
   },
   "admin": {
     "title": "Admin overview",

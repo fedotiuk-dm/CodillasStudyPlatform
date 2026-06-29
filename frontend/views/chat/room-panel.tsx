@@ -25,8 +25,8 @@ export function RoomPanel({ roomId, selfId }: { roomId: string; selfId?: string 
   }
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex-1 space-y-2 overflow-y-auto p-4">
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex-1 space-y-2 overflow-y-auto bg-muted/15 p-4 sm:p-5">
         {isLoading && <p className="text-muted-foreground text-sm">{t("loading")}</p>}
         {!isLoading && messages.length === 0 && (
           <p className="text-muted-foreground text-sm">{t("noMessages")}</p>
@@ -37,8 +37,10 @@ export function RoomPanel({ roomId, selfId }: { roomId: string; selfId?: string 
             <div key={m.id} className={cn("flex", mine ? "justify-end" : "justify-start")}>
               <div
                 className={cn(
-                  "max-w-[75%] rounded-lg px-3 py-2 text-sm",
-                  mine ? "bg-primary text-primary-foreground" : "bg-muted",
+                  "max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm shadow-xs sm:max-w-[70%]",
+                  mine
+                    ? "rounded-br-md bg-primary text-primary-foreground"
+                    : "rounded-bl-md border bg-card",
                 )}
               >
                 {m.content}
@@ -47,13 +49,14 @@ export function RoomPanel({ roomId, selfId }: { roomId: string; selfId?: string 
           );
         })}
       </div>
-      <form onSubmit={onSend} className="flex items-center gap-2 border-t p-3">
+      <form onSubmit={onSend} className="flex items-center gap-2 border-t bg-card p-3 sm:p-4">
         <Input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
+          className="h-10 rounded-xl bg-background"
           placeholder={t("messagePlaceholder")}
         />
-        <Button type="submit" size="icon" disabled={!draft.trim()}>
+        <Button type="submit" size="icon" className="size-10 rounded-xl" disabled={!draft.trim()}>
           <Send className="size-4" />
         </Button>
       </form>
