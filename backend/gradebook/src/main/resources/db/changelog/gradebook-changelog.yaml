@@ -19,3 +19,7 @@ databaseChangeLog:
   - include:
       file: changes/0.2.0/0.2.0-add-progress-weighting.yaml
       relativeToChangelogFile: true
+  # 0.5.0 — demo seed extras: weighted progress entries for the new graded items (context: seed)
+  - include:
+      file: changes/0.5.0/0.5.0-seed-gradebook-extras.yaml
+      relativeToChangelogFile: true

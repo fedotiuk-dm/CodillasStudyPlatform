@@ -48,3 +48,7 @@ databaseChangeLog:
   - include:
       file: changes/0.5.0/0.5.0-create-grade-criteria.yaml
       relativeToChangelogFile: true
+  # 0.5.0 — demo seed extras: rubric-graded + late-penalty assignments (context: seed)
+  - include:
+      file: changes/0.5.0/0.5.0-seed-homework-extras.yaml
+      relativeToChangelogFile: true

@@ -31,3 +31,7 @@ databaseChangeLog:
   - include:
       file: changes/0.4.0/0.4.0-add-course-lock-version.yaml
       relativeToChangelogFile: true
+  # 0.5.0 — demo seed extras: full structure + DRAFT/ARCHIVED courses (context: seed)
+  - include:
+      file: changes/0.5.0/0.5.0-seed-course-extras.yaml
+      relativeToChangelogFile: true

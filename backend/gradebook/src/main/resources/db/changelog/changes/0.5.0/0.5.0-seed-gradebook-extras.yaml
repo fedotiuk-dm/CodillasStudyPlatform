@@ -1,0 +1,19 @@
+# Demo seed extras — runs ONLY under the `seed` Liquibase context (dev stack sets it).
+databaseChangeLog:
+  - changeSet:
+      id: 0.5.0-seed-gradebook-extras
+      author: codillas
+      context: seed
+      comment: Demo weighted progress entries for the new graded items (dev only)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - sqlCheck:
+                expectedResult: 1
+                sql: SELECT count(*) FROM progress_entries WHERE source = 'TEST' AND reference_id = (SELECT id FROM tests WHERE title = 'Java Control Test')
+      changes:
+        - sqlFile:
+            path: 0.5.0-seed-gradebook-extras.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false

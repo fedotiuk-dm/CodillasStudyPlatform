@@ -1,0 +1,19 @@
+# Demo seed extras — runs ONLY under the `seed` Liquibase context (dev stack sets it).
+databaseChangeLog:
+  - changeSet:
+      id: 0.5.0-seed-notification-extras
+      author: codillas
+      context: seed
+      comment: Demo params backfill + unread attempt/due-soon/DM notifications (dev only)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - sqlCheck:
+                expectedResult: 1
+                sql: SELECT count(*) FROM notifications WHERE type = 'DIRECT_MESSAGE' AND recipient_id = (SELECT user_id FROM user_profiles WHERE display_name = 'Sam Student')
+      changes:
+        - sqlFile:
+            path: 0.5.0-seed-notification-extras.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
