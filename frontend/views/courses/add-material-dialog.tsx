@@ -148,6 +148,9 @@ export function AddMaterialDialog({
                 }}
                 chooseLabel={t("chooseFile")}
                 uploadingLabel={t("uploading")}
+                tooLargeLabel={t("fileTooLarge")}
+                unsupportedTypeLabel={t("fileUnsupportedType")}
+                uploadFailedLabel={t("fileUploadFailed")}
               />
               <FormMessage />
             </FormItem>

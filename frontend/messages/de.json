@@ -84,7 +84,10 @@
     "fileIdRequired": "Geben Sie eine Datei-ID für ein Datei-Material an.",
     "file": "Datei",
     "chooseFile": "Datei wählen",
-    "uploading": "Wird hochgeladen…"
+    "uploading": "Wird hochgeladen…",
+    "fileTooLarge": "Die Datei ist zu groß (max. 25 MB).",
+    "fileUnsupportedType": "Nicht unterstützter Dateityp.",
+    "fileUploadFailed": "Hochladen fehlgeschlagen. Bitte erneut versuchen."
   },
   "myCourses": {
     "title": "Meine Kurse",
@@ -253,7 +256,12 @@
     "size": "Größe",
     "actions": "Aktionen",
     "uploaded": "{name} hochgeladen",
-    "deleted": "Gelöscht"
+    "deleted": "Gelöscht",
+    "download": "Herunterladen",
+    "downloadFailed": "Die Datei konnte nicht heruntergeladen werden.",
+    "tooLarge": "Die Datei ist zu groß (max. 25 MB).",
+    "unsupportedType": "Nicht unterstützter Dateityp.",
+    "uploadFailed": "Hochladen fehlgeschlagen. Bitte erneut versuchen."
   },
   "people": {
     "title": "Personen",

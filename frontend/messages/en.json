@@ -84,7 +84,10 @@
     "fileIdRequired": "Provide a file ID for a file material.",
     "file": "File",
     "chooseFile": "Choose file",
-    "uploading": "Uploading…"
+    "uploading": "Uploading…",
+    "fileTooLarge": "File is too large (max 25 MB).",
+    "fileUnsupportedType": "Unsupported file type.",
+    "fileUploadFailed": "Upload failed. Please try again."
   },
   "myCourses": {
     "title": "My courses",
@@ -253,7 +256,12 @@
     "size": "Size",
     "actions": "Actions",
     "uploaded": "Uploaded {name}",
-    "deleted": "Deleted"
+    "deleted": "Deleted",
+    "download": "Download",
+    "downloadFailed": "Failed to download the file.",
+    "tooLarge": "File is too large (max 25 MB).",
+    "unsupportedType": "Unsupported file type.",
+    "uploadFailed": "Upload failed. Please try again."
   },
   "people": {
     "title": "People",
