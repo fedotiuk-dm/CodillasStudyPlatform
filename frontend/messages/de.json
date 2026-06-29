@@ -93,7 +93,13 @@
     "title": "Meine Kurse",
     "description": "Kurse, in die du über deine Gruppen eingeschrieben bist.",
     "group": "Gruppe",
-    "empty": "Du bist noch in keiner Gruppe eingeschrieben."
+    "empty": "Du bist noch in keiner Gruppe eingeschrieben.",
+    "statusLabel": "Status",
+    "status": {
+      "DRAFT": "Entwurf",
+      "RUNNING": "Laufend",
+      "ARCHIVED": "Archiviert"
+    }
   },
   "schedule": {
     "title": "Mein Zeitplan",

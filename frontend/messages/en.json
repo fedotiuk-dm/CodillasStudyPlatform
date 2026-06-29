@@ -93,7 +93,13 @@
     "title": "My courses",
     "description": "Courses you are enrolled in through your groups.",
     "group": "Group",
-    "empty": "You are not enrolled in any groups yet."
+    "empty": "You are not enrolled in any groups yet.",
+    "statusLabel": "Status",
+    "status": {
+      "DRAFT": "Draft",
+      "RUNNING": "Running",
+      "ARCHIVED": "Archived"
+    }
   },
   "schedule": {
     "title": "My schedule",

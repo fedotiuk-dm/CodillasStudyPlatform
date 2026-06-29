@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 
 import { DataState } from "@/components/shared/data-state";
 import { PageHeader } from "@/components/shared/page-header";
+import { StatusBadge } from "@/components/shared/status-badge";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
@@ -38,6 +39,7 @@ export function MyCoursesView() {
               <TableHeader>
                 <TableRow>
                   <TableHead>{t("group")}</TableHead>
+                  <TableHead>{t("statusLabel")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -47,6 +49,9 @@ export function MyCoursesView() {
                       <Link href={`/dashboard/courses/${g.courseId}`} className="hover:underline">
                         {g.name}
                       </Link>
+                    </TableCell>
+                    <TableCell>
+                      <StatusBadge status={g.status} label={t(`status.${g.status}`)} />
                     </TableCell>
                   </TableRow>
                 ))}
