@@ -266,7 +266,7 @@ function LessonRow({
           {records.map((r) => (
             <li key={r.id} className="flex items-center justify-between rounded border px-2 py-1">
               <span>{nameOf(r.userId)}</span>
-              <span className={r.present ? "text-green-600" : "text-muted-foreground"}>
+              <span className={r.present ? "text-success" : "text-muted-foreground"}>
                 {r.present ? t("present") : t("absent")}
               </span>
             </li>
