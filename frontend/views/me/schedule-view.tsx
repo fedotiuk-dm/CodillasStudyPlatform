@@ -13,7 +13,7 @@ import { safeHref } from "@/lib/utils";
 export function ScheduleView() {
   const t = useTranslations("schedule");
   const locale = useLocale();
-  const { data: lessons, isLoading, isError } = useListMySchedule();
+  const { data: lessons, isLoading, isError, refetch } = useListMySchedule();
   const { data: groups } = useListMyGroups();
   const agenda = lessons ?? [];
   const dateFormatter = new Intl.DateTimeFormat(locale, {
@@ -37,6 +37,7 @@ export function ScheduleView() {
         isError={isError}
         isEmpty={agenda.length === 0}
         emptyMessage={t("empty")}
+        onRetry={refetch}
       >
         <div className="grid gap-5">
           {Object.entries(grouped).map(([date, dayLessons]) => (

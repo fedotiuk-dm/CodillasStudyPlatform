@@ -15,7 +15,7 @@ import { useLocalizedNotification } from "@/lib/hooks/use-localized-notification
 
 export function NotificationsView() {
   const t = useTranslations("notifications");
-  const { data, isLoading, isError } = useListMyNotifications();
+  const { data, isLoading, isError, refetch } = useListMyNotifications();
   const markRead = useMarkRead();
   const localize = useLocalizedNotification();
 
@@ -28,7 +28,12 @@ export function NotificationsView() {
         title={t("title")}
         description={unread > 0 ? t("unread", { count: unread }) : t("allCaughtUp")}
       />
-      <DataState isLoading={isLoading} isError={isError} isEmpty={items.length === 0}>
+      <DataState
+        isLoading={isLoading}
+        isError={isError}
+        isEmpty={items.length === 0}
+        onRetry={refetch}
+      >
         <div className="grid gap-3">
           {items.map((n) => {
             const { title, body } = localize(n);

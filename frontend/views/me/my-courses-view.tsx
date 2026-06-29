@@ -13,7 +13,7 @@ import { useListMyGroups } from "@/lib/api/enrollment/enrollment/enrollment";
 export function MyCoursesView() {
   const t = useTranslations("myCourses");
   const locale = useLocale();
-  const { data, isLoading, isError } = useListMyGroups();
+  const { data, isLoading, isError, refetch } = useListMyGroups();
   const groups = data ?? [];
 
   return (
@@ -25,6 +25,8 @@ export function MyCoursesView() {
         isError={isError}
         isEmpty={groups.length === 0}
         emptyMessage={t("empty")}
+        variant="cards"
+        onRetry={refetch}
       >
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {groups.map((group) => (

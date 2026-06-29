@@ -19,7 +19,7 @@ import { SectionDialog } from "./section-dialog";
 export function CourseDetailView({ courseId }: { courseId: string }) {
   const t = useTranslations("course");
   const tCourses = useTranslations("courses");
-  const { data, isLoading, isError } = useGetCourse(courseId);
+  const { data, isLoading, isError, refetch } = useGetCourse(courseId);
   const isAdmin = useHasRole(Role.ADMIN);
   const isTeacher = useHasRole(Role.TEACHER);
   const [createSection, setCreateSection] = useState(false);
@@ -52,6 +52,8 @@ export function CourseDetailView({ courseId }: { courseId: string }) {
             isError={isError}
             isEmpty={sections.length === 0}
             emptyMessage={t("noSections")}
+            variant="detail"
+            onRetry={refetch}
           >
             <div className="grid gap-4">
               {sections.map((section) => (

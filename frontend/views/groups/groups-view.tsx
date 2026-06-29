@@ -34,7 +34,7 @@ export function GroupsView() {
   const [status, setStatus] = useState<string>(ALL);
   const [detail, setDetail] = useState<GroupResponse | null>(null);
 
-  const { data, isLoading, isError } = useListGroups(
+  const { data, isLoading, isError, refetch } = useListGroups(
     status === ALL ? undefined : { status: status as GroupStatus },
   );
   const { data: coursesData } = useListCourses();
@@ -66,7 +66,13 @@ export function GroupsView() {
             </SelectContent>
           </Select>
 
-          <DataState isLoading={isLoading} isError={isError} isEmpty={groups.length === 0}>
+          <DataState
+            isLoading={isLoading}
+            isError={isError}
+            isEmpty={groups.length === 0}
+            variant="table"
+            onRetry={refetch}
+          >
             <Table>
               <TableHeader>
                 <TableRow>

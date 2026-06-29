@@ -31,7 +31,7 @@ import { TestWizard } from "./test-wizard";
 
 export function AssessmentView() {
   const t = useTranslations("tests");
-  const { data, isLoading, isError } = useListTests();
+  const { data, isLoading, isError, refetch } = useListTests();
   const canManage = useHasAnyRole([Role.ADMIN, Role.TEACHER]);
   const [createOpen, setCreateOpen] = useState(false);
   const [manageTestId, setManageTestId] = useState<string | null>(null);
@@ -82,7 +82,13 @@ export function AssessmentView() {
 
       <Card>
         <CardContent className="pt-6">
-          <DataState isLoading={isLoading} isError={isError} isEmpty={tests.length === 0}>
+          <DataState
+            isLoading={isLoading}
+            isError={isError}
+            isEmpty={tests.length === 0}
+            variant="table"
+            onRetry={refetch}
+          >
             <Table>
               <TableHeader>
                 <TableRow>
