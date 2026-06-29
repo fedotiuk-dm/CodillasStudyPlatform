@@ -293,7 +293,11 @@
     "total": "Gesamt",
     "average": "Durchschnitt",
     "groupAverage": "Gruppendurchschnitt",
-    "studentsCount": "{count} Schüler"
+    "studentsCount": "{count} Schüler",
+    "finalGrade": "Endnote",
+    "points": "Punkte",
+    "finalPct": "Endnote %",
+    "sourceTypes": { "HOMEWORK": "Hausaufgaben", "TEST": "Tests" }
   },
   "chat": {
     "title": "Chat",

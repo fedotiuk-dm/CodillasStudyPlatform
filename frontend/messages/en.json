@@ -293,7 +293,11 @@
     "total": "Total",
     "average": "Average",
     "groupAverage": "Group average",
-    "studentsCount": "{count} students"
+    "studentsCount": "{count} students",
+    "finalGrade": "Final grade",
+    "points": "points",
+    "finalPct": "Final %",
+    "sourceTypes": { "HOMEWORK": "Homework", "TEST": "Tests" }
   },
   "chat": {
     "title": "Chat",

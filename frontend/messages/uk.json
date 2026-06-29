@@ -293,7 +293,11 @@
     "total": "Сума",
     "average": "Середнє",
     "groupAverage": "Середнє по групі",
-    "studentsCount": "{count} студентів"
+    "studentsCount": "{count} студентів",
+    "finalGrade": "Підсумкова оцінка",
+    "points": "балів",
+    "finalPct": "Підсумок %",
+    "sourceTypes": { "HOMEWORK": "Домашні", "TEST": "Тести" }
   },
   "chat": {
     "title": "Чат",
