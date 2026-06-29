@@ -2,11 +2,12 @@
 
 import { Bell } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
+import { NotificationType } from "@/lib/api/notification/model";
 import {
   useListMyNotifications,
   useMarkAllRead,
@@ -14,12 +15,27 @@ import {
 } from "@/lib/api/notification/notification/notification";
 import { useNotificationSound } from "@/lib/hooks/use-notification-sound";
 
+/** Where clicking a notification takes you — a chat notification opens that specific room. */
+function notificationHref(type: NotificationType, referenceId?: string): string {
+  switch (type) {
+    case NotificationType.DIRECT_MESSAGE:
+      return referenceId ? `/dashboard/chat?room=${referenceId}` : "/dashboard/chat";
+    case NotificationType.ATTEMPT_COMPLETED:
+      return "/dashboard/tests";
+    default:
+      // ASSIGNMENT_PUBLISHED / ASSIGNMENT_DUE_SOON / SUBMISSION_GRADED
+      return "/dashboard/homework";
+  }
+}
+
 /**
  * Header notification bell: an unread-count badge + a popover of recent items. Polled every 30s for
  * near-live updates (notifications have no WebSocket channel — only chat does).
  */
 export function NotificationBell() {
   const t = useTranslations("notifications");
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
   const { data } = useListMyNotifications({ size: 8 }, { query: { refetchInterval: 30_000 } });
   const markRead = useMarkRead();
   const markAll = useMarkAllRead();
@@ -36,7 +52,7 @@ export function NotificationBell() {
   }, [unread, playNotification]);
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon" className="relative" aria-label={t("title")}>
           <Bell className="h-5 w-5" />
@@ -74,6 +90,8 @@ export function NotificationBell() {
                 type="button"
                 onClick={() => {
                   if (!n.read) markRead.mutate({ notificationId: n.id });
+                  setOpen(false);
+                  router.push(notificationHref(n.type, n.referenceId));
                 }}
                 className={`flex w-full flex-col items-start gap-0.5 border-b px-4 py-3 text-left last:border-b-0 hover:bg-muted/50 ${
                   n.read ? "opacity-60" : ""

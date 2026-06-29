@@ -1,7 +1,8 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,12 @@ export function ChatView() {
   const rooms = data ?? [];
   const [activeRoom, setActiveRoom] = useState<string | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
+
+  // Deep-link: /dashboard/chat?room={id} (e.g. clicked from a notification) opens that room.
+  const roomParam = useSearchParams().get("room");
+  useEffect(() => {
+    if (roomParam) setActiveRoom(roomParam);
+  }, [roomParam]);
 
   return (
     <>
