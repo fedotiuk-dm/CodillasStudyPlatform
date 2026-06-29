@@ -388,6 +388,9 @@
     "markRead": "Позначити прочитаним",
     "markAllRead": "Прочитати всі",
     "seeAll": "Усі сповіщення",
+    "sortNewest": "Спочатку нові",
+    "sortOldest": "Спочатку старі",
+    "sortUnread": "Спершу непрочитані",
     "types": {
       "ASSIGNMENT_PUBLISHED": {
         "title": "Нове завдання",

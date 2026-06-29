@@ -118,6 +118,13 @@ notification:
         title: "Neue Nachricht"
         body: "Du hast eine neue Chat-Nachricht."
 
+homework:
+  # Due-soon reminder job. `cron` is the schedule (Spring 6-field cron); `window` is how far ahead
+  # to look for deadlines (ISO-8601 duration). Both fall back to hourly / 24h when unset.
+  due-reminder:
+    cron: ${HOMEWORK_DUE_REMINDER_CRON:0 0 * * * *}
+    window: ${HOMEWORK_DUE_REMINDER_WINDOW:PT24H}
+
 server:
   port: ${SERVER_PORT:8081}
 

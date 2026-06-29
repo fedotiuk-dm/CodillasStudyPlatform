@@ -388,6 +388,9 @@
     "markRead": "Als gelesen markieren",
     "markAllRead": "Alle als gelesen markieren",
     "seeAll": "Alle anzeigen",
+    "sortNewest": "Neueste zuerst",
+    "sortOldest": "Älteste zuerst",
+    "sortUnread": "Ungelesene zuerst",
     "types": {
       "ASSIGNMENT_PUBLISHED": {
         "title": "Neue Aufgabe",

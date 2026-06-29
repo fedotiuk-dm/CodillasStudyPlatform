@@ -50,7 +50,8 @@ class ChatServiceTest {
   @InjectMocks private ChatServiceImpl service;
 
   @Test
-  @DisplayName("posting a message notifies every other room member (for the bell), never the sender")
+  @DisplayName(
+      "posting a message notifies every other room member (for the bell), never the sender")
   void postMessage_notifiesOtherMembers() {
     UUID roomId = UUID.randomUUID();
     UUID senderId = UUID.randomUUID();

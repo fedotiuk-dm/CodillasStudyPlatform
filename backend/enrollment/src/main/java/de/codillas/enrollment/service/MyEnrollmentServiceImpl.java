@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 @Transactional(readOnly = true)
-public class MeServiceImpl implements MeService {
+public class MyEnrollmentServiceImpl implements MyEnrollmentService {
 
   private final MembershipRepository membershipRepository;
   private final GroupRepository groupRepository;

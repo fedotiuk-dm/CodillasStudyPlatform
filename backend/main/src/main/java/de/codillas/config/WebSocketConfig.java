@@ -20,9 +20,9 @@ import lombok.RequiredArgsConstructor;
 /**
  * STOMP-over-WebSocket setup. Handshake at {@code /ws}; clients publish to {@code /app/**} and
  * subscribe to {@code /topic/**} / {@code /user/**}. Authentication is established on CONNECT by
- * {@link StompAuthInterceptor}; {@code @EnableWebSocketSecurity} then guards every message.
- * Disabled under the {@code integration-test} profile (REST + events are tested without a live
- * broker).
+ * {@link StompAuthInterceptor}; {@code @EnableWebSocketSecurity} then guards every message, with
+ * chat-room membership enforced declaratively by {@link ChatRoomAuthorizationManager}. Disabled
+ * under the {@code integration-test} profile (REST + events are tested without a live broker).
  */
 @Configuration
 @Profile("!integration-test")
@@ -32,7 +32,7 @@ import lombok.RequiredArgsConstructor;
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
   private final StompAuthInterceptor stompAuthInterceptor;
-  private final ChatSubscriptionInterceptor chatSubscriptionInterceptor;
+  private final ChatRoomAuthorizationManager chatRoomAuthorizationManager;
 
   @Override
   public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -48,7 +48,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
   @Override
   public void configureClientInboundChannel(ChannelRegistration registration) {
-    registration.interceptors(stompAuthInterceptor, chatSubscriptionInterceptor);
+    registration.interceptors(stompAuthInterceptor);
   }
 
   @Bean
@@ -64,6 +64,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         .permitAll()
         .simpDestMatchers("/app/**")
         .authenticated()
+        // Chat rooms: only members may subscribe — matched before the generic rule below.
+        .simpSubscribeDestMatchers("/topic/chat/{roomId}")
+        .access(chatRoomAuthorizationManager::check)
         .simpSubscribeDestMatchers("/topic/**", "/queue/**", "/user/**")
         .authenticated()
         .anyMessage()

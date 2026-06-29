@@ -11,9 +11,6 @@ public enum Role {
   TEACHER,
   STUDENT;
 
-  /** System default for newly created users. */
-  public static final Role DEFAULT = STUDENT;
-
   /** Spring Security authority name, e.g. {@code ROLE_STUDENT}. */
   public String authority() {
     return "ROLE_" + name();

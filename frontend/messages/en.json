@@ -388,6 +388,9 @@
     "markRead": "Mark read",
     "markAllRead": "Mark all read",
     "seeAll": "See all",
+    "sortNewest": "Newest first",
+    "sortOldest": "Oldest first",
+    "sortUnread": "Unread first",
     "types": {
       "ASSIGNMENT_PUBLISHED": {
         "title": "New assignment",

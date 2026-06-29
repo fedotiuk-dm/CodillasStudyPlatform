@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 import { DataState } from "@/components/shared/data-state";
 import { PageHeader } from "@/components/shared/page-header";
@@ -8,14 +9,28 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   useListMyNotifications,
   useMarkRead,
 } from "@/lib/api/notification/notification/notification";
 import { useLocalizedNotification } from "@/lib/hooks/use-localized-notification";
 
+const SORTS = {
+  newest: ["createdAt,desc"],
+  oldest: ["createdAt,asc"],
+  unread: ["read,asc", "createdAt,desc"],
+} as const;
+
 export function NotificationsView() {
   const t = useTranslations("notifications");
-  const { data, isLoading, isError, refetch } = useListMyNotifications();
+  const [sort, setSort] = useState<keyof typeof SORTS>("newest");
+  const { data, isLoading, isError, refetch } = useListMyNotifications({ sort: [...SORTS[sort]] });
   const markRead = useMarkRead();
   const localize = useLocalizedNotification();
 
@@ -27,6 +42,18 @@ export function NotificationsView() {
       <PageHeader
         title={t("title")}
         description={unread > 0 ? t("unread", { count: unread }) : t("allCaughtUp")}
+        action={
+          <Select value={sort} onValueChange={(v) => setSort(v as keyof typeof SORTS)}>
+            <SelectTrigger className="w-48">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="newest">{t("sortNewest")}</SelectItem>
+              <SelectItem value="oldest">{t("sortOldest")}</SelectItem>
+              <SelectItem value="unread">{t("sortUnread")}</SelectItem>
+            </SelectContent>
+          </Select>
+        }
       />
       <DataState
         isLoading={isLoading}

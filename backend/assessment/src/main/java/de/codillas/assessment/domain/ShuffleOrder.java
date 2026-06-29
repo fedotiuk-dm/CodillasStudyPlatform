@@ -34,6 +34,8 @@ public final class ShuffleOrder {
   /** A new list holding {@code items} in this order; the input is never mutated. */
   public <T> List<T> apply(List<T> items) {
     List<T> copy = new ArrayList<>(items);
+    // Seeded Random gives a stable, reproducible order. Not security — it only arranges quiz
+    // questions/options on screen, so the weak-PRNG warning (S2245) is a knowing false positive.
     Collections.shuffle(copy, new Random(seed));
     return copy;
   }

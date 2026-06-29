@@ -21,8 +21,8 @@ import de.codillas.enrollment.api.dto.ScheduleLessonRequest;
 import de.codillas.enrollment.api.dto.ScheduledLessonResponse;
 import de.codillas.enrollment.service.AttendanceService;
 import de.codillas.enrollment.service.GroupService;
-import de.codillas.enrollment.service.MeService;
 import de.codillas.enrollment.service.MembershipService;
+import de.codillas.enrollment.service.MyEnrollmentService;
 import de.codillas.enrollment.service.ScheduledLessonService;
 import de.codillas.shared.security.RequiresAdmin;
 import de.codillas.shared.security.RequiresAuthenticated;
@@ -38,7 +38,7 @@ public class EnrollmentController implements EnrollmentApi {
   private final MembershipService membershipService;
   private final ScheduledLessonService scheduledLessonService;
   private final AttendanceService attendanceService;
-  private final MeService meService;
+  private final MyEnrollmentService myEnrollmentService;
 
   @Override
   @RequiresAdmin
@@ -75,13 +75,13 @@ public class EnrollmentController implements EnrollmentApi {
   @Override
   @RequiresAuthenticated
   public ResponseEntity<List<GroupResponse>> listMyGroups() {
-    return ResponseEntity.ok(meService.listMyGroups());
+    return ResponseEntity.ok(myEnrollmentService.listMyGroups());
   }
 
   @Override
   @RequiresAuthenticated
   public ResponseEntity<List<ScheduledLessonResponse>> listMySchedule() {
-    return ResponseEntity.ok(meService.listMySchedule());
+    return ResponseEntity.ok(myEnrollmentService.listMySchedule());
   }
 
   @Override

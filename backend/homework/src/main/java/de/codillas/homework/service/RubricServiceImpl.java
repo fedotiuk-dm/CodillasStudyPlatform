@@ -38,7 +38,16 @@ public class RubricServiceImpl implements RubricService {
         assignmentRepository
             .findById(assignmentId)
             .orElseThrow(() -> new NotFoundException("Assignment", assignmentId));
-    // Replace any prior rubric (re-author): drop old criteria + rubric.
+    replaceExistingRubric(assignmentId);
+    Rubric rubric = rubricRepository.save(Rubric.builder().assignmentId(assignmentId).build());
+    List<RubricCriterion> criteria = saveCriteria(rubric.getId(), request.getCriteria());
+    assignment.setRubricId(rubric.getId());
+    assignmentRepository.save(assignment);
+    return mapper.toResponse(rubric, mapper.toCriterionResponses(criteria));
+  }
+
+  /** Re-author: drop the assignment's prior rubric and its criteria, if any. */
+  private void replaceExistingRubric(UUID assignmentId) {
     rubricRepository
         .findByAssignmentId(assignmentId)
         .ifPresent(
@@ -46,15 +55,17 @@ public class RubricServiceImpl implements RubricService {
               criterionRepository.deleteByRubricId(old.getId());
               rubricRepository.delete(old);
             });
-    Rubric rubric = rubricRepository.save(Rubric.builder().assignmentId(assignmentId).build());
-    int position = 0;
+  }
+
+  /** Persist each criterion via MapStruct in request order, stamping a 0-based position. */
+  private List<RubricCriterion> saveCriteria(
+      UUID rubricId, List<CreateRubricCriterionRequest> requests) {
     List<RubricCriterion> criteria = new ArrayList<>();
-    for (CreateRubricCriterionRequest c : request.getCriteria()) {
-      criteria.add(criterionRepository.save(mapper.toCriterion(c, rubric.getId(), position++)));
+    int position = 0;
+    for (CreateRubricCriterionRequest c : requests) {
+      criteria.add(criterionRepository.save(mapper.toCriterion(c, rubricId, position++)));
     }
-    assignment.setRubricId(rubric.getId());
-    assignmentRepository.save(assignment);
-    return mapper.toResponse(rubric, mapper.toCriterionResponses(criteria));
+    return criteria;
   }
 
   @Override
