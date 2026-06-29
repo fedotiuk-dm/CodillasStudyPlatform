@@ -28,8 +28,10 @@ class CourseStartupReconciler {
   private final CourseRepository courseRepository;
   private final ApplicationEventPublisher events;
 
+  // Read-write tx (not readOnly): publishing CoursePublished enlists an INSERT into the Modulith
+  // event_publication registry, which a read-only transaction would reject.
   @EventListener(ApplicationReadyEvent.class)
-  @Transactional(readOnly = true)
+  @Transactional
   void republishPublishedCourses() {
     var published = courseRepository.findByStatus(CourseStatus.PUBLISHED);
     published.stream()
