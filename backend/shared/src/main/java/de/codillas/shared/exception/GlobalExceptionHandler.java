@@ -1,24 +1,20 @@
 package de.codillas.shared.exception;
 
 import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Global error handling as RFC 9457 ProblemDetail. Spring already renders {@link
- * org.springframework.web.ErrorResponseException} subclasses (NotFound / Conflict / BadRequest) and
- * bean-validation failures; this advice adds method-security denials and a safe catch-all.
+ * Global error handling as RFC 9457 ProblemDetail. The base {@link ResponseEntityExceptionHandler}
+ * already renders Spring MVC failures — bean validation, unreadable bodies, and {@code
+ * ErrorResponse} types (our NotFound / Conflict / BadRequest, plus an oversize upload as 413). This
+ * advice adds method-security denials, optimistic-lock conflicts, and a safe catch-all.
  */
 @RestControllerAdvice
 @Slf4j
@@ -26,27 +22,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
   @ExceptionHandler(AuthorizationDeniedException.class)
   ProblemDetail handleAccessDenied(AuthorizationDeniedException ex) {
+    log.debug("Access denied: {}", ex.getMessage());
     return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, "Access denied");
   }
 
   @ExceptionHandler(OptimisticLockingFailureException.class)
   ProblemDetail handleOptimisticLock(OptimisticLockingFailureException ex) {
+    log.warn("Optimistic lock conflict: {}", ex.getMessage());
     return ProblemDetail.forStatusAndDetail(
         HttpStatus.CONFLICT, "The resource was modified concurrently; reload and retry");
-  }
-
-  // Overrides the base dispatcher's mapping for this type (a sibling @ExceptionHandler would be
-  // ambiguous): renders a 413 ProblemDetail when an upload exceeds the multipart size limit.
-  @Override
-  protected ResponseEntity<Object> handleMaxUploadSizeExceededException(
-      MaxUploadSizeExceededException ex,
-      HttpHeaders headers,
-      HttpStatusCode status,
-      WebRequest request) {
-    ProblemDetail body =
-        ProblemDetail.forStatusAndDetail(
-            HttpStatus.PAYLOAD_TOO_LARGE, "Uploaded file exceeds the size limit");
-    return handleExceptionInternal(ex, body, headers, HttpStatus.PAYLOAD_TOO_LARGE, request);
   }
 
   @ExceptionHandler(Exception.class)
