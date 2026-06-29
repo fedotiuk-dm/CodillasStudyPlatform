@@ -20,6 +20,7 @@
     "emptyHint": "Neue Informationen erscheinen hier, sobald sie hinzugefügt wurden.",
     "loadError": "Daten konnten nicht geladen werden",
     "loadErrorHint": "Prüfen Sie die Verbindung und versuchen Sie es erneut.",
+    "retry": "Erneut versuchen",
     "changeLanguage": "Sprache ändern",
     "toggleTheme": "Design wechseln",
     "userMenu": "Benutzermenü"

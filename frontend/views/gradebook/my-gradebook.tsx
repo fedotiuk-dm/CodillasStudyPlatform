@@ -22,7 +22,7 @@ import { CourseGradeCard } from "./course-grade-card";
 export function MyGradebook() {
   const t = useTranslations("gradebook");
   const { userId } = useKeycloak();
-  const { data, isLoading, isError } = useGetStudentGradebook(userId ?? "", {
+  const { data, isLoading, isError, refetch } = useGetStudentGradebook(userId ?? "", {
     query: { enabled: !!userId },
   });
   const entries = data?.entries ?? [];
@@ -39,6 +39,8 @@ export function MyGradebook() {
           isError={isError}
           isEmpty={entries.length === 0}
           emptyMessage={t("noGrades")}
+          variant="table"
+          onRetry={refetch}
         >
           <Table>
             <TableHeader>

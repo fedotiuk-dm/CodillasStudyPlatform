@@ -31,7 +31,7 @@ export function CoursesView() {
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<string>(ALL);
 
-  const { data, isLoading, isError } = useListCourses(
+  const { data, isLoading, isError, refetch } = useListCourses(
     status === ALL ? undefined : { status: status as CourseStatus },
   );
   const courses = data?.content ?? [];
@@ -62,7 +62,13 @@ export function CoursesView() {
             </Select>
           )}
 
-          <DataState isLoading={isLoading} isError={isError} isEmpty={courses.length === 0}>
+          <DataState
+            isLoading={isLoading}
+            isError={isError}
+            isEmpty={courses.length === 0}
+            variant="table"
+            onRetry={refetch}
+          >
             <Table>
               <TableHeader>
                 <TableRow>

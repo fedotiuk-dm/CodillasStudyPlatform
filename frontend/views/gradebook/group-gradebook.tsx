@@ -37,7 +37,7 @@ export function GroupGradebook() {
   const groups = groupsData?.content ?? [];
   const [groupId, setGroupId] = useState("");
   const nameOf = useProfileNames();
-  const { data, isLoading, isError } = useGetGroupGradebook(groupId, {
+  const { data, isLoading, isError, refetch } = useGetGroupGradebook(groupId, {
     query: { enabled: !!groupId },
   });
   const students = data?.students ?? [];
@@ -98,6 +98,8 @@ export function GroupGradebook() {
             isError={isError}
             isEmpty={students.length === 0}
             emptyMessage={t("noGroupGrades")}
+            variant="table"
+            onRetry={refetch}
           >
             <Table>
               <TableHeader>

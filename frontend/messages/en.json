@@ -20,6 +20,7 @@
     "emptyHint": "New information will appear here once it is added.",
     "loadError": "Could not load the data",
     "loadErrorHint": "Check your connection and try again.",
+    "retry": "Try again",
     "changeLanguage": "Change language",
     "toggleTheme": "Toggle theme",
     "userMenu": "User menu"

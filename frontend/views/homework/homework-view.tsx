@@ -31,7 +31,7 @@ export function HomeworkView() {
   const canManage = useHasAnyRole([Role.ADMIN, Role.TEACHER]);
   const [open, setOpen] = useState(false);
 
-  const { data, isLoading, isError } = useListAssignments(
+  const { data, isLoading, isError, refetch } = useListAssignments(
     { groupId },
     { query: { enabled: !!groupId } },
   );
@@ -67,7 +67,13 @@ export function HomeworkView() {
       {groupId && (
         <Card>
           <CardContent className="pt-6">
-            <DataState isLoading={isLoading} isError={isError} isEmpty={assignments.length === 0}>
+            <DataState
+              isLoading={isLoading}
+              isError={isError}
+              isEmpty={assignments.length === 0}
+              variant="table"
+              onRetry={refetch}
+            >
               <Table>
                 <TableHeader>
                   <TableRow>
