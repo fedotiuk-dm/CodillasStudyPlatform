@@ -210,7 +210,38 @@
     "sendReview": "Send review",
     "scorePlaceholder": "0–100",
     "grade": "Grade",
-    "returnToStudent": "Return to student"
+    "returnToStudent": "Return to student",
+    "optional": "Optional",
+    "pctRange": "Between 1 and 100",
+    "latePenaltyPerDay": "Late penalty per day (%)",
+    "maxLatePenalty": "Max penalty (%)",
+    "latePenaltyBadge": "Late -{perDay}%/day (max {max}%)",
+    "late": "Late",
+    "addRubric": "Add rubric",
+    "rubric": "Rubric",
+    "createRubric": "Create rubric",
+    "rubricDialogDescription": "Describe the criteria used to grade the work.",
+    "rubricCreated": "Rubric created",
+    "criteria": "Criteria",
+    "criterionPlaceholder": "e.g. Correctness of the solution",
+    "criterionLabelRequired": "Criterion is required",
+    "maxPoints": "Max points",
+    "maxPointsMin": "At least 1",
+    "addCriterion": "Add criterion",
+    "removeCriterion": "Remove criterion",
+    "gradeEffective": "Effective score",
+    "gradeRaw": "Raw score",
+    "assignmentStatus": {
+      "DRAFT": "Draft",
+      "PUBLISHED": "Published"
+    },
+    "submissionStatus": {
+      "DRAFT": "Draft",
+      "SUBMITTED": "Submitted",
+      "IN_REVIEW": "In review",
+      "GRADED": "Graded",
+      "RETURNED": "Returned"
+    }
   },
   "files": {
     "title": "Files",

@@ -210,7 +210,38 @@
     "sendReview": "Rückmeldung senden",
     "scorePlaceholder": "0–100",
     "grade": "Bewerten",
-    "returnToStudent": "An Schüler zurückgeben"
+    "returnToStudent": "An Schüler zurückgeben",
+    "optional": "Optional",
+    "pctRange": "Zwischen 1 und 100",
+    "latePenaltyPerDay": "Verspätungsabzug pro Tag (%)",
+    "maxLatePenalty": "Max. Abzug (%)",
+    "latePenaltyBadge": "Verspätung -{perDay}%/Tag (max. {max}%)",
+    "late": "Verspätet",
+    "addRubric": "Rubrik hinzufügen",
+    "rubric": "Rubrik",
+    "createRubric": "Rubrik erstellen",
+    "rubricDialogDescription": "Beschreibe die Kriterien zur Bewertung der Arbeit.",
+    "rubricCreated": "Rubrik erstellt",
+    "criteria": "Kriterien",
+    "criterionPlaceholder": "z. B. Korrektheit der Lösung",
+    "criterionLabelRequired": "Kriterium ist erforderlich",
+    "maxPoints": "Max. Punkte",
+    "maxPointsMin": "Mindestens 1",
+    "addCriterion": "Kriterium hinzufügen",
+    "removeCriterion": "Kriterium entfernen",
+    "gradeEffective": "Effektive Wertung",
+    "gradeRaw": "Rohwertung",
+    "assignmentStatus": {
+      "DRAFT": "Entwurf",
+      "PUBLISHED": "Veröffentlicht"
+    },
+    "submissionStatus": {
+      "DRAFT": "Entwurf",
+      "SUBMITTED": "Abgegeben",
+      "IN_REVIEW": "In Prüfung",
+      "GRADED": "Bewertet",
+      "RETURNED": "Zurückgegeben"
+    }
   },
   "files": {
     "title": "Dateien",

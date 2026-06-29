@@ -210,7 +210,38 @@
     "sendReview": "Надіслати відгук",
     "scorePlaceholder": "0–100",
     "grade": "Оцінити",
-    "returnToStudent": "Повернути студенту"
+    "returnToStudent": "Повернути студенту",
+    "optional": "Необовʼязково",
+    "pctRange": "Від 1 до 100",
+    "latePenaltyPerDay": "Штраф за день (%)",
+    "maxLatePenalty": "Макс. штраф (%)",
+    "latePenaltyBadge": "Штраф -{perDay}%/день (макс. {max}%)",
+    "late": "Прострочено",
+    "addRubric": "Додати рубрику",
+    "rubric": "Рубрика",
+    "createRubric": "Створити рубрику",
+    "rubricDialogDescription": "Опишіть критерії оцінювання роботи.",
+    "rubricCreated": "Рубрику створено",
+    "criteria": "Критерії",
+    "criterionPlaceholder": "напр. Коректність рішення",
+    "criterionLabelRequired": "Вкажіть критерій",
+    "maxPoints": "Макс. балів",
+    "maxPointsMin": "Щонайменше 1",
+    "addCriterion": "Додати критерій",
+    "removeCriterion": "Видалити критерій",
+    "gradeEffective": "Підсумковий бал",
+    "gradeRaw": "Сирий бал",
+    "assignmentStatus": {
+      "DRAFT": "Чернетка",
+      "PUBLISHED": "Опубліковано"
+    },
+    "submissionStatus": {
+      "DRAFT": "Чернетка",
+      "SUBMITTED": "Надіслано",
+      "IN_REVIEW": "На перевірці",
+      "GRADED": "Оцінено",
+      "RETURNED": "Повернено"
+    }
   },
   "files": {
     "title": "Файли",
