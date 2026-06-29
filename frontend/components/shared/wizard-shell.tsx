@@ -59,13 +59,12 @@ export function WizardShell({
         </DialogHeader>
 
         <div className="flex items-center gap-1.5" aria-hidden>
-          {Array.from({ length: stepCount }).map((_, i) => (
+          {Array.from({ length: stepCount }, (_, i) => i).map((step) => (
             <span
-              // biome-ignore lint/suspicious/noArrayIndexKey: fixed-length progress dots
-              key={i}
+              key={step}
               className={cn(
                 "h-1.5 flex-1 rounded-full",
-                i <= activeStep ? "bg-primary" : "bg-muted",
+                step <= activeStep ? "bg-primary" : "bg-muted",
               )}
             />
           ))}

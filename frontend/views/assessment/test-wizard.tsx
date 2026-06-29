@@ -23,7 +23,7 @@ type Step = 0 | 1 | 2;
 function toRequests(questions: DraftQuestion[]) {
   return questions.map(({ _key, ...q }) => ({
     ...q,
-    options: q.options?.filter((o) => o.text.trim()),
+    options: q.options?.filter((o) => o.text.trim()).map(({ _key, ...o }) => o),
   }));
 }
 
@@ -62,7 +62,13 @@ export function TestWizard({
       return;
     }
     if (!title.trim()) setTitle(tpl.suggestedTitle);
-    setQuestions(tpl.questions.map((q) => ({ ...q, _key: crypto.randomUUID() })));
+    setQuestions(
+      tpl.questions.map((q) => ({
+        ...q,
+        _key: crypto.randomUUID(),
+        options: q.options?.map((o) => ({ ...o, _key: crypto.randomUUID() })),
+      })),
+    );
     setStep(1);
   }
 

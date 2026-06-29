@@ -61,9 +61,13 @@ export function QuestionAnswerInput({
                 {o.text}
               </label>
             ) : (
-              // biome-ignore lint/a11y/noLabelWithoutControl: Radix Checkbox is the control
-              <label key={o.id} className="flex items-center gap-2 text-sm">
+              <label
+                key={o.id}
+                htmlFor={`q-${q.id}-${o.id}`}
+                className="flex items-center gap-2 text-sm"
+              >
                 <Checkbox
+                  id={`q-${q.id}-${o.id}`}
                   checked={selected.includes(o.id)}
                   onCheckedChange={(c) =>
                     onChange({
