@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import { LanguageSwitcher } from "@/components/dashboard/language-switcher";
+import { NotificationBell } from "@/components/dashboard/notification-bell";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { ThemeToggle } from "@/components/dashboard/theme-toggle";
 import { UserMenu } from "@/components/dashboard/user-menu";
@@ -13,6 +14,7 @@ export function DashboardShell({ children }: Readonly<{ children: ReactNode }>) 
         <header className="bg-card/80 sticky top-0 z-30 flex h-14 items-center justify-end gap-1 border-b px-4 backdrop-blur">
           <LanguageSwitcher />
           <ThemeToggle />
+          <NotificationBell />
           <UserMenu />
         </header>
         <main className="flex-1 p-6">{children}</main>
