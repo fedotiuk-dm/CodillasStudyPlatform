@@ -211,7 +211,7 @@ class GradebookServiceTest {
     List<ProgressEntry> entries = List.of(new ProgressEntry());
     StudentGradebookResponse dto = mock(StudentGradebookResponse.class);
     CourseGradeResponse courseGrade = mock(CourseGradeResponse.class);
-    WeightedGrade weighted = new WeightedGrade(0, 0, List.of());
+    WeightedGrade weighted = new WeightedGrade(0, 0, 0.0, List.of());
     when(currentUser.isStaff()).thenReturn(true);
     when(repository.findByStudentId(eq(studentId), any())).thenReturn(entries);
     when(mapper.toEntryResponses(entries)).thenReturn(List.of());
@@ -232,7 +232,7 @@ class GradebookServiceTest {
             ProgressEntry.builder().source(GradeSource.TEST).score(18).maxPoints(20).build());
     StudentGradebookResponse dto = mock(StudentGradebookResponse.class);
     CourseGradeResponse courseGrade = mock(CourseGradeResponse.class);
-    WeightedGrade weighted = new WeightedGrade(52, 60, List.of());
+    WeightedGrade weighted = new WeightedGrade(52, 60, 86.667, List.of());
     when(currentUser.isStaff()).thenReturn(true);
     when(repository.findByStudentId(eq(studentId), any())).thenReturn(entries);
     when(mapper.toEntryResponses(entries)).thenReturn(List.of());

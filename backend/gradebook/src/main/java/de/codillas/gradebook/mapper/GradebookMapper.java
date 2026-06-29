@@ -30,10 +30,8 @@ public interface GradebookMapper {
 
   List<ProgressEntryResponse> toEntryResponses(List<ProgressEntry> entries);
 
-  @Mapping(target = "percent", expression = "java(type.percent())")
   TypeGradeResponse toTypeGrade(TypeGrade type);
 
-  @Mapping(target = "percent", expression = "java(grade.percent())")
   CourseGradeResponse toCourseGrade(WeightedGrade grade);
 
   StudentGradebookResponse toStudentGradebook(
