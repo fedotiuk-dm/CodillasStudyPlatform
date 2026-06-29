@@ -14,6 +14,7 @@ import de.codillas.enrollment.api.dto.CreateGroupRequest;
 import de.codillas.enrollment.api.dto.EnrollStudentRequest;
 import de.codillas.enrollment.api.dto.GroupListResponse;
 import de.codillas.enrollment.api.dto.GroupResponse;
+import de.codillas.enrollment.api.dto.GroupStatus;
 import de.codillas.enrollment.api.dto.MarkAttendanceRequest;
 import de.codillas.enrollment.api.dto.MembershipResponse;
 import de.codillas.enrollment.api.dto.ScheduleLessonRequest;
@@ -48,8 +49,7 @@ public class EnrollmentController implements EnrollmentApi {
 
   @Override
   @RequiresAuthenticated
-  public ResponseEntity<GroupListResponse> listGroups(
-      de.codillas.enrollment.api.dto.GroupStatus status, Pageable pageable) {
+  public ResponseEntity<GroupListResponse> listGroups(GroupStatus status, Pageable pageable) {
     return ResponseEntity.ok(groupService.listGroups(status, pageable));
   }
 

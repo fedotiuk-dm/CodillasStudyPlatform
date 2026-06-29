@@ -1,7 +1,9 @@
 package de.codillas.course.service;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -70,22 +72,26 @@ public class CourseServiceImpl implements CourseService {
   public CourseListResponse listCourses(
       de.codillas.course.api.dto.CourseStatus status, Pageable pageable) {
     CourseStatus filter = courseMapper.toDomainStatus(status); // null when no filter
-    Page<Course> page;
+    return courseMapper.toListResponse(findVisible(filter, pageable));
+  }
+
+  /**
+   * Staff list any status; everyone else only PUBLISHED/ARCHIVED. A filter outside what the caller
+   * may see yields an empty page rather than leaking that drafts exist.
+   */
+  private Page<Course> findVisible(CourseStatus filter, Pageable pageable) {
     if (currentUser.isStaff()) {
-      page =
-          filter == null
-              ? courseRepository.findAll(pageable)
-              : courseRepository.findByStatus(filter, pageable);
-    } else if (filter == CourseStatus.DRAFT) {
-      page = Page.empty(pageable); // non-staff never see drafts
-    } else if (filter == null) {
-      page =
-          courseRepository.findByStatusIn(
-              java.util.EnumSet.of(CourseStatus.PUBLISHED, CourseStatus.ARCHIVED), pageable);
-    } else {
-      page = courseRepository.findByStatus(filter, pageable);
+      return filter == null
+          ? courseRepository.findAll(pageable)
+          : courseRepository.findByStatus(filter, pageable);
     }
-    return courseMapper.toListResponse(page);
+    Set<CourseStatus> visible = EnumSet.of(CourseStatus.PUBLISHED, CourseStatus.ARCHIVED);
+    if (filter == null) {
+      return courseRepository.findByStatusIn(visible, pageable);
+    }
+    return visible.contains(filter)
+        ? courseRepository.findByStatus(filter, pageable)
+        : Page.empty(pageable);
   }
 
   @Override

@@ -13,13 +13,11 @@ import de.codillas.shared.mapper.CentralMapperConfig;
 
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(config = CentralMapperConfig.class)
 public interface QuestionMapper {
 
-  @Mapping(target = "options", source = "options")
   QuestionResponse toResponse(Question question, List<OptionResponse> options);
 
   /** Correctness is intentionally not exposed. */

@@ -22,7 +22,6 @@ public interface NotificationMapper {
 
   NotificationResponse toResponse(Notification notification);
 
-  @Mapping(target = "unread", source = "unread")
   NotificationListResponse toListResponse(Page<Notification> page, long unread);
 
   @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)

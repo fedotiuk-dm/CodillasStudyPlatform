@@ -21,7 +21,6 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(config = CentralMapperConfig.class)
 public interface AttemptMapper {
 
-  @Mapping(target = "answers", source = "answers")
   AttemptResponse toResponse(Attempt attempt, List<AnswerResponse> answers);
 
   AnswerResponse toAnswerResponse(Answer answer);

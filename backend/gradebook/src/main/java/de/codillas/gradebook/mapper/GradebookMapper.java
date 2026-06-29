@@ -30,10 +30,8 @@ public interface GradebookMapper {
 
   List<ProgressEntryResponse> toEntryResponses(List<ProgressEntry> entries);
 
-  @Mapping(target = "percent", expression = "java(type.percent())")
   TypeGradeResponse toTypeGrade(TypeGrade type);
 
-  @Mapping(target = "percent", expression = "java(grade.percent())")
   CourseGradeResponse toCourseGrade(WeightedGrade grade);
 
   StudentGradebookResponse toStudentGradebook(
@@ -46,8 +44,6 @@ public interface GradebookMapper {
   @Mapping(target = "sourceId", source = "submissionId")
   @Mapping(target = "referenceId", source = "assignmentId")
   @Mapping(target = "score", source = "awarded")
-  @Mapping(target = "maxPoints", source = "maxPoints")
-  @Mapping(target = "groupId", source = "groupId")
   ProgressEntry toEntry(SubmissionGraded event);
 
   @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
@@ -55,8 +51,6 @@ public interface GradebookMapper {
   @Mapping(target = "sourceId", source = "attemptId")
   @Mapping(target = "referenceId", source = "testId")
   @Mapping(target = "score", source = "awarded")
-  @Mapping(target = "maxPoints", source = "maxPoints")
-  @Mapping(target = "groupId", source = "groupId")
   ProgressEntry toEntry(AttemptCompleted event);
 
   @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)

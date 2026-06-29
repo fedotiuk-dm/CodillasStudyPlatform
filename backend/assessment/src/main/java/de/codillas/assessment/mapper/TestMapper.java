@@ -14,13 +14,11 @@ import de.codillas.shared.mapper.CentralMapperConfig;
 
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(config = CentralMapperConfig.class)
 public interface TestMapper {
 
-  @Mapping(target = "questions", source = "questions")
   TestResponse toResponse(Test test, List<QuestionResponse> questions);
 
   TestSummary toSummary(Test test);

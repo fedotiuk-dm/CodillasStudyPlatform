@@ -22,6 +22,5 @@ public interface MembershipMapper {
   List<MembershipResponse> toResponseList(List<Membership> entities);
 
   @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
-  @Mapping(target = "groupId", source = "groupId")
   Membership toEntity(EnrollStudentRequest request, UUID groupId);
 }

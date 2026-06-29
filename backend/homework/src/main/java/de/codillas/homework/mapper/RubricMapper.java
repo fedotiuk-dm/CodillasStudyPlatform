@@ -12,7 +12,6 @@ import de.codillas.shared.mapper.CentralMapperConfig;
 
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(config = CentralMapperConfig.class)
@@ -25,7 +24,5 @@ public interface RubricMapper {
   RubricResponse toResponse(Rubric rubric, List<RubricCriterionResponse> criteria);
 
   @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
-  @Mapping(target = "rubricId", source = "rubricId")
-  @Mapping(target = "position", source = "position")
   RubricCriterion toCriterion(CreateRubricCriterionRequest request, UUID rubricId, int position);
 }
