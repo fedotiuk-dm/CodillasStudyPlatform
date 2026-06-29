@@ -8,25 +8,32 @@ import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Link } from "@/i18n/navigation";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useListCourses } from "@/lib/api/course/course/course";
+import { CourseStatus } from "@/lib/api/course/model";
 import { useHasRole } from "@/lib/auth";
 import { Role } from "@/lib/constants";
+
+import { CourseRow } from "./course-row";
 import { CreateCourseDialog } from "./create-course-dialog";
+
+const ALL = "ALL";
 
 export function CoursesView() {
   const t = useTranslations("courses");
-  const { data, isLoading, isError } = useListCourses();
   const canManage = useHasRole(Role.ADMIN);
   const [open, setOpen] = useState(false);
+  const [status, setStatus] = useState<string>(ALL);
 
+  const { data, isLoading, isError } = useListCourses(
+    status === ALL ? undefined : { status: status as CourseStatus },
+  );
   const courses = data?.content ?? [];
 
   return (
@@ -40,27 +47,34 @@ export function CoursesView() {
       />
 
       <Card>
-        <CardContent className="pt-6">
+        <CardContent className="space-y-4 pt-6">
+          {canManage && (
+            <Select value={status} onValueChange={setStatus}>
+              <SelectTrigger className="w-48">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={ALL}>{t("filterAll")}</SelectItem>
+                <SelectItem value={CourseStatus.DRAFT}>{t("status.DRAFT")}</SelectItem>
+                <SelectItem value={CourseStatus.PUBLISHED}>{t("status.PUBLISHED")}</SelectItem>
+                <SelectItem value={CourseStatus.ARCHIVED}>{t("status.ARCHIVED")}</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+
           <DataState isLoading={isLoading} isError={isError} isEmpty={courses.length === 0}>
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>{t("name")}</TableHead>
                   <TableHead>{t("descriptionLabel")}</TableHead>
+                  <TableHead>{t("statusLabel")}</TableHead>
+                  <TableHead />
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {courses.map((course) => (
-                  <TableRow key={course.id}>
-                    <TableCell className="font-medium">
-                      <Link href={`/dashboard/courses/${course.id}`} className="hover:underline">
-                        {course.name}
-                      </Link>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {course.description ?? "—"}
-                    </TableCell>
-                  </TableRow>
+                  <CourseRow key={course.id} course={course} canManage={canManage} />
                 ))}
               </TableBody>
             </Table>

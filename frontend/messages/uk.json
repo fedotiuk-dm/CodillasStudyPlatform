@@ -103,7 +103,17 @@
     "dialogDescription": "Додайте курс до каталогу.",
     "created": "Курс створено",
     "namePlaceholder": "напр. Основи Java",
-    "descriptionPlaceholder": "Про що цей курс…"
+    "descriptionPlaceholder": "Про що цей курс…",
+    "statusLabel": "Статус",
+    "status": { "DRAFT": "Чернетка", "PUBLISHED": "Опубліковано", "ARCHIVED": "Архів" },
+    "filterAll": "Усі статуси",
+    "actions": "Дії",
+    "publish": "Опублікувати",
+    "archive": "Архівувати",
+    "delete": "Видалити",
+    "cancel": "Скасувати",
+    "confirmDeleteTitle": "Видалити курс?",
+    "confirmDelete": "Це видалить курс і всі його секції, уроки та матеріали. Дію не можна скасувати."
   },
   "groups": {
     "title": "Групи",

@@ -103,7 +103,17 @@
     "dialogDescription": "Füge einen Kurs zum Katalog hinzu.",
     "created": "Kurs erstellt",
     "namePlaceholder": "z. B. Java-Grundlagen",
-    "descriptionPlaceholder": "Worum es im Kurs geht…"
+    "descriptionPlaceholder": "Worum es im Kurs geht…",
+    "statusLabel": "Status",
+    "status": { "DRAFT": "Entwurf", "PUBLISHED": "Veröffentlicht", "ARCHIVED": "Archiviert" },
+    "filterAll": "Alle Status",
+    "actions": "Aktionen",
+    "publish": "Veröffentlichen",
+    "archive": "Archivieren",
+    "delete": "Löschen",
+    "cancel": "Abbrechen",
+    "confirmDeleteTitle": "Kurs löschen?",
+    "confirmDelete": "Dies löscht den Kurs und alle seine Abschnitte, Lektionen und Materialien. Dies kann nicht rückgängig gemacht werden."
   },
   "groups": {
     "title": "Gruppen",

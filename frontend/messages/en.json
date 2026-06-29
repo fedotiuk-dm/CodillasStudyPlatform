@@ -103,7 +103,17 @@
     "dialogDescription": "Add a course to the catalogue.",
     "created": "Course created",
     "namePlaceholder": "e.g. Java Fundamentals",
-    "descriptionPlaceholder": "What the course covers…"
+    "descriptionPlaceholder": "What the course covers…",
+    "statusLabel": "Status",
+    "status": { "DRAFT": "Draft", "PUBLISHED": "Published", "ARCHIVED": "Archived" },
+    "filterAll": "All statuses",
+    "actions": "Actions",
+    "publish": "Publish",
+    "archive": "Archive",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "confirmDeleteTitle": "Delete course?",
+    "confirmDelete": "This deletes the course and all its sections, lessons and materials. This cannot be undone."
   },
   "groups": {
     "title": "Groups",
