@@ -1,5 +1,10 @@
 # P2b — Grading model: late penalties, rubrics, final course grade (implementation plan)
 
+> **Status (2026-07-03): IMPLEMENTED** on `feat/lms-hardening` — landed in commit `6af4743`
+> (backend P0–P2c) plus the frontend integration commits that follow it. The checkboxes below
+> were never ticked during execution; treat this banner, the code, and the git history as the
+> source of truth, not the boxes.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Make grading real. `homework` gains a configurable **late penalty** (a pure `GradeCalculator` that turns a raw score into an `effectiveScore`) and an optional **rubric** (ordered criteria, grade = Σ criterion scores). The shared `SubmissionGraded`/`AttemptCompleted` events start carrying `awarded` + `maxPoints` + `groupId`. `gradebook` records those, and computes a **final course grade** = points-weighted percent `Σawarded / Σmax` per `(student, group)` with a per-type (homework vs test) breakdown.

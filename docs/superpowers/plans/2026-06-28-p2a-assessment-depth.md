@@ -1,5 +1,10 @@
 # P2a — Assessment depth Implementation Plan
 
+> **Status (2026-07-03): IMPLEMENTED** on `feat/lms-hardening` — landed in commit `6af4743`
+> (backend P0–P2c) plus the frontend integration commits that follow it. The checkboxes below
+> were never ticked during execution; treat this banner, the code, and the git history as the
+> source of truth, not the boxes.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Give the `assessment` module real test depth — multiple attempts with a cap, a server-side timer, an availability window, proportional partial credit for `MULTIPLE_CHOICE`, and a deterministic per-attempt shuffle of questions/options in the taker view — plus best-attempt-of-record semantics in `gradebook`. Implements Batch 3 of `docs/superpowers/specs/2026-06-28-lms-hardening-design.md`. Follow its Decisions table exactly.

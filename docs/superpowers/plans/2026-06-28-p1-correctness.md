@@ -1,5 +1,10 @@
 # P1 — Correctness & integrity hardening (implementation plan)
 
+> **Status (2026-07-03): IMPLEMENTED** on `feat/lms-hardening` — landed in commit `6af4743`
+> (backend P0–P2c) plus the frontend integration commits that follow it. The checkboxes below
+> were never ticked during execution; treat this banner, the code, and the git history as the
+> source of truth, not the boxes.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Close the correctness gaps the 2026-06-28 audit found (Batch 2 of `docs/superpowers/specs/2026-06-28-lms-hardening-design.md`): optimistic locking on the two raced aggregates, late-submission flagging, idempotent re-grade, file size/type limits, hard-delete endpoints with intra-module FK cascade + cross-module event cleanup, and wiring the dead email channel.

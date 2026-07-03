@@ -1,5 +1,10 @@
 # P2c — Course & cohort lifecycle implementation plan
 
+> **Status (2026-07-03): IMPLEMENTED** on `feat/lms-hardening` — landed in commit `6af4743`
+> (backend P0–P2c) plus the frontend integration commits that follow it. The checkboxes below
+> were never ticked during execution; treat this banner, the code, and the git history as the
+> source of truth, not the boxes.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Give `course` and `enrollment` an explicit lifecycle. A `Course` is `DRAFT → PUBLISHED → ARCHIVED`; a `Group` is `DRAFT → RUNNING → ARCHIVED`. Add `publish`/`archive` (course) and `start`/`archive` (group) endpoints, hide `DRAFT` courses from non-staff list queries, validate that a group is only created against a `PUBLISHED` course, reject writes (enroll/schedule) into an `ARCHIVED` group, and surface `RUNNING+ARCHIVED` (never `DRAFT`) in `/api/me/groups`.

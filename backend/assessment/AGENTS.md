@@ -9,4 +9,4 @@ Build/fill with the **`new-modulith-module`** skill — do not scaffold blind.
 - **Consumes:** —
 - **Depends on (by id / events / API only):** course (lesson), user (by id)
 - **OpenAPI spec:** `backend/openapi/assessment-paths.yaml` (+ `assessment-schemas.yaml`)
-- **Status:** skeleton — implement in phase 4.
+- **Status:** implemented (builder + attempts, auto-grade, timer/window, limits, partial credit, shuffle).

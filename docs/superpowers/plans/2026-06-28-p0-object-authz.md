@@ -1,5 +1,10 @@
 # P0 — Object-level authorization Implementation Plan
 
+> **Status (2026-07-03): IMPLEMENTED** on `feat/lms-hardening` — landed in commit `6af4743`
+> (backend P0–P2c) plus the frontend integration commits that follow it. The checkboxes below
+> were never ticked during execution; treat this banner, the code, and the git history as the
+> source of truth, not the boxes.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Close the five IDOR / auth-bypass holes the audit found. Today every service gates on *role* but almost never on *ownership*: a student can read/modify another student's submission, attempt, grades, download any file by id, and subscribe to any chat room. Add a caller-vs-resource check at the service layer (404 on mismatch, staff bypass), a `FileAccessAuthorizer` SPI for per-reference-type file access, and a frame-level chat subscription guard.

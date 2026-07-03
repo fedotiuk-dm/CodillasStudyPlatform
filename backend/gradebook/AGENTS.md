@@ -9,4 +9,4 @@ Build/fill with the **`new-modulith-module`** skill — do not scaffold blind.
 - **Consumes:** StudentEnrolled, SubmissionGraded, AttemptCompleted
 - **Depends on (by id / events / API only):** — (events only)
 - **OpenAPI spec:** `backend/openapi/gradebook-paths.yaml` (+ `gradebook-schemas.yaml`)
-- **Status:** skeleton — implement in phase 5.
+- **Status:** implemented (event-fed read model; student + group views).

@@ -19,5 +19,4 @@ Build/fill with the **`new-modulith-module`** skill — do not scaffold blind.
 - **Depends on (by id / events / API only):** files (materials, by API)
 - **OpenAPI spec:** `backend/openapi/course-paths.yaml` (+ `course-schemas.yaml`) — single `course`
   tag (one tag = one generated `*Api` interface; never add a second tag per module).
-- **Status:** backend done (structure CRUD + nested course-tree read). TODO: re-point
-  `homework.Assignment` at `lessonId`; controller integration tests for the new endpoints; frontend.
+- **Status:** implemented (structure CRUD + course tree + DRAFT/PUBLISHED/ARCHIVED lifecycle + builder UI).

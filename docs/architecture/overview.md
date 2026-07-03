@@ -141,14 +141,15 @@ MapStruct.
 | 4 | `homework`   | Assignments + versioned submissions + review | Assignment, Submission, Review, Grade          |
 | 5 | `assessment` | Test/control builder + auto-grading          | Test, Question, Option, Attempt, Answer        |
 | 6 | `gradebook`  | Progress journal — event-driven read model   | ProgressEntry (derived)                        |
+| 7 | `announcement` | Class stream: teacher posts to a group     | Announcement, AnnouncementMembership (derived) |
 
 ### Copied from boosting (pattern exists — do not rewrite)
 
-| # | Module         | Responsibility                                                                |
-|---|----------------|-------------------------------------------------------------------------------|
-| 7 | `chat`         | Full WebSocket chat: group channel, student↔teacher DM, per-assignment thread |
-| 8 | `notification` | Email + in-app notifications, event-driven                                    |
-| 9 | `files`        | S3/minio storage; attachments for homework / materials / chat                 |
+| #  | Module         | Responsibility                                                                |
+|----|----------------|-------------------------------------------------------------------------------|
+| 8  | `chat`         | Full WebSocket chat: group channel, student↔teacher DM, per-assignment thread |
+| 9  | `notification` | Email + in-app notifications, event-driven                                    |
+| 10 | `files`        | S3/minio storage; attachments for homework / materials / chat                 |
 
 ### Cross-cutting (shared kernel / infra — not domain modules)
 
@@ -162,15 +163,19 @@ The glue. Publishers don't know their consumers.
 
 | Event                 | Published by | Consumed by                                                |
 |-----------------------|--------------|------------------------------------------------------------|
-| `StudentEnrolled`     | enrollment   | chat (add to channel), gradebook (init progress)           |
+| `StudentEnrolled`     | enrollment   | chat (add to channel), gradebook (init progress), notification + announcement (rosters) |
 | `AssignmentPublished` | homework     | notification                                               |
+| `AssignmentDueSoon`   | homework     | notification (deadline reminders)                          |
 | `SubmissionGraded`    | homework     | gradebook, notification                                    |
 | `AttemptCompleted`    | assessment   | gradebook, notification                                    |
-| `MessagePosted`       | chat         | notification (if recipient offline)                        |
+| `MessagePosted`       | chat         | — (group-channel per-message noise deliberately unconsumed)|
+| `DirectMessagePosted` | chat         | notification (DM rooms — one clear recipient)              |
+| `AnnouncementPosted`  | announcement | notification (fan-out to the group)                        |
+| `UserEmailChanged`    | user         | notification (recipient-email read model)                  |
 | `CoursePublished`     | course       | enrollment (course-status read model → group-create guard) |
 | `CourseArchived`      | course       | enrollment (course-status read model)                      |
 | `CourseDeleted`       | course       | enrollment (cascade-delete its cohorts)                    |
-| `GroupDeleted`        | enrollment   | chat, gradebook, homework, notification (purge read models)|
+| `GroupDeleted`        | enrollment   | chat, gradebook, homework, notification, announcement (purge read models) |
 
 Events are persisted via Spring Modulith's event publication registry
 (at-least-once, retried on restart) so a consumer failure never silently drops

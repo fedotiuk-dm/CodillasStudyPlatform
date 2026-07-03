@@ -5,7 +5,7 @@ Build/fill with the **`new-modulith-module`** skill — do not scaffold blind.
 
 - **Responsibility:** Full WebSocket chat — copy/adapt from boosting: group channel, student↔teacher DM, per-assignment thread.
 - **Key entities:** ChatRoom, ChatRoomMember, ChatMessage
-- **Publishes:** MessagePosted
+- **Publishes:** MessagePosted, DirectMessagePosted (DM rooms only — one clear recipient)
 - **Consumes:** StudentEnrolled (auto-creates the group channel + adds the student)
 - **Depends on (by id / events / API only):** user (by id), files (FileAccessAuthorizer SPI)
 - **OpenAPI spec:** `backend/openapi/chat-paths.yaml` (+ `chat-schemas.yaml`)
