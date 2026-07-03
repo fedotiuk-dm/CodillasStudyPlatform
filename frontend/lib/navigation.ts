@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   Library,
   type LucideIcon,
+  Megaphone,
   MessageSquare,
   Bell as NotificationIcon,
   ShieldCheck,
@@ -64,6 +65,13 @@ export const NAV_ITEMS: readonly NavItem[] = [
     icon: GraduationCap,
     roles: [],
     group: "learning",
+  },
+  {
+    key: "announcements",
+    href: "/dashboard/announcements",
+    icon: Megaphone,
+    roles: [],
+    group: "communication",
   },
   { key: "chat", href: "/dashboard/chat", icon: MessageSquare, roles: [], group: "communication" },
   {

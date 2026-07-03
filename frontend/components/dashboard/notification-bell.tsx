@@ -23,6 +23,11 @@ function notificationHref(type: NotificationType, referenceId?: string): string 
       return referenceId ? `/dashboard/chat?room=${referenceId}` : "/dashboard/chat";
     case NotificationType.ATTEMPT_COMPLETED:
       return "/dashboard/tests";
+    case NotificationType.ANNOUNCEMENT_POSTED:
+      // referenceId is the group id — open that group's stream.
+      return referenceId
+        ? `/dashboard/announcements?group=${referenceId}`
+        : "/dashboard/announcements";
     default:
       // ASSIGNMENT_PUBLISHED / ASSIGNMENT_DUE_SOON / SUBMISSION_GRADED
       return "/dashboard/homework";

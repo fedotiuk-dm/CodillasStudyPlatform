@@ -58,7 +58,8 @@
       "ADMIN": "Administrator",
       "TEACHER": "Lehrkraft",
       "STUDENT": "Student"
-    }
+    },
+    "announcements": "Ankündigungen"
   },
   "dashboard": {
     "eyebrow": "Ihr Lernbereich",
@@ -87,7 +88,10 @@
     "openChat": "Chat öffnen",
     "schoolOverview": "Schulübersicht",
     "courses": "Kurse",
-    "people": "Personen"
+    "people": "Personen",
+    "latestAnnouncements": "Neueste Ankündigungen",
+    "fromYourGroups": "Aus deinen Gruppen",
+    "allAnnouncements": "Alle Ankündigungen"
   },
   "course": {
     "course": "Kurs",
@@ -393,6 +397,28 @@
     "members": "Mitglieder",
     "searchPeople": "Personen suchen…"
   },
+  "announcements": {
+    "title": "Ankündigungen",
+    "description": "Neuigkeiten und Updates aus deinen Gruppen.",
+    "allGroups": "Alle meine Gruppen",
+    "selectGroup": "Gruppe wählen",
+    "newAnnouncement": "Neue Ankündigung",
+    "dialogDescription": "Veröffentliche ein Update für die ganze Gruppe. Mitglieder werden benachrichtigt.",
+    "titleLabel": "Titel",
+    "titlePlaceholder": "z. B. Unterricht auf Freitag verschoben",
+    "bodyLabel": "Nachricht",
+    "bodyPlaceholder": "Details für die Gruppe…",
+    "pinned": "Oben anheften",
+    "posted": "Ankündigung veröffentlicht",
+    "postLabel": "Veröffentlichen",
+    "posting": "Wird veröffentlicht…",
+    "pinnedBadge": "Angeheftet",
+    "pin": "Anheften",
+    "unpin": "Lösen",
+    "deleted": "Ankündigung gelöscht",
+    "deleteTitle": "Diese Ankündigung löschen?",
+    "deleteDescription": "Gruppenmitglieder sehen sie nicht mehr. Das kann nicht rückgängig gemacht werden."
+  },
   "notifications": {
     "title": "Benachrichtigungen",
     "unread": "{count} ungelesen",
@@ -424,6 +450,10 @@
       "DIRECT_MESSAGE": {
         "title": "Neue Nachricht",
         "body": "Du hast eine neue Chat-Nachricht."
+      },
+      "ANNOUNCEMENT_POSTED": {
+        "title": "Neue Ankündigung",
+        "body": "{title}"
       }
     }
   },

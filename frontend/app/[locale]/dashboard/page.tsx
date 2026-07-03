@@ -7,6 +7,7 @@ import {
   CalendarDays,
   Clock3,
   GraduationCap,
+  Megaphone,
   MessageSquare,
   Users,
 } from "lucide-react";
@@ -15,6 +16,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
+import { useListMyAnnouncements } from "@/lib/api/announcement/announcement/announcement";
 import { useListMyRooms } from "@/lib/api/chat/chat/chat";
 import { useListCourses } from "@/lib/api/course/course/course";
 import {
@@ -67,6 +69,7 @@ export default function DashboardPage() {
 
   const { data: myGroups } = useListMyGroups();
   const { data: schedule } = useListMySchedule();
+  const { data: announcements } = useListMyAnnouncements({ size: 3 });
   const { data: notifications } = useListMyNotifications({ size: 5 });
   const { data: rooms } = useListMyRooms();
   const { data: groups } = useListGroups(undefined, { query: { enabled: canManage } });
@@ -214,6 +217,42 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </section>
+
+      {(announcements?.content?.length ?? 0) > 0 && (
+        <Card>
+          <CardHeader className="flex-row items-center justify-between gap-4">
+            <div>
+              <p className="text-muted-foreground text-xs uppercase tracking-[0.14em]">
+                {t("fromYourGroups")}
+              </p>
+              <CardTitle className="mt-1.5 text-lg">{t("latestAnnouncements")}</CardTitle>
+            </div>
+            <span className="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary">
+              <Megaphone className="size-5" />
+            </span>
+          </CardHeader>
+          <CardContent className="grid gap-2">
+            {announcements?.content?.map((a) => (
+              <Link
+                key={a.id}
+                href={`/dashboard/announcements?group=${a.groupId}`}
+                className="rounded-xl border bg-muted/20 p-3 transition-colors hover:border-primary/25"
+              >
+                <p className="font-medium text-sm">{a.title}</p>
+                {a.body && (
+                  <p className="mt-0.5 line-clamp-2 text-muted-foreground text-xs">{a.body}</p>
+                )}
+              </Link>
+            ))}
+            <Button asChild variant="ghost" size="sm" className="justify-start px-3">
+              <Link href="/dashboard/announcements">
+                {t("allAnnouncements")}
+                <ArrowRight className="size-4" />
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       {isAdmin && (
         <section>

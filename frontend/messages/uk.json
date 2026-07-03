@@ -58,7 +58,8 @@
       "ADMIN": "Адміністратор",
       "TEACHER": "Викладач",
       "STUDENT": "Студент"
-    }
+    },
+    "announcements": "Оголошення"
   },
   "dashboard": {
     "eyebrow": "Ваш навчальний простір",
@@ -87,7 +88,10 @@
     "openChat": "Відкрити чат",
     "schoolOverview": "Школа",
     "courses": "Курси",
-    "people": "Користувачі"
+    "people": "Користувачі",
+    "latestAnnouncements": "Останні оголошення",
+    "fromYourGroups": "З ваших груп",
+    "allAnnouncements": "Усі оголошення"
   },
   "course": {
     "course": "Курс",
@@ -393,6 +397,28 @@
     "members": "Учасники",
     "searchPeople": "Пошук людей…"
   },
+  "announcements": {
+    "title": "Оголошення",
+    "description": "Новини та оновлення з ваших груп.",
+    "allGroups": "Усі мої групи",
+    "selectGroup": "Оберіть групу",
+    "newAnnouncement": "Нове оголошення",
+    "dialogDescription": "Опублікуйте оновлення для всієї групи. Учасники отримають сповіщення.",
+    "titleLabel": "Заголовок",
+    "titlePlaceholder": "напр. Урок перенесено на п'ятницю",
+    "bodyLabel": "Повідомлення",
+    "bodyPlaceholder": "Деталі для групи…",
+    "pinned": "Закріпити зверху",
+    "posted": "Оголошення опубліковано",
+    "postLabel": "Опублікувати",
+    "posting": "Публікація…",
+    "pinnedBadge": "Закріплено",
+    "pin": "Закріпити",
+    "unpin": "Відкріпити",
+    "deleted": "Оголошення видалено",
+    "deleteTitle": "Видалити це оголошення?",
+    "deleteDescription": "Учасники групи більше його не побачать. Дію не можна скасувати."
+  },
   "notifications": {
     "title": "Сповіщення",
     "unread": "{count} непрочитаних",
@@ -424,6 +450,10 @@
       "DIRECT_MESSAGE": {
         "title": "Нове повідомлення",
         "body": "У вас нове повідомлення в чаті."
+      },
+      "ANNOUNCEMENT_POSTED": {
+        "title": "Нове оголошення",
+        "body": "{title}"
       }
     }
   },

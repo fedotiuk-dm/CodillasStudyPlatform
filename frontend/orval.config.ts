@@ -19,6 +19,7 @@ const MODULES = [
   "gradebook",
   "chat",
   "notification",
+  "announcement",
   "files",
 ] as const;
 

@@ -58,7 +58,8 @@
       "ADMIN": "Administrator",
       "TEACHER": "Teacher",
       "STUDENT": "Student"
-    }
+    },
+    "announcements": "Announcements"
   },
   "dashboard": {
     "eyebrow": "Your learning workspace",
@@ -87,7 +88,10 @@
     "openChat": "Open chat",
     "schoolOverview": "School overview",
     "courses": "Courses",
-    "people": "People"
+    "people": "People",
+    "latestAnnouncements": "Latest announcements",
+    "fromYourGroups": "From your groups",
+    "allAnnouncements": "All announcements"
   },
   "course": {
     "course": "Course",
@@ -393,6 +397,28 @@
     "members": "Members",
     "searchPeople": "Search people…"
   },
+  "announcements": {
+    "title": "Announcements",
+    "description": "News and updates from your groups.",
+    "allGroups": "All my groups",
+    "selectGroup": "Select a group",
+    "newAnnouncement": "New announcement",
+    "dialogDescription": "Post an update to everyone in this group. Members get a notification.",
+    "titleLabel": "Title",
+    "titlePlaceholder": "e.g. Lesson moved to Friday",
+    "bodyLabel": "Message",
+    "bodyPlaceholder": "Details for the group…",
+    "pinned": "Pin to the top",
+    "posted": "Announcement posted",
+    "postLabel": "Post",
+    "posting": "Posting…",
+    "pinnedBadge": "Pinned",
+    "pin": "Pin",
+    "unpin": "Unpin",
+    "deleted": "Announcement deleted",
+    "deleteTitle": "Delete this announcement?",
+    "deleteDescription": "Group members will no longer see it. This cannot be undone."
+  },
   "notifications": {
     "title": "Notifications",
     "unread": "{count} unread",
@@ -424,6 +450,10 @@
       "DIRECT_MESSAGE": {
         "title": "New message",
         "body": "You have a new chat message."
+      },
+      "ANNOUNCEMENT_POSTED": {
+        "title": "New announcement",
+        "body": "{title}"
       }
     }
   },
