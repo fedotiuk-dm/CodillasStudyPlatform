@@ -37,6 +37,10 @@ class AttendanceControllerIntegrationTest extends BaseIntegrationTest {
     return jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"));
   }
 
+  private static JwtRequestPostProcessor as(String role) {
+    return jwt().authorities(new SimpleGrantedAuthority("ROLE_" + role));
+  }
+
   /**
    * Create a DRAFT course, publish it, and await enrollment's local read model catching up via the
    * {@code CoursePublished} event — a group can only be created against a PUBLISHED course.
@@ -149,5 +153,42 @@ class AttendanceControllerIntegrationTest extends BaseIntegrationTest {
         .andExpect(
             jsonPath("$[?(@.userId=='%s')].present".formatted(presentUser))
                 .value(Matchers.contains(false)));
+  }
+
+  @Test
+  @DisplayName("a teacher can mark and read attendance; a student cannot (403)")
+  void attendance_teacherAllowed_studentForbidden() throws Exception {
+    UUID groupId = createGroup();
+    UUID lessonId = scheduleLesson(groupId, "Roles");
+    UUID student = UUID.randomUUID();
+
+    mockMvc
+        .perform(
+            put("/api/groups/{groupId}/lessons/{scheduledLessonId}/attendance", groupId, lessonId)
+                .with(as("TEACHER"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"userId\":\"%s\",\"present\":true}".formatted(student)))
+        .andExpect(status().isOk());
+
+    mockMvc
+        .perform(
+            get("/api/groups/{groupId}/lessons/{scheduledLessonId}/attendance", groupId, lessonId)
+                .with(as("TEACHER")))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(1));
+
+    mockMvc
+        .perform(
+            put("/api/groups/{groupId}/lessons/{scheduledLessonId}/attendance", groupId, lessonId)
+                .with(as("STUDENT"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"userId\":\"%s\",\"present\":true}".formatted(student)))
+        .andExpect(status().isForbidden());
+
+    mockMvc
+        .perform(
+            get("/api/groups/{groupId}/lessons/{scheduledLessonId}/attendance", groupId, lessonId)
+                .with(as("STUDENT")))
+        .andExpect(status().isForbidden());
   }
 }

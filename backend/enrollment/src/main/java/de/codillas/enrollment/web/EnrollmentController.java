@@ -26,6 +26,7 @@ import de.codillas.enrollment.service.MyEnrollmentService;
 import de.codillas.enrollment.service.ScheduledLessonService;
 import de.codillas.shared.security.RequiresAdmin;
 import de.codillas.shared.security.RequiresAuthenticated;
+import de.codillas.shared.security.RequiresTeacher;
 
 import lombok.RequiredArgsConstructor;
 
@@ -113,7 +114,7 @@ public class EnrollmentController implements EnrollmentApi {
   }
 
   @Override
-  @RequiresAdmin
+  @RequiresTeacher
   public ResponseEntity<AttendanceResponse> markAttendance(
       UUID groupId, UUID scheduledLessonId, MarkAttendanceRequest markAttendanceRequest) {
     return ResponseEntity.ok(
@@ -121,7 +122,7 @@ public class EnrollmentController implements EnrollmentApi {
   }
 
   @Override
-  @RequiresAdmin
+  @RequiresTeacher
   public ResponseEntity<List<AttendanceResponse>> listAttendance(
       UUID groupId, UUID scheduledLessonId) {
     return ResponseEntity.ok(attendanceService.listAttendance(scheduledLessonId));
