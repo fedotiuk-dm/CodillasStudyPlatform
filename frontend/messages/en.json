@@ -171,7 +171,12 @@
     "description": "Your upcoming lessons across all your groups.",
     "joinMeeting": "Join meeting",
     "linkPending": "Link will be added later",
-    "empty": "No upcoming lessons scheduled."
+    "empty": "No upcoming lessons scheduled.",
+    "exportIcs": "Export .ics",
+    "agendaView": "Agenda",
+    "monthView": "Month",
+    "noLessonsThatDay": "No lessons on this day.",
+    "pickDay": "Pick a day"
   },
   "courses": {
     "title": "Courses",

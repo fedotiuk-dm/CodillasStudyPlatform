@@ -171,7 +171,12 @@
     "description": "Deine anstehenden Lektionen in allen deinen Gruppen.",
     "joinMeeting": "Meeting beitreten",
     "linkPending": "Link wird später hinzugefügt",
-    "empty": "Keine anstehenden Lektionen geplant."
+    "empty": "Keine anstehenden Lektionen geplant.",
+    "exportIcs": ".ics exportieren",
+    "agendaView": "Agenda",
+    "monthView": "Monat",
+    "noLessonsThatDay": "An diesem Tag gibt es keinen Unterricht.",
+    "pickDay": "Tag auswählen"
   },
   "courses": {
     "title": "Kurse",
