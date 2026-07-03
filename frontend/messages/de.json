@@ -339,6 +339,16 @@
     "name": "Name",
     "bio": "Biografie"
   },
+  "profile": {
+    "menuItem": "Profil bearbeiten",
+    "title": "Mein Profil",
+    "description": "Dein Anzeigename und deine Beschreibung sind für andere Mitglieder der Schule sichtbar.",
+    "displayName": "Anzeigename",
+    "bio": "Über mich",
+    "bioPlaceholder": "Ein paar Worte über dich…",
+    "saved": "Profil aktualisiert",
+    "saving": "Speichern…"
+  },
   "gradebook": {
     "title": "Notenbuch",
     "description": "Bewertete Hausaufgaben und Tests.",
@@ -359,7 +369,10 @@
     "finalGrade": "Endnote",
     "points": "Punkte",
     "finalPct": "Endnote %",
-    "sourceTypes": { "HOMEWORK": "Hausaufgaben", "TEST": "Tests" }
+    "sourceTypes": {
+      "HOMEWORK": "Hausaufgaben",
+      "TEST": "Tests"
+    }
   },
   "chat": {
     "title": "Chat",
@@ -408,7 +421,10 @@
         "title": "Test bewertet",
         "body": "Dein Testversuch: {points} Punkte."
       },
-      "DIRECT_MESSAGE": { "title": "Neue Nachricht", "body": "Du hast eine neue Chat-Nachricht." }
+      "DIRECT_MESSAGE": {
+        "title": "Neue Nachricht",
+        "body": "Du hast eine neue Chat-Nachricht."
+      }
     }
   },
   "tests": {

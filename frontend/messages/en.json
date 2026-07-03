@@ -339,6 +339,16 @@
     "name": "Name",
     "bio": "Bio"
   },
+  "profile": {
+    "menuItem": "Edit profile",
+    "title": "My profile",
+    "description": "Your display name and bio are visible to other members of the school.",
+    "displayName": "Display name",
+    "bio": "About me",
+    "bioPlaceholder": "A few words about yourself…",
+    "saved": "Profile updated",
+    "saving": "Saving…"
+  },
   "gradebook": {
     "title": "Gradebook",
     "description": "Graded homework and tests.",
@@ -359,7 +369,10 @@
     "finalGrade": "Final grade",
     "points": "points",
     "finalPct": "Final %",
-    "sourceTypes": { "HOMEWORK": "Homework", "TEST": "Tests" }
+    "sourceTypes": {
+      "HOMEWORK": "Homework",
+      "TEST": "Tests"
+    }
   },
   "chat": {
     "title": "Chat",
@@ -408,7 +421,10 @@
         "title": "Test scored",
         "body": "Your test attempt scored {points} points."
       },
-      "DIRECT_MESSAGE": { "title": "New message", "body": "You have a new chat message." }
+      "DIRECT_MESSAGE": {
+        "title": "New message",
+        "body": "You have a new chat message."
+      }
     }
   },
   "tests": {
