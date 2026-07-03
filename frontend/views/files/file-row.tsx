@@ -11,13 +11,7 @@ function humanSize(bytes: number) {
 }
 
 /** One stored file: name, reference-type badge, human-readable size, and download/delete actions. */
-export function FileRow({
-  file,
-  onDeleted,
-}: {
-  file: StoredFileResponse;
-  onDeleted: (id: string) => void;
-}) {
+export function FileRow({ file }: { file: StoredFileResponse }) {
   return (
     <TableRow>
       <TableCell className="font-medium">{file.originalFilename}</TableCell>
@@ -26,7 +20,7 @@ export function FileRow({
       </TableCell>
       <TableCell className="text-muted-foreground">{humanSize(file.fileSize)}</TableCell>
       <TableCell>
-        <FileRowActions file={file} onDeleted={onDeleted} />
+        <FileRowActions file={file} />
       </TableCell>
     </TableRow>
   );

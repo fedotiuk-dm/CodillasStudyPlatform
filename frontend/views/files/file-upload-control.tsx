@@ -19,21 +19,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useUploadFile } from "@/lib/api/files/files/files";
-import type { StoredFileResponse } from "@/lib/api/files/model";
 import { FileReferenceType } from "@/lib/api/files/model";
 
 /**
  * Reference-type picker + upload button. Validates the file against the shared guardrails before it
- * leaves the browser and reports a rejected upload (size/type) via toast.
+ * leaves the browser and reports a rejected upload (size/type) via toast. The list refreshes via
+ * the global mutation-success invalidation.
  */
 export function FileUploadControl({
   referenceType,
   onReferenceTypeChange,
-  onUploaded,
 }: {
   referenceType: FileReferenceType;
   onReferenceTypeChange: (value: FileReferenceType) => void;
-  onUploaded: (file: StoredFileResponse) => void;
 }) {
   const t = useTranslations("files");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -59,7 +57,6 @@ export function FileUploadControl({
       { data: { file, referenceType } },
       {
         onSuccess: (stored) => {
-          onUploaded(stored);
           toast.success(t("uploaded", { name: stored.originalFilename }));
         },
         onError: (err) => toast.error(messageFor(uploadErrorReason(err))),

@@ -3,6 +3,7 @@ package de.codillas.files.web;
 import java.util.UUID;
 
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import de.codillas.files.api.FilesApi;
+import de.codillas.files.api.dto.FileListResponse;
 import de.codillas.files.api.dto.FileReferenceType;
 import de.codillas.files.api.dto.StoredFileResponse;
 import de.codillas.files.service.FileContent;
@@ -36,6 +38,12 @@ public class FilesController implements FilesApi {
       MultipartFile file, FileReferenceType referenceType, UUID referenceId) {
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(fileService.upload(file, referenceType, referenceId, currentUser.id()));
+  }
+
+  @Override
+  @RequiresAuthenticated
+  public ResponseEntity<FileListResponse> listMyFiles(Pageable pageable) {
+    return ResponseEntity.ok(fileService.listMyFiles(currentUser.id(), pageable));
   }
 
   @Override

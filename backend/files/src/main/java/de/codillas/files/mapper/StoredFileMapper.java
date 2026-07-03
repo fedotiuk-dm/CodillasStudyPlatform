@@ -2,6 +2,9 @@ package de.codillas.files.mapper;
 
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+
+import de.codillas.files.api.dto.FileListResponse;
 import de.codillas.files.api.dto.FileReferenceType;
 import de.codillas.files.api.dto.StoredFileResponse;
 import de.codillas.files.domain.model.StoredFile;
@@ -15,6 +18,8 @@ import org.mapstruct.ReportingPolicy;
 public interface StoredFileMapper {
 
   StoredFileResponse toResponse(StoredFile entity);
+
+  FileListResponse toListResponse(Page<StoredFile> page);
 
   @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
   StoredFile toEntity(

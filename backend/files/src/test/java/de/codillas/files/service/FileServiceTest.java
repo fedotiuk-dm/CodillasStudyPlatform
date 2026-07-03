@@ -174,6 +174,24 @@ class FileServiceTest {
   }
 
   @Test
+  @DisplayName("listMyFiles returns the caller's uploads, newest first by default")
+  void listMyFiles_returnsCallersUploads() {
+    UUID uploader = UUID.randomUUID();
+    org.springframework.data.domain.Page<StoredFile> page =
+        new org.springframework.data.domain.PageImpl<>(
+            java.util.List.of(StoredFile.builder().storageKey("k").uploadedBy(uploader).build()));
+    de.codillas.files.api.dto.FileListResponse dto =
+        mock(de.codillas.files.api.dto.FileListResponse.class);
+    when(repository.findByUploadedBy(
+            eq(uploader), any(org.springframework.data.domain.Pageable.class)))
+        .thenReturn(page);
+    when(mapper.toListResponse(page)).thenReturn(dto);
+
+    assertThat(service.listMyFiles(uploader, org.springframework.data.domain.PageRequest.of(0, 20)))
+        .isSameAs(dto);
+  }
+
+  @Test
   @DisplayName("delete removes the object then the metadata")
   void delete_removesBoth() {
     UUID fileId = UUID.randomUUID();

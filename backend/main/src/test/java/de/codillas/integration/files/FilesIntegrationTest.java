@@ -107,6 +107,30 @@ class FilesIntegrationTest extends BaseIntegrationTest {
   }
 
   @Test
+  @DisplayName("my files lists only the caller's uploads, newest first")
+  void listMyFiles_onlyOwnUploads() throws Exception {
+    UUID me = UUID.randomUUID();
+    UUID other = UUID.randomUUID();
+    MockMultipartFile mine =
+        new MockMultipartFile("file", "mine.txt", "text/plain", "mine".getBytes());
+    MockMultipartFile theirs =
+        new MockMultipartFile("file", "theirs.txt", "text/plain", "theirs".getBytes());
+
+    mockMvc
+        .perform(multipart("/api/files").file(mine).with(as(me, "STUDENT")))
+        .andExpect(status().isCreated());
+    mockMvc
+        .perform(multipart("/api/files").file(theirs).with(as(other, "STUDENT")))
+        .andExpect(status().isCreated());
+
+    mockMvc
+        .perform(get("/api/files/my").with(as(me, "STUDENT")))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.content[?(@.originalFilename=='mine.txt')]").exists())
+        .andExpect(jsonPath("$.content[?(@.originalFilename=='theirs.txt')]").doesNotExist());
+  }
+
+  @Test
   @DisplayName("a student cannot delete files (403)")
   void delete_asStudent_returns403() throws Exception {
     mockMvc

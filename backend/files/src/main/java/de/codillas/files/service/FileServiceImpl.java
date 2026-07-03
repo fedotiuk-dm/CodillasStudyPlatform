@@ -5,16 +5,19 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import de.codillas.files.api.dto.FileListResponse;
 import de.codillas.files.api.dto.FileReferenceType;
 import de.codillas.files.api.dto.StoredFileResponse;
 import de.codillas.files.config.FilesProperties;
 import de.codillas.files.domain.model.StoredFile;
 import de.codillas.files.domain.repository.StoredFileRepository;
 import de.codillas.files.mapper.StoredFileMapper;
+import de.codillas.shared.domain.repository.GenericSpecification;
 import de.codillas.shared.exception.BadRequestException;
 import de.codillas.shared.exception.NotFoundException;
 import de.codillas.shared.security.CurrentUser;
@@ -69,6 +72,14 @@ public class FileServiceImpl implements FileService {
                 referenceType,
                 referenceId));
     return mapper.toResponse(saved);
+  }
+
+  @Override
+  public FileListResponse listMyFiles(UUID uploaderId, Pageable pageable) {
+    return mapper.toListResponse(
+        repository.findByUploadedBy(
+            uploaderId,
+            GenericSpecification.withDefaultSort(pageable, StoredFileRepository.NEWEST_FIRST)));
   }
 
   @Override

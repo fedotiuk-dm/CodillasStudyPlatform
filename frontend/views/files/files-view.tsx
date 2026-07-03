@@ -7,7 +7,7 @@ import { DataState } from "@/components/shared/data-state";
 import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import type { StoredFileResponse } from "@/lib/api/files/model";
+import { useListMyFiles } from "@/lib/api/files/files/files";
 import { FileReferenceType } from "@/lib/api/files/model";
 
 import { FileRow } from "./file-row";
@@ -15,9 +15,10 @@ import { FileUploadControl } from "./file-upload-control";
 
 export function FilesView() {
   const t = useTranslations("files");
-  // ponytail: session-local list — the Files API has no list endpoint, only by-id.
-  const [files, setFiles] = useState<StoredFileResponse[]>([]);
   const [referenceType, setReferenceType] = useState<FileReferenceType>(FileReferenceType.MATERIAL);
+  const { data, isLoading, isError, refetch } = useListMyFiles();
+
+  const files = data?.content ?? [];
 
   return (
     <>
@@ -28,14 +29,18 @@ export function FilesView() {
           <FileUploadControl
             referenceType={referenceType}
             onReferenceTypeChange={setReferenceType}
-            onUploaded={(stored) => setFiles((prev) => [stored, ...prev])}
           />
         }
       />
 
       <Card>
         <CardContent className="pt-6">
-          <DataState isLoading={false} isError={false} isEmpty={files.length === 0}>
+          <DataState
+            isLoading={isLoading}
+            isError={isError}
+            isEmpty={files.length === 0}
+            onRetry={refetch}
+          >
             <Table>
               <TableHeader>
                 <TableRow>
@@ -47,11 +52,7 @@ export function FilesView() {
               </TableHeader>
               <TableBody>
                 {files.map((f) => (
-                  <FileRow
-                    key={f.id}
-                    file={f}
-                    onDeleted={(id) => setFiles((prev) => prev.filter((x) => x.id !== id))}
-                  />
+                  <FileRow key={f.id} file={f} />
                 ))}
               </TableBody>
             </Table>
