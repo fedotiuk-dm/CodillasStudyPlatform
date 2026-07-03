@@ -1,7 +1,7 @@
 openapi: 3.0.4
 info:
   title: Codillas Notification schemas
-  version: 0.2.0
+  version: 0.3.0
 paths: {}
 components:
   schemas:
@@ -13,6 +13,7 @@ components:
         - SUBMISSION_GRADED
         - ATTEMPT_COMPLETED
         - DIRECT_MESSAGE
+        - ANNOUNCEMENT_POSTED
     NotificationResponse:
       type: object
       required:

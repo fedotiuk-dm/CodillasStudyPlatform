@@ -28,6 +28,7 @@
     <module>gradebook</module>
     <module>chat</module>
     <module>notification</module>
+    <module>announcement</module>
     <module>files</module>
     <module>main</module>
   </modules>

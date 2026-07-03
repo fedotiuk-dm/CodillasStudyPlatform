@@ -24,6 +24,7 @@
     <dependency><groupId>de.codillas</groupId><artifactId>codillas-gradebook</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>de.codillas</groupId><artifactId>codillas-chat</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>de.codillas</groupId><artifactId>codillas-notification</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>de.codillas</groupId><artifactId>codillas-announcement</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>de.codillas</groupId><artifactId>codillas-files</artifactId><version>${project.version}</version></dependency>
 
     <!-- App-level concerns -->

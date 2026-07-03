@@ -1,0 +1,55 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.1.0-create-announcements
+      author: codillas
+      comment: Create announcements — group-scoped class-stream posts (0.1.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: announcements
+      changes:
+        - createTable:
+            tableName: announcements
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: group_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: author_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: title
+                  type: varchar(200)
+                  constraints: { nullable: false }
+              - column:
+                  name: body
+                  type: text
+              - column:
+                  name: pinned
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints: { nullable: false }
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz
+        - createIndex:
+            tableName: announcements
+            indexName: idx_announcements_group
+            columns:
+              - column:
+                  name: group_id

@@ -2,6 +2,8 @@ package de.codillas.files.service;
 
 import java.util.UUID;
 
+import org.springframework.modulith.NamedInterface;
+
 import de.codillas.files.domain.model.FileReferenceType;
 
 /**
@@ -9,7 +11,12 @@ import de.codillas.files.domain.model.FileReferenceType;
  * Resolved by {@link #referenceType()} at download time and implemented once per module that owns
  * files (homework, chat, files/materials). Receives only ids — never the {@code StoredFile} entity
  * — so an implementing module imports no files persistence type.
+ *
+ * <p>{@code @NamedInterface}: this SPI (and the {@link FileReferenceType} it needs) is the files
+ * module's exposed surface for implementers — Modulith's {@code verify()} allows other modules to
+ * depend on it.
  */
+@NamedInterface("spi")
 public interface FileAccessAuthorizer {
 
   /** The reference type this authorizer governs. */

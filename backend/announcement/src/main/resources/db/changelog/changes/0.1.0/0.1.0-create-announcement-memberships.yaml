@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.1.0-create-announcement-memberships
+      author: codillas
+      comment: Create announcement_memberships roster — unique per (group, student) (0.1.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: announcement_memberships
+      changes:
+        - createTable:
+            tableName: announcement_memberships
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: group_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: student_id
+                  type: uuid
+                  constraints: { nullable: false }
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz
+        - addUniqueConstraint:
+            tableName: announcement_memberships
+            columnNames: group_id, student_id
+            constraintName: uq_announcement_memberships_group_student

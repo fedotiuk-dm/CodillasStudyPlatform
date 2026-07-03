@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Pageable;
 
 import de.codillas.notification.api.dto.NotificationListResponse;
+import de.codillas.shared.event.AnnouncementPosted;
 import de.codillas.shared.event.AssignmentDueSoon;
 import de.codillas.shared.event.AssignmentPublished;
 import de.codillas.shared.event.AttemptCompleted;
@@ -34,4 +35,6 @@ public interface NotificationService {
   void onAttemptCompleted(AttemptCompleted event);
 
   void onDirectMessage(DirectMessagePosted event);
+
+  void onAnnouncementPosted(AnnouncementPosted event);
 }

@@ -15,6 +15,7 @@ import de.codillas.notification.domain.repository.NotificationRepository;
 import de.codillas.notification.mapper.NotificationMapper;
 import de.codillas.notification.service.NotificationTemplateResolver.Rendered;
 import de.codillas.shared.domain.repository.GenericSpecification;
+import de.codillas.shared.event.AnnouncementPosted;
 import de.codillas.shared.event.AssignmentDueSoon;
 import de.codillas.shared.event.AssignmentPublished;
 import de.codillas.shared.event.AttemptCompleted;
@@ -129,6 +130,20 @@ public class NotificationServiceImpl implements NotificationService {
   @Transactional
   public void onDirectMessage(DirectMessagePosted event) {
     notify(event.recipientId(), NotificationType.DIRECT_MESSAGE, Map.of(), event.roomId());
+  }
+
+  @Override
+  @Transactional
+  public void onAnnouncementPosted(AnnouncementPosted event) {
+    membershipRepository
+        .findByGroupId(event.groupId())
+        .forEach(
+            member ->
+                notify(
+                    member.getStudentId(),
+                    NotificationType.ANNOUNCEMENT_POSTED,
+                    Map.of("title", event.title()),
+                    event.groupId()));
   }
 
   private void notify(

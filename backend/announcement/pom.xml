@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>de.codillas</groupId>
+    <artifactId>codillas-study-platform</artifactId>
+    <version>0.2.0-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+  <artifactId>codillas-announcement</artifactId>
+  <name>Codillas Announcement</name>
+
+  <properties>
+    <openapi.skip>false</openapi.skip>
+    <openapi.spec>announcement-paths.yaml</openapi.spec>
+    <openapi.api-package>de.codillas.announcement.api</openapi.api-package>
+    <openapi.model-package>de.codillas.announcement.api.dto</openapi.model-package>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>de.codillas</groupId>
+      <artifactId>codillas-shared</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- @ApplicationModuleListener for consuming domain events. -->
+    <dependency>
+      <groupId>org.springframework.modulith</groupId>
+      <artifactId>spring-modulith-events-api</artifactId>
+    </dependency>
+  </dependencies>
+</project>

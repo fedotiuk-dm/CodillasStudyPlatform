@@ -3,6 +3,7 @@ package de.codillas.notification.service;
 import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Component;
 
+import de.codillas.shared.event.AnnouncementPosted;
 import de.codillas.shared.event.AssignmentDueSoon;
 import de.codillas.shared.event.AssignmentPublished;
 import de.codillas.shared.event.AttemptCompleted;
@@ -50,6 +51,11 @@ class NotificationEventListener {
   @ApplicationModuleListener
   void on(DirectMessagePosted event) {
     service.onDirectMessage(event);
+  }
+
+  @ApplicationModuleListener
+  void on(AnnouncementPosted event) {
+    service.onAnnouncementPosted(event);
   }
 
   @ApplicationModuleListener

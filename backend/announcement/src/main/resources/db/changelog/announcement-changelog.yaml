@@ -1,0 +1,8 @@
+# announcement module changelog — owns the announcements + announcement_memberships tables.
+databaseChangeLog:
+  - include:
+      file: changes/0.1.0/0.1.0-create-announcements.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/0.1.0/0.1.0-create-announcement-memberships.yaml
+      relativeToChangelogFile: true

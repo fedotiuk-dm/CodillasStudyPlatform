@@ -13,4 +13,5 @@ databaseChangeLog:
   - include: { file: db/changelog/gradebook-changelog.yaml, relativeToChangelogFile: false }
   - include: { file: db/changelog/chat-changelog.yaml, relativeToChangelogFile: false }
   - include: { file: db/changelog/notification-changelog.yaml, relativeToChangelogFile: false }
+  - include: { file: db/changelog/announcement-changelog.yaml, relativeToChangelogFile: false }
   - include: { file: db/changelog/files-changelog.yaml, relativeToChangelogFile: false }

@@ -85,6 +85,9 @@ notification:
       direct-message:
         title: "New message"
         body: "You have a new chat message."
+      announcement-posted:
+        title: "New announcement"
+        body: "{title}"
     uk:
       assignment-published:
         title: "Нове завдання"
@@ -101,6 +104,9 @@ notification:
       direct-message:
         title: "Нове повідомлення"
         body: "У вас нове повідомлення в чаті."
+      announcement-posted:
+        title: "Нове оголошення"
+        body: "{title}"
     de:
       assignment-published:
         title: "Neue Aufgabe"
@@ -117,6 +123,9 @@ notification:
       direct-message:
         title: "Neue Nachricht"
         body: "Du hast eine neue Chat-Nachricht."
+      announcement-posted:
+        title: "Neue Ankündigung"
+        body: "{title}"
 
 homework:
   # Due-soon reminder job. `cron` is the schedule (Spring 6-field cron); `window` is how far ahead
