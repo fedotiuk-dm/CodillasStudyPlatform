@@ -101,7 +101,8 @@ paths:
           $ref: "common.yaml#/components/responses/NotFound"
   /api/courses/{courseId}/publish:
     post:
-      tags: [course]
+      tags:
+        - course
       operationId: publishCourse
       summary: Publish a draft course (makes it selectable for groups)
       parameters:
@@ -113,13 +114,18 @@ paths:
             application/json:
               schema:
                 $ref: "course-schemas.yaml#/components/schemas/CourseResponse"
-        "401": { $ref: "common.yaml#/components/responses/Unauthorized" }
-        "403": { $ref: "common.yaml#/components/responses/Forbidden" }
-        "404": { $ref: "common.yaml#/components/responses/NotFound" }
-        "409": { $ref: "common.yaml#/components/responses/Conflict" }
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "common.yaml#/components/responses/Conflict"
   /api/courses/{courseId}/archive:
     post:
-      tags: [course]
+      tags:
+        - course
       operationId: archiveCourse
       summary: Archive a course (retire it; read-only thereafter)
       parameters:
@@ -131,10 +137,14 @@ paths:
             application/json:
               schema:
                 $ref: "course-schemas.yaml#/components/schemas/CourseResponse"
-        "401": { $ref: "common.yaml#/components/responses/Unauthorized" }
-        "403": { $ref: "common.yaml#/components/responses/Forbidden" }
-        "404": { $ref: "common.yaml#/components/responses/NotFound" }
-        "409": { $ref: "common.yaml#/components/responses/Conflict" }
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "common.yaml#/components/responses/Conflict"
   /api/courses/{courseId}/sections:
     post:
       tags:

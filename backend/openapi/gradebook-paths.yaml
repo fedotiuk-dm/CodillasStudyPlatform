@@ -18,7 +18,8 @@ tags:
 paths:
   /api/gradebook/students/{studentId}:
     get:
-      tags: [gradebook]
+      tags:
+        - gradebook
       operationId: getStudentGradebook
       summary: A student's progress journal
       parameters:
@@ -41,7 +42,8 @@ paths:
           $ref: "common.yaml#/components/responses/NotFound"
   /api/gradebook/groups/{groupId}:
     get:
-      tags: [gradebook]
+      tags:
+        - gradebook
       operationId: getGroupGradebook
       summary: A group's gradebook — every member's progress
       parameters:

@@ -18,7 +18,8 @@ tags:
 paths:
   /api/files:
     post:
-      tags: [files]
+      tags:
+        - files
       operationId: uploadFile
       summary: Upload a file
       requestBody:
@@ -52,7 +53,8 @@ paths:
           $ref: "common.yaml#/components/responses/Unauthorized"
   /api/files/my:
     get:
-      tags: [files]
+      tags:
+        - files
       operationId: listMyFiles
       summary: The current user's uploads (paginated, newest first)
       x-spring-paginated: true
@@ -71,7 +73,8 @@ paths:
           $ref: "common.yaml#/components/responses/Unauthorized"
   /api/files/{fileId}:
     get:
-      tags: [files]
+      tags:
+        - files
       operationId: downloadFile
       summary: Download a file's content
       parameters:
@@ -94,7 +97,8 @@ paths:
         "404":
           $ref: "common.yaml#/components/responses/NotFound"
     delete:
-      tags: [files]
+      tags:
+        - files
       operationId: deleteFile
       summary: Delete a file
       parameters:
@@ -115,7 +119,8 @@ paths:
           $ref: "common.yaml#/components/responses/NotFound"
   /api/files/{fileId}/metadata:
     get:
-      tags: [files]
+      tags:
+        - files
       operationId: getFileMetadata
       summary: A file's metadata
       parameters:

@@ -18,7 +18,8 @@ tags:
 paths:
   /api/tests:
     get:
-      tags: [assessment]
+      tags:
+        - assessment
       operationId: listTests
       summary: List tests (paginated)
       x-spring-paginated: true
@@ -42,7 +43,8 @@ paths:
         "401":
           $ref: "common.yaml#/components/responses/Unauthorized"
     post:
-      tags: [assessment]
+      tags:
+        - assessment
       operationId: createTest
       summary: Create a draft test
       requestBody:
@@ -66,7 +68,8 @@ paths:
           $ref: "common.yaml#/components/responses/Forbidden"
   /api/tests/{testId}:
     get:
-      tags: [assessment]
+      tags:
+        - assessment
       operationId: getTest
       summary: Get a test with its questions
       parameters:
@@ -89,7 +92,8 @@ paths:
           $ref: "common.yaml#/components/responses/NotFound"
   /api/tests/{testId}/publish:
     post:
-      tags: [assessment]
+      tags:
+        - assessment
       operationId: publishTest
       summary: Publish a draft test
       parameters:
@@ -116,7 +120,8 @@ paths:
           $ref: "common.yaml#/components/responses/Conflict"
   /api/tests/{testId}/questions:
     post:
-      tags: [assessment]
+      tags:
+        - assessment
       operationId: addQuestion
       summary: Add a question (with its options) to a test
       parameters:
@@ -151,7 +156,8 @@ paths:
           $ref: "common.yaml#/components/responses/Conflict"
   /api/tests/{testId}/attempts:
     post:
-      tags: [assessment]
+      tags:
+        - assessment
       operationId: startAttempt
       summary: Start the current student's attempt at a test
       parameters:
@@ -178,7 +184,8 @@ paths:
           $ref: "common.yaml#/components/responses/Conflict"
   /api/attempts/{attemptId}:
     get:
-      tags: [assessment]
+      tags:
+        - assessment
       operationId: getAttempt
       summary: Get an attempt with its answers and score
       parameters:
@@ -201,7 +208,8 @@ paths:
           $ref: "common.yaml#/components/responses/NotFound"
   /api/attempts/{attemptId}/answers:
     put:
-      tags: [assessment]
+      tags:
+        - assessment
       operationId: saveAnswer
       summary: Save (upsert) the student's answer to a question
       parameters:
@@ -234,7 +242,8 @@ paths:
           $ref: "common.yaml#/components/responses/Conflict"
   /api/attempts/{attemptId}/submit:
     post:
-      tags: [assessment]
+      tags:
+        - assessment
       operationId: submitAttempt
       summary: Submit the attempt — auto-grades choice answers and emits AttemptCompleted
       parameters:
@@ -259,7 +268,8 @@ paths:
           $ref: "common.yaml#/components/responses/Conflict"
   /api/attempts/{attemptId}/answers/{answerId}/grade:
     post:
-      tags: [assessment]
+      tags:
+        - assessment
       operationId: gradeAnswer
       summary: Award points to a (text) answer; completes the attempt when all are graded
       parameters:

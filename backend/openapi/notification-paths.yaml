@@ -18,7 +18,8 @@ tags:
 paths:
   /api/notifications:
     get:
-      tags: [notification]
+      tags:
+        - notification
       operationId: listMyNotifications
       summary: The current user's notifications (paginated, with unread count)
       x-spring-paginated: true
@@ -37,7 +38,8 @@ paths:
           $ref: "common.yaml#/components/responses/Unauthorized"
   /api/notifications/{notificationId}/read:
     post:
-      tags: [notification]
+      tags:
+        - notification
       operationId: markRead
       summary: Mark a notification as read
       parameters:
@@ -56,7 +58,8 @@ paths:
           $ref: "common.yaml#/components/responses/NotFound"
   /api/notifications/read-all:
     post:
-      tags: [notification]
+      tags:
+        - notification
       operationId: markAllRead
       summary: Mark all the current user's notifications as read
       responses:

@@ -18,7 +18,8 @@ tags:
 paths:
   /api/groups/{groupId}/announcements:
     get:
-      tags: [announcement]
+      tags:
+        - announcement
       operationId: listGroupAnnouncements
       summary: A group's announcements (pinned first, then newest)
       x-spring-paginated: true
@@ -44,7 +45,8 @@ paths:
         "404":
           $ref: "common.yaml#/components/responses/NotFound"
     post:
-      tags: [announcement]
+      tags:
+        - announcement
       operationId: createAnnouncement
       summary: Post an announcement to a group
       parameters:
@@ -75,7 +77,8 @@ paths:
           $ref: "common.yaml#/components/responses/Forbidden"
   /api/announcements/{announcementId}:
     put:
-      tags: [announcement]
+      tags:
+        - announcement
       operationId: updateAnnouncement
       summary: Edit an announcement (title, body, pinned)
       parameters:
@@ -107,7 +110,8 @@ paths:
         "404":
           $ref: "common.yaml#/components/responses/NotFound"
     delete:
-      tags: [announcement]
+      tags:
+        - announcement
       operationId: deleteAnnouncement
       summary: Delete an announcement
       parameters:
@@ -128,7 +132,8 @@ paths:
           $ref: "common.yaml#/components/responses/NotFound"
   /api/me/announcements:
     get:
-      tags: [announcement]
+      tags:
+        - announcement
       operationId: listMyAnnouncements
       summary: Recent announcements across the caller's groups (staff sees all groups)
       x-spring-paginated: true
