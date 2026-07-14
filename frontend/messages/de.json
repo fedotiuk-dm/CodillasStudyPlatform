@@ -1,7 +1,13 @@
 {
   "app": {
     "name": "Codillas Study Platform",
-    "tagline": "Lernplattform der Codillas IT-Schule"
+    "tagline": "Lernplattform der Codillas IT-Schule",
+    "eyebrow": "Lernen ohne unnötiges Chaos",
+    "heroTitle": "Der gesamte Lernweg in einem übersichtlichen Bereich",
+    "heroDescription": "Kurse, Unterricht, Hausaufgaben, Tests und Kommunikation sind immer griffbereit.",
+    "featureLearning": "Kurse und Aufgaben",
+    "featureProgress": "Klarer Fortschritt",
+    "featureCommunication": "Direkte Kommunikation"
   },
   "common": {
     "loading": "Wird geladen…",
@@ -9,13 +15,25 @@
     "cancel": "Abbrechen",
     "delete": "Löschen",
     "signIn": "Anmelden",
-    "signOut": "Abmelden"
+    "signOut": "Abmelden",
+    "emptyTitle": "Hier ist noch nichts",
+    "emptyHint": "Neue Informationen erscheinen hier, sobald sie hinzugefügt wurden.",
+    "loadError": "Daten konnten nicht geladen werden",
+    "loadErrorHint": "Prüfen Sie die Verbindung und versuchen Sie es erneut.",
+    "retry": "Erneut versuchen",
+    "signingIn": "Anmeldung…",
+    "redirectingToSignIn": "Weiterleitung zur Anmeldung…",
+    "noAccess": "Sie haben keinen Zugriff auf diese Seite.",
+    "changeLanguage": "Sprache ändern",
+    "toggleTheme": "Design wechseln",
+    "userMenu": "Benutzermenü"
   },
   "auth": {
     "sessionExpired": "Sitzung abgelaufen",
     "sessionExpiredHint": "Bitte melden Sie sich erneut an."
   },
   "nav": {
+    "dashboard": "Übersicht",
     "courses": "Kurse",
     "myCourses": "Meine Kurse",
     "schedule": "Zeitplan",
@@ -27,7 +45,53 @@
     "notifications": "Benachrichtigungen",
     "files": "Dateien",
     "people": "Personen",
-    "admin": "Verwaltung"
+    "admin": "Verwaltung",
+    "openMenu": "Menü öffnen",
+    "menu": "Navigation",
+    "menuDescription": "Hauptnavigation der Plattform",
+    "sections": {
+      "learning": "Lernen",
+      "communication": "Kommunikation",
+      "management": "Verwaltung"
+    },
+    "roles": {
+      "ADMIN": "Administrator",
+      "TEACHER": "Lehrkraft",
+      "STUDENT": "Student"
+    },
+    "announcements": "Ankündigungen"
+  },
+  "dashboard": {
+    "eyebrow": "Ihr Lernbereich",
+    "welcome": "Willkommen, {name}",
+    "learner": "Lernende",
+    "studentIntro": "Behalten Sie Unterricht, Aufgaben und Fortschritt an einem Ort im Blick.",
+    "staffIntro": "Organisieren Sie das Lernen, prüfen Sie Arbeiten und bleiben Sie mit Gruppen verbunden.",
+    "overview": "Auf einen Blick",
+    "myCourses": "Meine Kurse",
+    "upcomingLessons": "Geplante Lektionen",
+    "unreadNotifications": "Ungelesen",
+    "groups": "Gruppen",
+    "messages": "Nachrichten",
+    "nextUp": "Als Nächstes",
+    "nextLesson": "Nächste Lektion",
+    "joinLesson": "Teilnehmen",
+    "viewSchedule": "Zeitplan ansehen",
+    "noUpcoming": "Keine anstehenden Lektionen",
+    "noUpcomingHint": "Neue Lektionen erscheinen hier, sobald sie geplant wurden.",
+    "quickActions": "Schnellzugriff",
+    "reviewHomework": "Hausaufgaben prüfen",
+    "manageGroups": "Gruppen verwalten",
+    "openSchedule": "Zeitplan öffnen",
+    "openHomework": "Hausaufgaben öffnen",
+    "openTests": "Tests öffnen",
+    "openChat": "Chat öffnen",
+    "schoolOverview": "Schulübersicht",
+    "courses": "Kurse",
+    "people": "Personen",
+    "latestAnnouncements": "Neueste Ankündigungen",
+    "fromYourGroups": "Aus deinen Gruppen",
+    "allAnnouncements": "Alle Ankündigungen"
   },
   "course": {
     "course": "Kurs",
@@ -65,8 +129,12 @@
     "create": "Erstellen",
     "add": "Hinzufügen",
     "saving": "Speichern…",
+    "cancel": "Abbrechen",
+    "confirmDeleteSectionTitle": "Abschnitt löschen?",
     "confirmDeleteSection": "Diesen Abschnitt mit allen Lektionen und Materialien löschen?",
+    "confirmDeleteLessonTitle": "Lektion löschen?",
     "confirmDeleteLesson": "Diese Lektion und ihre Materialien löschen?",
+    "confirmDeleteMaterialTitle": "Material löschen?",
     "confirmDeleteMaterial": "Dieses Material löschen?",
     "sectionCreated": "Abschnitt erstellt",
     "sectionRenamed": "Abschnitt umbenannt",
@@ -80,19 +148,35 @@
     "fileIdRequired": "Geben Sie eine Datei-ID für ein Datei-Material an.",
     "file": "Datei",
     "chooseFile": "Datei wählen",
-    "uploading": "Wird hochgeladen…"
+    "uploading": "Wird hochgeladen…",
+    "fileTooLarge": "Die Datei ist zu groß (max. 25 MB).",
+    "fileUnsupportedType": "Nicht unterstützter Dateityp.",
+    "fileUploadFailed": "Hochladen fehlgeschlagen. Bitte erneut versuchen."
   },
   "myCourses": {
     "title": "Meine Kurse",
     "description": "Kurse, in die du über deine Gruppen eingeschrieben bist.",
     "group": "Gruppe",
-    "empty": "Du bist noch in keiner Gruppe eingeschrieben."
+    "empty": "Du bist noch in keiner Gruppe eingeschrieben.",
+    "startNotSet": "Startdatum nicht festgelegt",
+    "statusLabel": "Status",
+    "status": {
+      "DRAFT": "Entwurf",
+      "RUNNING": "Laufend",
+      "ARCHIVED": "Archiviert"
+    }
   },
   "schedule": {
     "title": "Mein Zeitplan",
     "description": "Deine anstehenden Lektionen in allen deinen Gruppen.",
     "joinMeeting": "Meeting beitreten",
-    "empty": "Keine anstehenden Lektionen geplant."
+    "linkPending": "Link wird später hinzugefügt",
+    "empty": "Keine anstehenden Lektionen geplant.",
+    "exportIcs": ".ics exportieren",
+    "agendaView": "Agenda",
+    "monthView": "Monat",
+    "noLessonsThatDay": "An diesem Tag gibt es keinen Unterricht.",
+    "pickDay": "Tag auswählen"
   },
   "courses": {
     "title": "Kurse",
@@ -103,7 +187,21 @@
     "dialogDescription": "Füge einen Kurs zum Katalog hinzu.",
     "created": "Kurs erstellt",
     "namePlaceholder": "z. B. Java-Grundlagen",
-    "descriptionPlaceholder": "Worum es im Kurs geht…"
+    "descriptionPlaceholder": "Worum es im Kurs geht…",
+    "statusLabel": "Status",
+    "status": {
+      "DRAFT": "Entwurf",
+      "PUBLISHED": "Veröffentlicht",
+      "ARCHIVED": "Archiviert"
+    },
+    "filterAll": "Alle Status",
+    "actions": "Aktionen",
+    "publish": "Veröffentlichen",
+    "archive": "Archivieren",
+    "delete": "Löschen",
+    "cancel": "Abbrechen",
+    "confirmDeleteTitle": "Kurs löschen?",
+    "confirmDelete": "Dies löscht den Kurs und alle seine Abschnitte, Lektionen und Materialien. Dies kann nicht rückgängig gemacht werden."
   },
   "groups": {
     "title": "Gruppen",
@@ -139,7 +237,21 @@
     "markedAbsent": "Als abwesend markiert",
     "searchStudent": "Schüler suchen…",
     "present": "Anwesend",
-    "absent": "Abwesend"
+    "absent": "Abwesend",
+    "statusLabel": "Status",
+    "filterAll": "Alle Status",
+    "status": {
+      "DRAFT": "Entwurf",
+      "RUNNING": "Laufend",
+      "ARCHIVED": "Archiviert"
+    },
+    "start": "Starten",
+    "archive": "Archivieren",
+    "delete": "Löschen",
+    "cancel": "Abbrechen",
+    "confirmDeleteTitle": "Gruppe löschen?",
+    "confirmDelete": "Dies löscht die Gruppe mit ihren Mitgliedern, dem Zeitplan und der Anwesenheit. Dies kann nicht rückgängig gemacht werden.",
+    "manageReadOnlyDescription": "Diese Gruppe ist archiviert — schreibgeschützt."
   },
   "homework": {
     "title": "Hausaufgaben",
@@ -178,7 +290,38 @@
     "sendReview": "Rückmeldung senden",
     "scorePlaceholder": "0–100",
     "grade": "Bewerten",
-    "returnToStudent": "An Schüler zurückgeben"
+    "returnToStudent": "An Schüler zurückgeben",
+    "optional": "Optional",
+    "pctRange": "Zwischen 1 und 100",
+    "latePenaltyPerDay": "Verspätungsabzug pro Tag (%)",
+    "maxLatePenalty": "Max. Abzug (%)",
+    "latePenaltyBadge": "Verspätung -{perDay}%/Tag (max. {max}%)",
+    "late": "Verspätet",
+    "addRubric": "Rubrik hinzufügen",
+    "rubric": "Rubrik",
+    "createRubric": "Rubrik erstellen",
+    "rubricDialogDescription": "Beschreibe die Kriterien zur Bewertung der Arbeit.",
+    "rubricCreated": "Rubrik erstellt",
+    "criteria": "Kriterien",
+    "criterionPlaceholder": "z. B. Korrektheit der Lösung",
+    "criterionLabelRequired": "Kriterium ist erforderlich",
+    "maxPoints": "Max. Punkte",
+    "maxPointsMin": "Mindestens 1",
+    "addCriterion": "Kriterium hinzufügen",
+    "removeCriterion": "Kriterium entfernen",
+    "gradeEffective": "Effektive Wertung",
+    "gradeRaw": "Rohwertung",
+    "assignmentStatus": {
+      "DRAFT": "Entwurf",
+      "PUBLISHED": "Veröffentlicht"
+    },
+    "submissionStatus": {
+      "DRAFT": "Entwurf",
+      "SUBMITTED": "Abgegeben",
+      "IN_REVIEW": "In Prüfung",
+      "GRADED": "Bewertet",
+      "RETURNED": "Zurückgegeben"
+    }
   },
   "files": {
     "title": "Dateien",
@@ -190,7 +333,12 @@
     "size": "Größe",
     "actions": "Aktionen",
     "uploaded": "{name} hochgeladen",
-    "deleted": "Gelöscht"
+    "deleted": "Gelöscht",
+    "download": "Herunterladen",
+    "downloadFailed": "Die Datei konnte nicht heruntergeladen werden.",
+    "tooLarge": "Die Datei ist zu groß (max. 25 MB).",
+    "unsupportedType": "Nicht unterstützter Dateityp.",
+    "uploadFailed": "Hochladen fehlgeschlagen. Bitte erneut versuchen."
   },
   "people": {
     "title": "Personen",
@@ -199,6 +347,16 @@
     "empty": "Keine Profile gefunden.",
     "name": "Name",
     "bio": "Biografie"
+  },
+  "profile": {
+    "menuItem": "Profil bearbeiten",
+    "title": "Mein Profil",
+    "description": "Dein Anzeigename und deine Beschreibung sind für andere Mitglieder der Schule sichtbar.",
+    "displayName": "Anzeigename",
+    "bio": "Über mich",
+    "bioPlaceholder": "Ein paar Worte über dich…",
+    "saved": "Profil aktualisiert",
+    "saving": "Speichern…"
   },
   "gradebook": {
     "title": "Notenbuch",
@@ -216,7 +374,14 @@
     "total": "Gesamt",
     "average": "Durchschnitt",
     "groupAverage": "Gruppendurchschnitt",
-    "studentsCount": "{count} Schüler"
+    "studentsCount": "{count} Schüler",
+    "finalGrade": "Endnote",
+    "points": "Punkte",
+    "finalPct": "Endnote %",
+    "sourceTypes": {
+      "HOMEWORK": "Hausaufgaben",
+      "TEST": "Tests"
+    }
   },
   "chat": {
     "title": "Chat",
@@ -224,6 +389,8 @@
     "newRoom": "Neuer Raum",
     "noRooms": "Noch keine Räume.",
     "selectRoom": "Wähle einen Raum, um zu chatten.",
+    "backToRooms": "Zurück zu Chats",
+    "conversation": "Unterhaltung",
     "loading": "Wird geladen…",
     "noMessages": "Noch keine Nachrichten — sag Hallo.",
     "messagePlaceholder": "Nachricht eingeben…",
@@ -235,12 +402,65 @@
     "members": "Mitglieder",
     "searchPeople": "Personen suchen…"
   },
+  "announcements": {
+    "title": "Ankündigungen",
+    "description": "Neuigkeiten und Updates aus deinen Gruppen.",
+    "allGroups": "Alle meine Gruppen",
+    "selectGroup": "Gruppe wählen",
+    "newAnnouncement": "Neue Ankündigung",
+    "dialogDescription": "Veröffentliche ein Update für die ganze Gruppe. Mitglieder werden benachrichtigt.",
+    "titleLabel": "Titel",
+    "titlePlaceholder": "z. B. Unterricht auf Freitag verschoben",
+    "bodyLabel": "Nachricht",
+    "bodyPlaceholder": "Details für die Gruppe…",
+    "pinned": "Oben anheften",
+    "posted": "Ankündigung veröffentlicht",
+    "postLabel": "Veröffentlichen",
+    "posting": "Wird veröffentlicht…",
+    "pinnedBadge": "Angeheftet",
+    "pin": "Anheften",
+    "unpin": "Lösen",
+    "deleted": "Ankündigung gelöscht",
+    "deleteTitle": "Diese Ankündigung löschen?",
+    "deleteDescription": "Gruppenmitglieder sehen sie nicht mehr. Das kann nicht rückgängig gemacht werden."
+  },
   "notifications": {
     "title": "Benachrichtigungen",
     "unread": "{count} ungelesen",
     "allCaughtUp": "Du bist auf dem neuesten Stand.",
     "new": "neu",
-    "markRead": "Als gelesen markieren"
+    "markRead": "Als gelesen markieren",
+    "markAllRead": "Alle als gelesen markieren",
+    "seeAll": "Alle anzeigen",
+    "sortNewest": "Neueste zuerst",
+    "sortOldest": "Älteste zuerst",
+    "sortUnread": "Ungelesene zuerst",
+    "types": {
+      "ASSIGNMENT_PUBLISHED": {
+        "title": "Neue Aufgabe",
+        "body": "In deiner Gruppe wurde eine neue Aufgabe veröffentlicht."
+      },
+      "ASSIGNMENT_DUE_SOON": {
+        "title": "Abgabe bald fällig",
+        "body": "Eine Aufgabe in deiner Gruppe ist bald fällig."
+      },
+      "SUBMISSION_GRADED": {
+        "title": "Hausaufgabe bewertet",
+        "body": "Deine Abgabe wurde bewertet: {points} Punkte."
+      },
+      "ATTEMPT_COMPLETED": {
+        "title": "Test bewertet",
+        "body": "Dein Testversuch: {points} Punkte."
+      },
+      "DIRECT_MESSAGE": {
+        "title": "Neue Nachricht",
+        "body": "Du hast eine neue Chat-Nachricht."
+      },
+      "ANNOUNCEMENT_POSTED": {
+        "title": "Neue Ankündigung",
+        "body": "{title}"
+      }
+    }
   },
   "tests": {
     "title": "Tests",
@@ -302,7 +522,30 @@
     "answered": "Beantwortet",
     "unanswered": "Nicht beantwortet",
     "reviewAnswers": "Überprüfen Sie Ihre Antworten vor dem Absenden.",
-    "questionProgress": "Frage {current} / {total}"
+    "questionProgress": "Frage {current} / {total}",
+    "configTitle": "Durchführungseinstellungen",
+    "maxAttemptsLabel": "Max. Versuche",
+    "durationLabel": "Zeitlimit (Minuten)",
+    "availableFromLabel": "Verfügbar ab",
+    "availableUntilLabel": "Verfügbar bis",
+    "unlimited": "Unbegrenzt",
+    "untimed": "Ohne Zeitlimit",
+    "anytime": "Jederzeit",
+    "shuffleQuestions": "Fragen mischen",
+    "shuffleOptions": "Optionen mischen",
+    "attemptNumber": "Versuch #{number}",
+    "timeUp": "Die Zeit ist um — dein Versuch wird abgegeben.",
+    "availableUntilNote": "Verfügbar bis {date}",
+    "availableFromNote": "Verfügbar ab {date}",
+    "testStatus": {
+      "DRAFT": "Entwurf",
+      "PUBLISHED": "Veröffentlicht"
+    },
+    "attemptStatus": {
+      "IN_PROGRESS": "In Bearbeitung",
+      "SUBMITTED": "Eingereicht",
+      "GRADED": "Bewertet"
+    }
   },
   "admin": {
     "title": "Admin-Übersicht",

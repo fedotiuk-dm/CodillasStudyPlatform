@@ -1,7 +1,7 @@
 openapi: 3.0.4
 info:
   title: Codillas Gradebook schemas
-  version: 0.1.0
+  version: 0.2.0
 paths: {}
 components:
   schemas:
@@ -35,9 +35,48 @@ components:
           description: The assignment or test the artefact belongs to.
         score:
           type: integer
+        maxPoints:
+          type: integer
+          description: Weighting denominator for this entry.
         recordedAt:
           type: string
           format: date-time
+    TypeGradeResponse:
+      type: object
+      required:
+        - source
+        - awarded
+        - maxPoints
+        - percent
+      properties:
+        source:
+          $ref: "#/components/schemas/GradeSource"
+        awarded:
+          type: integer
+        maxPoints:
+          type: integer
+        percent:
+          type: number
+          format: double
+    CourseGradeResponse:
+      type: object
+      required:
+        - awarded
+        - maxPoints
+        - percent
+        - byType
+      properties:
+        awarded:
+          type: integer
+        maxPoints:
+          type: integer
+        percent:
+          type: number
+          format: double
+        byType:
+          type: array
+          items:
+            $ref: "#/components/schemas/TypeGradeResponse"
     StudentGradebookResponse:
       type: object
       required:
@@ -51,6 +90,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ProgressEntryResponse"
+        courseGrade:
+          $ref: "#/components/schemas/CourseGradeResponse"
     GroupGradebookResponse:
       type: object
       required:

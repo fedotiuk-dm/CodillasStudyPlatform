@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.4.0-add-notification-params
+      author: codillas
+      comment: Add structured render params (jsonb) to notifications (0.4.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: notifications
+                columnName: params
+      changes:
+        - addColumn:
+            tableName: notifications
+            columns:
+              - column:
+                  name: params
+                  type: jsonb

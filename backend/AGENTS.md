@@ -59,7 +59,11 @@ config/                      module-local @ConfigurationProperties
    @Slf4j @Transactional(readOnly = true)`; `@Transactional` on writers). Holds business logic;
    maps via the mapper; throws `shared.exception` `NotFoundException` / `ConflictException` /
    `BadRequestException` (RFC 9457 ProblemDetail, rendered by Spring + `GlobalExceptionHandler`).
-   Pattern: private `findByIdOrThrow(id)`.
+   Pattern: private `findByIdOrThrow(id)`. **Authorize the caller, not only the role:** a service
+   method loading a *user-owned* aggregate checks the caller against the resource in a private
+   `findByIdForCaller(id)` — owner or `currentUser.isStaff()`, else `NotFoundException` (404 on
+   mismatch, never 403 — don't leak existence). This object-level check is *in addition to* the
+   controller's `@Requires*` role gate, not a replacement.
 3. **Repository** — `@Repository public interface … extends JpaRepository<Entity, UUID>` + derived
    finders. Sort orders are **named `Sort` constants on the repository built from the Hibernate
    static metamodel** (`Sort LATEST = Sort.by(Sort.Order.desc(Entity_.FIELD))`) — never inline

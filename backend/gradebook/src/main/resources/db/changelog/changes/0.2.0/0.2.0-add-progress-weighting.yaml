@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.2.0-add-progress-weighting
+      author: codillas
+      comment: Weighting denominator + group scope on progress entries (0.2.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: progress_entries
+                columnName: max_points
+      changes:
+        - addColumn:
+            tableName: progress_entries
+            columns:
+              - column:
+                  name: max_points
+                  type: int
+                  defaultValueNumeric: 100
+                  constraints: { nullable: false }
+              - column:
+                  name: group_id
+                  type: uuid

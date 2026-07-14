@@ -1,5 +1,7 @@
 package de.codillas.integration.enrollment;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -7,6 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.Duration;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +18,11 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor;
 import org.springframework.test.web.servlet.MockMvc;
 
+import de.codillas.enrollment.domain.model.CourseStatusView;
+import de.codillas.enrollment.domain.repository.CourseStatusViewRepository;
 import de.codillas.integration.BaseIntegrationTest;
 
+import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -24,17 +30,86 @@ import org.junit.jupiter.api.Test;
 class EnrollmentControllerIntegrationTest extends BaseIntegrationTest {
 
   @Autowired private MockMvc mockMvc;
+  @Autowired private CourseStatusViewRepository courseStatus;
 
   private static JwtRequestPostProcessor withRole(String role) {
     return jwt().authorities(new SimpleGrantedAuthority("ROLE_" + role));
   }
 
+  /**
+   * Create a DRAFT course, publish it, and await enrollment's local read model catching up via the
+   * {@code CoursePublished} event — a group can only be created against a PUBLISHED course, and
+   * enrollment learns that by event, never by importing course internals.
+   */
+  private UUID createPublishedCourse() throws Exception {
+    String course =
+        mockMvc
+            .perform(
+                post("/api/courses")
+                    .with(withRole("ADMIN"))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"name\":\"Course %s\"}".formatted(UUID.randomUUID())))
+            .andExpect(status().isCreated())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    UUID courseId = UUID.fromString(JsonPath.read(course, "$.id"));
+    mockMvc
+        .perform(post("/api/courses/{id}/publish", courseId).with(withRole("ADMIN")))
+        .andExpect(status().isOk());
+    await()
+        .atMost(Duration.ofSeconds(15))
+        .untilAsserted(
+            () ->
+                assertThat(courseStatus.findById(courseId))
+                    .get()
+                    .extracting(CourseStatusView::getStatus)
+                    .isEqualTo("PUBLISHED"));
+    return courseId;
+  }
+
+  /**
+   * Persist a real study_group (against a published course) so group-scoped FKs are satisfiable.
+   */
+  private UUID createGroup() throws Exception {
+    String body =
+        mockMvc
+            .perform(
+                post("/api/groups")
+                    .with(withRole("ADMIN"))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(
+                        "{\"name\":\"Cohort\",\"courseId\":\"%s\",\"teacherId\":\"%s\"}"
+                            .formatted(createPublishedCourse(), UUID.randomUUID())))
+            .andExpect(status().isCreated())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    return UUID.fromString(JsonPath.read(body, "$.id"));
+  }
+
+  /** Persist a real scheduled_lesson under {@code groupId} so attendance's FK is satisfiable. */
+  private UUID scheduleLesson(UUID groupId) throws Exception {
+    String body =
+        mockMvc
+            .perform(
+                post("/api/groups/{groupId}/lessons", groupId)
+                    .with(withRole("ADMIN"))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"title\":\"Intro\",\"scheduledAt\":\"2026-09-01T10:00:00Z\"}"))
+            .andExpect(status().isCreated())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    return UUID.fromString(JsonPath.read(body, "$.id"));
+  }
+
   @Test
-  @DisplayName("POST /api/groups as ADMIN creates the group (201)")
+  @DisplayName("POST /api/groups against a PUBLISHED course as ADMIN creates a DRAFT group (201)")
   void createGroup_asAdmin_returns201() throws Exception {
     String body =
         "{\"name\":\"Cohort A\",\"courseId\":\"%s\",\"teacherId\":\"%s\"}"
-            .formatted(UUID.randomUUID(), UUID.randomUUID());
+            .formatted(createPublishedCourse(), UUID.randomUUID());
     mockMvc
         .perform(
             post("/api/groups")
@@ -42,7 +117,8 @@ class EnrollmentControllerIntegrationTest extends BaseIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))
         .andExpect(status().isCreated())
-        .andExpect(jsonPath("$.name").value("Cohort A"));
+        .andExpect(jsonPath("$.name").value("Cohort A"))
+        .andExpect(jsonPath("$.status").value("DRAFT"));
   }
 
   @Test
@@ -62,7 +138,7 @@ class EnrollmentControllerIntegrationTest extends BaseIntegrationTest {
   @Test
   @DisplayName("enrol a student (201) then list the group's members (200)")
   void enrollStudent_thenListMembers() throws Exception {
-    UUID groupId = UUID.randomUUID();
+    UUID groupId = createGroup();
     UUID userId = UUID.randomUUID();
 
     mockMvc
@@ -84,7 +160,7 @@ class EnrollmentControllerIntegrationTest extends BaseIntegrationTest {
   @Test
   @DisplayName("schedule a lesson (201) then list the group's lessons (200)")
   void scheduleLesson_thenList() throws Exception {
-    UUID groupId = UUID.randomUUID();
+    UUID groupId = createGroup();
 
     mockMvc
         .perform(
@@ -104,8 +180,8 @@ class EnrollmentControllerIntegrationTest extends BaseIntegrationTest {
   @Test
   @DisplayName("markAttendance upserts the student's attendance (200)")
   void markAttendance_upserts() throws Exception {
-    UUID groupId = UUID.randomUUID();
-    UUID lessonId = UUID.randomUUID();
+    UUID groupId = createGroup();
+    UUID lessonId = scheduleLesson(groupId);
     UUID userId = UUID.randomUUID();
 
     mockMvc

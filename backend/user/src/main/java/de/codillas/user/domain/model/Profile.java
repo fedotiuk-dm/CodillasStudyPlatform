@@ -30,4 +30,7 @@ public class Profile extends BaseAuditableEntity {
 
   @Column(length = 500)
   private String bio;
+
+  @Column(length = 320)
+  private String email;
 }

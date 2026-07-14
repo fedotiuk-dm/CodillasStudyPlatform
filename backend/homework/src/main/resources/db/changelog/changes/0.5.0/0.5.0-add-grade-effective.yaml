@@ -1,0 +1,25 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.5.0-add-grade-effective
+      author: codillas
+      comment: Raw vs effective score + max-points denominator on grades (0.5.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: grades
+                columnName: effective_score
+      changes:
+        - addColumn:
+            tableName: grades
+            columns:
+              - column:
+                  name: effective_score
+                  type: int
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }
+              - column:
+                  name: max_points
+                  type: int
+                  defaultValueNumeric: 100
+                  constraints: { nullable: false }

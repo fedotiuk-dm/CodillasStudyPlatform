@@ -1,0 +1,77 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.4.0-add-courses-lock-version
+      author: codillas
+      comment: Add optimistic-lock version column to courses (0.4.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: courses
+                columnName: lock_version
+      changes:
+        - addColumn:
+            tableName: courses
+            columns:
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }
+  - changeSet:
+      id: 0.4.0-add-sections-lock-version
+      author: codillas
+      comment: Add optimistic-lock version column to sections (0.4.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: sections
+                columnName: lock_version
+      changes:
+        - addColumn:
+            tableName: sections
+            columns:
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }
+  - changeSet:
+      id: 0.4.0-add-lessons-lock-version
+      author: codillas
+      comment: Add optimistic-lock version column to lessons (0.4.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: lessons
+                columnName: lock_version
+      changes:
+        - addColumn:
+            tableName: lessons
+            columns:
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }
+  - changeSet:
+      id: 0.4.0-add-materials-lock-version
+      author: codillas
+      comment: Add optimistic-lock version column to materials (0.4.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: materials
+                columnName: lock_version
+      changes:
+        - addColumn:
+            tableName: materials
+            columns:
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }

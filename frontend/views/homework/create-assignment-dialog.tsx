@@ -10,7 +10,19 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreateAssignment } from "@/lib/api/homework/homework/homework";
 
-type FormValues = { title: string; description: string; dueAt: string };
+type FormValues = {
+  title: string;
+  description: string;
+  dueAt: string;
+  latePenaltyPctPerDay: string;
+  maxLatePenaltyPct: string;
+};
+
+/** Optional 1–100 percent: parsed to a number, or omitted when the field is left blank. */
+function pct(value: string): number | undefined {
+  const trimmed = value.trim();
+  return trimmed ? Number(trimmed) : undefined;
+}
 
 export function CreateAssignmentDialog({
   groupId,
@@ -24,7 +36,15 @@ export function CreateAssignmentDialog({
   onCreated?: () => void;
 }) {
   const t = useTranslations("homework");
-  const form = useForm<FormValues>({ defaultValues: { title: "", description: "", dueAt: "" } });
+  const form = useForm<FormValues>({
+    defaultValues: {
+      title: "",
+      description: "",
+      dueAt: "",
+      latePenaltyPctPerDay: "",
+      maxLatePenaltyPct: "",
+    },
+  });
   const createAssignment = useCreateAssignment();
 
   return (
@@ -43,6 +63,8 @@ export function CreateAssignmentDialog({
             title: values.title,
             description: values.description || undefined,
             dueAt: values.dueAt || undefined,
+            latePenaltyPctPerDay: pct(values.latePenaltyPctPerDay),
+            maxLatePenaltyPct: pct(values.maxLatePenaltyPct),
           },
         })
       }
@@ -92,6 +114,42 @@ export function CreateAssignmentDialog({
           </FormItem>
         )}
       />
+      <div className="grid grid-cols-2 gap-4">
+        <FormField
+          control={form.control}
+          name="latePenaltyPctPerDay"
+          rules={{
+            min: { value: 1, message: t("pctRange") },
+            max: { value: 100, message: t("pctRange") },
+          }}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("latePenaltyPerDay")}</FormLabel>
+              <FormControl>
+                <Input type="number" min={1} max={100} placeholder={t("optional")} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="maxLatePenaltyPct"
+          rules={{
+            min: { value: 1, message: t("pctRange") },
+            max: { value: 100, message: t("pctRange") },
+          }}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("maxLatePenalty")}</FormLabel>
+              <FormControl>
+                <Input type="number" min={1} max={100} placeholder={t("optional")} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
     </FormDialog>
   );
 }

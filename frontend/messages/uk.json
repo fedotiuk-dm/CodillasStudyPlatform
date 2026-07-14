@@ -1,7 +1,13 @@
 {
   "app": {
     "name": "Codillas Study Platform",
-    "tagline": "Навчальна платформа IT-школи Codillas"
+    "tagline": "Навчальна платформа IT-школи Codillas",
+    "eyebrow": "Навчання без зайвого хаосу",
+    "heroTitle": "Усе навчання в одному зрозумілому просторі",
+    "heroDescription": "Курси, заняття, домашні роботи, тести та спілкування завжди під рукою.",
+    "featureLearning": "Курси та завдання",
+    "featureProgress": "Прозорий прогрес",
+    "featureCommunication": "Живе спілкування"
   },
   "common": {
     "loading": "Завантаження…",
@@ -9,13 +15,25 @@
     "cancel": "Скасувати",
     "delete": "Видалити",
     "signIn": "Увійти",
-    "signOut": "Вийти"
+    "signOut": "Вийти",
+    "emptyTitle": "Тут поки що порожньо",
+    "emptyHint": "Нові дані з’являться тут, щойно їх буде додано.",
+    "loadError": "Не вдалося завантажити дані",
+    "loadErrorHint": "Перевірте з’єднання та спробуйте ще раз.",
+    "retry": "Повторити",
+    "signingIn": "Вхід…",
+    "redirectingToSignIn": "Перенаправлення на вхід…",
+    "noAccess": "У вас немає доступу до цієї сторінки.",
+    "changeLanguage": "Змінити мову",
+    "toggleTheme": "Змінити тему",
+    "userMenu": "Меню користувача"
   },
   "auth": {
     "sessionExpired": "Сесія завершилася",
     "sessionExpiredHint": "Будь ласка, увійдіть знову."
   },
   "nav": {
+    "dashboard": "Огляд",
     "courses": "Курси",
     "myCourses": "Мої курси",
     "schedule": "Розклад",
@@ -27,7 +45,53 @@
     "notifications": "Сповіщення",
     "files": "Файли",
     "people": "Люди",
-    "admin": "Адмін"
+    "admin": "Адмін",
+    "openMenu": "Відкрити меню",
+    "menu": "Навігація",
+    "menuDescription": "Основна навігація платформи",
+    "sections": {
+      "learning": "Навчання",
+      "communication": "Спілкування",
+      "management": "Керування"
+    },
+    "roles": {
+      "ADMIN": "Адміністратор",
+      "TEACHER": "Викладач",
+      "STUDENT": "Студент"
+    },
+    "announcements": "Оголошення"
+  },
+  "dashboard": {
+    "eyebrow": "Ваш навчальний простір",
+    "welcome": "Вітаємо, {name}",
+    "learner": "друже",
+    "studentIntro": "Слідкуйте за заняттями, завданнями та прогресом в одному місці.",
+    "staffIntro": "Керуйте навчанням, перевіряйте роботи та залишайтеся на зв’язку з групами.",
+    "overview": "Короткий огляд",
+    "myCourses": "Мої курси",
+    "upcomingLessons": "Заняття в розкладі",
+    "unreadNotifications": "Непрочитані",
+    "groups": "Групи",
+    "messages": "Повідомлення",
+    "nextUp": "Далі",
+    "nextLesson": "Наступне заняття",
+    "joinLesson": "Приєднатися",
+    "viewSchedule": "Переглянути розклад",
+    "noUpcoming": "Найближчих занять немає",
+    "noUpcomingHint": "Нові заняття з’являться тут після планування викладачем.",
+    "quickActions": "Швидкі дії",
+    "reviewHomework": "Перевірити домашні роботи",
+    "manageGroups": "Керувати групами",
+    "openSchedule": "Відкрити розклад",
+    "openHomework": "Перейти до завдань",
+    "openTests": "Перейти до тестів",
+    "openChat": "Відкрити чат",
+    "schoolOverview": "Школа",
+    "courses": "Курси",
+    "people": "Користувачі",
+    "latestAnnouncements": "Останні оголошення",
+    "fromYourGroups": "З ваших груп",
+    "allAnnouncements": "Усі оголошення"
   },
   "course": {
     "course": "Курс",
@@ -65,8 +129,12 @@
     "create": "Створити",
     "add": "Додати",
     "saving": "Збереження…",
+    "cancel": "Скасувати",
+    "confirmDeleteSectionTitle": "Видалити розділ?",
     "confirmDeleteSection": "Видалити цей розділ з усіма уроками та матеріалами?",
+    "confirmDeleteLessonTitle": "Видалити урок?",
     "confirmDeleteLesson": "Видалити цей урок та його матеріали?",
+    "confirmDeleteMaterialTitle": "Видалити матеріал?",
     "confirmDeleteMaterial": "Видалити цей матеріал?",
     "sectionCreated": "Розділ створено",
     "sectionRenamed": "Розділ перейменовано",
@@ -80,19 +148,35 @@
     "fileIdRequired": "Вкажіть ID файлу для матеріалу-файлу.",
     "file": "Файл",
     "chooseFile": "Вибрати файл",
-    "uploading": "Завантаження…"
+    "uploading": "Завантаження…",
+    "fileTooLarge": "Файл завеликий (макс. 25 МБ).",
+    "fileUnsupportedType": "Непідтримуваний тип файлу.",
+    "fileUploadFailed": "Не вдалося завантажити. Спробуйте ще раз."
   },
   "myCourses": {
     "title": "Мої курси",
     "description": "Курси, на які ви зараховані через свої групи.",
     "group": "Група",
-    "empty": "Ви ще не зараховані до жодної групи."
+    "empty": "Ви ще не зараховані до жодної групи.",
+    "startNotSet": "Дата початку не вказана",
+    "statusLabel": "Статус",
+    "status": {
+      "DRAFT": "Чернетка",
+      "RUNNING": "Активна",
+      "ARCHIVED": "Архівована"
+    }
   },
   "schedule": {
     "title": "Мій розклад",
     "description": "Ваші майбутні уроки в усіх ваших групах.",
     "joinMeeting": "Приєднатися до зустрічі",
-    "empty": "Немає запланованих уроків."
+    "linkPending": "Посилання з’явиться пізніше",
+    "empty": "Немає запланованих уроків.",
+    "exportIcs": "Експорт .ics",
+    "agendaView": "Список",
+    "monthView": "Місяць",
+    "noLessonsThatDay": "Цього дня уроків немає.",
+    "pickDay": "Оберіть день"
   },
   "courses": {
     "title": "Курси",
@@ -103,7 +187,21 @@
     "dialogDescription": "Додайте курс до каталогу.",
     "created": "Курс створено",
     "namePlaceholder": "напр. Основи Java",
-    "descriptionPlaceholder": "Про що цей курс…"
+    "descriptionPlaceholder": "Про що цей курс…",
+    "statusLabel": "Статус",
+    "status": {
+      "DRAFT": "Чернетка",
+      "PUBLISHED": "Опубліковано",
+      "ARCHIVED": "Архів"
+    },
+    "filterAll": "Усі статуси",
+    "actions": "Дії",
+    "publish": "Опублікувати",
+    "archive": "Архівувати",
+    "delete": "Видалити",
+    "cancel": "Скасувати",
+    "confirmDeleteTitle": "Видалити курс?",
+    "confirmDelete": "Це видалить курс і всі його секції, уроки та матеріали. Дію не можна скасувати."
   },
   "groups": {
     "title": "Групи",
@@ -139,7 +237,21 @@
     "markedAbsent": "Відмічено як відсутній",
     "searchStudent": "Пошук студента…",
     "present": "Присутній",
-    "absent": "Відсутній"
+    "absent": "Відсутній",
+    "statusLabel": "Статус",
+    "filterAll": "Усі статуси",
+    "status": {
+      "DRAFT": "Чернетка",
+      "RUNNING": "Активна",
+      "ARCHIVED": "Архівована"
+    },
+    "start": "Запустити",
+    "archive": "Архівувати",
+    "delete": "Видалити",
+    "cancel": "Скасувати",
+    "confirmDeleteTitle": "Видалити групу?",
+    "confirmDelete": "Це видалить групу разом з її учасниками, розкладом і відвідуваністю. Дію не можна скасувати.",
+    "manageReadOnlyDescription": "Група архівована — лише перегляд."
   },
   "homework": {
     "title": "Домашні завдання",
@@ -178,7 +290,38 @@
     "sendReview": "Надіслати відгук",
     "scorePlaceholder": "0–100",
     "grade": "Оцінити",
-    "returnToStudent": "Повернути студенту"
+    "returnToStudent": "Повернути студенту",
+    "optional": "Необовʼязково",
+    "pctRange": "Від 1 до 100",
+    "latePenaltyPerDay": "Штраф за день (%)",
+    "maxLatePenalty": "Макс. штраф (%)",
+    "latePenaltyBadge": "Штраф -{perDay}%/день (макс. {max}%)",
+    "late": "Прострочено",
+    "addRubric": "Додати рубрику",
+    "rubric": "Рубрика",
+    "createRubric": "Створити рубрику",
+    "rubricDialogDescription": "Опишіть критерії оцінювання роботи.",
+    "rubricCreated": "Рубрику створено",
+    "criteria": "Критерії",
+    "criterionPlaceholder": "напр. Коректність рішення",
+    "criterionLabelRequired": "Вкажіть критерій",
+    "maxPoints": "Макс. балів",
+    "maxPointsMin": "Щонайменше 1",
+    "addCriterion": "Додати критерій",
+    "removeCriterion": "Видалити критерій",
+    "gradeEffective": "Підсумковий бал",
+    "gradeRaw": "Сирий бал",
+    "assignmentStatus": {
+      "DRAFT": "Чернетка",
+      "PUBLISHED": "Опубліковано"
+    },
+    "submissionStatus": {
+      "DRAFT": "Чернетка",
+      "SUBMITTED": "Надіслано",
+      "IN_REVIEW": "На перевірці",
+      "GRADED": "Оцінено",
+      "RETURNED": "Повернено"
+    }
   },
   "files": {
     "title": "Файли",
@@ -190,7 +333,12 @@
     "size": "Розмір",
     "actions": "Дії",
     "uploaded": "Завантажено {name}",
-    "deleted": "Видалено"
+    "deleted": "Видалено",
+    "download": "Завантажити",
+    "downloadFailed": "Не вдалося завантажити файл.",
+    "tooLarge": "Файл завеликий (макс. 25 МБ).",
+    "unsupportedType": "Непідтримуваний тип файлу.",
+    "uploadFailed": "Не вдалося завантажити. Спробуйте ще раз."
   },
   "people": {
     "title": "Люди",
@@ -199,6 +347,16 @@
     "empty": "Профілів не знайдено.",
     "name": "Ім’я",
     "bio": "Біографія"
+  },
+  "profile": {
+    "menuItem": "Редагувати профіль",
+    "title": "Мій профіль",
+    "description": "Ваше ім'я та опис бачать інші учасники школи.",
+    "displayName": "Ім'я для показу",
+    "bio": "Про мене",
+    "bioPlaceholder": "Кілька слів про себе…",
+    "saved": "Профіль оновлено",
+    "saving": "Збереження…"
   },
   "gradebook": {
     "title": "Журнал",
@@ -216,7 +374,14 @@
     "total": "Сума",
     "average": "Середнє",
     "groupAverage": "Середнє по групі",
-    "studentsCount": "{count} студентів"
+    "studentsCount": "{count} студентів",
+    "finalGrade": "Підсумкова оцінка",
+    "points": "балів",
+    "finalPct": "Підсумок %",
+    "sourceTypes": {
+      "HOMEWORK": "Домашні",
+      "TEST": "Тести"
+    }
   },
   "chat": {
     "title": "Чат",
@@ -224,6 +389,8 @@
     "newRoom": "Нова кімната",
     "noRooms": "Поки що немає кімнат.",
     "selectRoom": "Виберіть кімнату, щоб почати спілкування.",
+    "backToRooms": "Назад до чатів",
+    "conversation": "Розмова",
     "loading": "Завантаження…",
     "noMessages": "Поки що немає повідомлень — привітайтеся.",
     "messagePlaceholder": "Введіть повідомлення…",
@@ -235,12 +402,65 @@
     "members": "Учасники",
     "searchPeople": "Пошук людей…"
   },
+  "announcements": {
+    "title": "Оголошення",
+    "description": "Новини та оновлення з ваших груп.",
+    "allGroups": "Усі мої групи",
+    "selectGroup": "Оберіть групу",
+    "newAnnouncement": "Нове оголошення",
+    "dialogDescription": "Опублікуйте оновлення для всієї групи. Учасники отримають сповіщення.",
+    "titleLabel": "Заголовок",
+    "titlePlaceholder": "напр. Урок перенесено на п'ятницю",
+    "bodyLabel": "Повідомлення",
+    "bodyPlaceholder": "Деталі для групи…",
+    "pinned": "Закріпити зверху",
+    "posted": "Оголошення опубліковано",
+    "postLabel": "Опублікувати",
+    "posting": "Публікація…",
+    "pinnedBadge": "Закріплено",
+    "pin": "Закріпити",
+    "unpin": "Відкріпити",
+    "deleted": "Оголошення видалено",
+    "deleteTitle": "Видалити це оголошення?",
+    "deleteDescription": "Учасники групи більше його не побачать. Дію не можна скасувати."
+  },
   "notifications": {
     "title": "Сповіщення",
     "unread": "{count} непрочитаних",
     "allCaughtUp": "Усе прочитано.",
     "new": "нове",
-    "markRead": "Позначити прочитаним"
+    "markRead": "Позначити прочитаним",
+    "markAllRead": "Прочитати всі",
+    "seeAll": "Усі сповіщення",
+    "sortNewest": "Спочатку нові",
+    "sortOldest": "Спочатку старі",
+    "sortUnread": "Спершу непрочитані",
+    "types": {
+      "ASSIGNMENT_PUBLISHED": {
+        "title": "Нове завдання",
+        "body": "У вашій групі опубліковано нове завдання."
+      },
+      "ASSIGNMENT_DUE_SOON": {
+        "title": "Скоро дедлайн",
+        "body": "У вашій групі скоро дедлайн завдання."
+      },
+      "SUBMISSION_GRADED": {
+        "title": "Роботу оцінено",
+        "body": "Вашу роботу оцінено: {points} балів."
+      },
+      "ATTEMPT_COMPLETED": {
+        "title": "Тест оцінено",
+        "body": "Ваша спроба тесту: {points} балів."
+      },
+      "DIRECT_MESSAGE": {
+        "title": "Нове повідомлення",
+        "body": "У вас нове повідомлення в чаті."
+      },
+      "ANNOUNCEMENT_POSTED": {
+        "title": "Нове оголошення",
+        "body": "{title}"
+      }
+    }
   },
   "tests": {
     "title": "Тести",
@@ -302,7 +522,30 @@
     "answered": "Відповідь надано",
     "unanswered": "Без відповіді",
     "reviewAnswers": "Перевірте відповіді перед надсиланням.",
-    "questionProgress": "Питання {current} / {total}"
+    "questionProgress": "Питання {current} / {total}",
+    "configTitle": "Налаштування проходження",
+    "maxAttemptsLabel": "Макс. спроб",
+    "durationLabel": "Ліміт часу (хвилини)",
+    "availableFromLabel": "Доступно з",
+    "availableUntilLabel": "Доступно до",
+    "unlimited": "Без обмежень",
+    "untimed": "Без обмеження часу",
+    "anytime": "Будь-коли",
+    "shuffleQuestions": "Перемішувати питання",
+    "shuffleOptions": "Перемішувати варіанти",
+    "attemptNumber": "Спроба №{number}",
+    "timeUp": "Час вийшов — надсилаємо вашу спробу.",
+    "availableUntilNote": "Доступно до {date}",
+    "availableFromNote": "Доступно з {date}",
+    "testStatus": {
+      "DRAFT": "Чернетка",
+      "PUBLISHED": "Опубліковано"
+    },
+    "attemptStatus": {
+      "IN_PROGRESS": "В процесі",
+      "SUBMITTED": "Надіслано",
+      "GRADED": "Оцінено"
+    }
   },
   "admin": {
     "title": "Огляд адміністратора",

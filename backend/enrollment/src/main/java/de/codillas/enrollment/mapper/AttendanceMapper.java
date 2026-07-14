@@ -22,7 +22,6 @@ public interface AttendanceMapper {
   List<AttendanceResponse> toResponseList(List<Attendance> entities);
 
   @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
-  @Mapping(target = "scheduledLessonId", source = "scheduledLessonId")
   Attendance toEntity(MarkAttendanceRequest request, UUID scheduledLessonId);
 
   @BeanMapping(ignoreByDefault = true)

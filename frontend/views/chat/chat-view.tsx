@@ -1,68 +1,19 @@
 "use client";
 
-import { Send } from "lucide-react";
+import { ArrowLeft, MessageCircle } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { useListMyRooms } from "@/lib/api/chat/chat/chat";
 import { useKeycloak } from "@/lib/auth";
 import { cn } from "@/lib/utils";
+
 import { CreateRoomDialog } from "./create-room-dialog";
-import { useRoomMessages } from "./use-room-messages";
-
-function RoomPanel({ roomId, selfId }: { roomId: string; selfId?: string }) {
-  const t = useTranslations("chat");
-  const { messages, isLoading, send } = useRoomMessages(roomId);
-  const [draft, setDraft] = useState("");
-
-  function onSend(e: React.FormEvent) {
-    e.preventDefault();
-    const content = draft.trim();
-    if (!content) return;
-    send(content);
-    setDraft("");
-  }
-
-  return (
-    <div className="flex h-full flex-col">
-      <div className="flex-1 space-y-2 overflow-y-auto p-4">
-        {isLoading && <p className="text-muted-foreground text-sm">{t("loading")}</p>}
-        {!isLoading && messages.length === 0 && (
-          <p className="text-muted-foreground text-sm">{t("noMessages")}</p>
-        )}
-        {messages.map((m) => {
-          const mine = m.senderId === selfId;
-          return (
-            <div key={m.id} className={cn("flex", mine ? "justify-end" : "justify-start")}>
-              <div
-                className={cn(
-                  "max-w-[75%] rounded-lg px-3 py-2 text-sm",
-                  mine ? "bg-primary text-primary-foreground" : "bg-muted",
-                )}
-              >
-                {m.content}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-      <form onSubmit={onSend} className="flex items-center gap-2 border-t p-3">
-        <Input
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          placeholder={t("messagePlaceholder")}
-        />
-        <Button type="submit" size="icon" disabled={!draft.trim()}>
-          <Send className="size-4" />
-        </Button>
-      </form>
-    </div>
-  );
-}
+import { RoomPanel } from "./room-panel";
 
 export function ChatView() {
   const t = useTranslations("chat");
@@ -72,6 +23,12 @@ export function ChatView() {
   const [activeRoom, setActiveRoom] = useState<string | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
 
+  // Deep-link: /dashboard/chat?room={id} (e.g. clicked from a notification) opens that room.
+  const roomParam = useSearchParams().get("room");
+  useEffect(() => {
+    if (roomParam) setActiveRoom(roomParam);
+  }, [roomParam]);
+
   return (
     <>
       <PageHeader
@@ -80,10 +37,17 @@ export function ChatView() {
         action={<Button onClick={() => setCreateOpen(true)}>{t("newRoom")}</Button>}
       />
 
-      <Card className="grid h-[70vh] grid-cols-[16rem_1fr] overflow-hidden p-0">
-        <div className="overflow-y-auto border-r">
+      <Card className="grid h-[calc(100dvh-12rem)] min-h-[32rem] overflow-hidden p-0 md:grid-cols-[17rem_minmax(0,1fr)]">
+        <div className={cn("overflow-y-auto md:border-r", activeRoom && "hidden md:block")}>
           {rooms.length === 0 && (
-            <p className="p-4 text-muted-foreground text-sm">{t("noRooms")}</p>
+            <div className="grid h-full place-items-center p-6 text-center">
+              <div>
+                <span className="mx-auto grid size-11 place-items-center rounded-xl bg-primary/10 text-primary">
+                  <MessageCircle className="size-5" />
+                </span>
+                <p className="mt-3 text-muted-foreground text-sm">{t("noRooms")}</p>
+              </div>
+            </div>
           )}
           {rooms.map((r) => (
             <button
@@ -91,18 +55,36 @@ export function ChatView() {
               key={r.id}
               onClick={() => setActiveRoom(r.id)}
               className={cn(
-                "w-full border-b px-4 py-3 text-left text-sm hover:bg-muted",
-                activeRoom === r.id && "bg-muted font-medium",
+                "flex min-h-14 w-full items-center gap-3 border-b px-4 py-3 text-left text-sm transition-colors hover:bg-muted/60",
+                activeRoom === r.id && "bg-primary/8 font-medium text-primary",
               )}
             >
-              {r.name || r.type}
+              <span className="grid size-9 shrink-0 place-items-center rounded-full bg-secondary text-secondary-foreground">
+                <MessageCircle className="size-4" />
+              </span>
+              <span className="truncate">{r.name || r.type}</span>
             </button>
           ))}
         </div>
         {activeRoom ? (
-          <RoomPanel roomId={activeRoom} selfId={userId} />
+          <div className="flex min-h-0 min-w-0 flex-col">
+            <div className="flex h-12 items-center gap-2 border-b px-3 md:hidden">
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label={t("backToRooms")}
+                onClick={() => setActiveRoom(null)}
+              >
+                <ArrowLeft className="size-5" />
+              </Button>
+              <span className="truncate font-medium text-sm">
+                {rooms.find((room) => room.id === activeRoom)?.name ?? t("conversation")}
+              </span>
+            </div>
+            <RoomPanel roomId={activeRoom} selfId={userId} />
+          </div>
         ) : (
-          <div className="flex items-center justify-center text-muted-foreground text-sm">
+          <div className="hidden items-center justify-center text-muted-foreground text-sm md:flex">
             {t("selectRoom")}
           </div>
         )}

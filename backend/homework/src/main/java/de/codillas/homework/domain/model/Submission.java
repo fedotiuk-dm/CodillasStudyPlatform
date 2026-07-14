@@ -1,5 +1,6 @@
 package de.codillas.homework.domain.model;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -51,4 +52,11 @@ public class Submission extends BaseAuditableEntity {
 
   @Column(columnDefinition = "text")
   private String content;
+
+  @Column(name = "submitted_at")
+  private Instant submittedAt;
+
+  @Column(nullable = false)
+  @Builder.Default
+  private boolean late = false;
 }

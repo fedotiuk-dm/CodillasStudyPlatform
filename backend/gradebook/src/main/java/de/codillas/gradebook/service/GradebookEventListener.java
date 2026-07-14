@@ -4,6 +4,7 @@ import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Component;
 
 import de.codillas.shared.event.AttemptCompleted;
+import de.codillas.shared.event.GroupDeleted;
 import de.codillas.shared.event.StudentEnrolled;
 import de.codillas.shared.event.SubmissionGraded;
 
@@ -29,5 +30,10 @@ class GradebookEventListener {
   @ApplicationModuleListener
   void on(AttemptCompleted event) {
     service.recordAttempt(event);
+  }
+
+  @ApplicationModuleListener
+  void on(GroupDeleted event) {
+    service.purgeGroup(event);
   }
 }

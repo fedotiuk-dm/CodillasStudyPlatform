@@ -13,7 +13,7 @@
 
   <groupId>de.codillas</groupId>
   <artifactId>codillas-study-platform</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Codillas Study Platform</name>
   <description>Learning platform for the Codillas IT school (Spring Modulith)</description>
@@ -28,6 +28,7 @@
     <module>gradebook</module>
     <module>chat</module>
     <module>notification</module>
+    <module>announcement</module>
     <module>files</module>
     <module>main</module>
   </modules>

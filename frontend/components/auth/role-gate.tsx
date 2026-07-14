@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
 
@@ -13,6 +14,7 @@ import { AuthLoading } from "./auth-loading";
  * client-side — a server component can't read it.)
  */
 export function RoleGate({ children, roles }: { children: ReactNode; roles?: readonly Role[] }) {
+  const t = useTranslations("common");
   const { isInitialized, isAuthenticated, roles: userRoles, login } = useKeycloak();
   const loginTriggered = useRef(false);
 
@@ -23,12 +25,12 @@ export function RoleGate({ children, roles }: { children: ReactNode; roles?: rea
   }, [isInitialized, isAuthenticated, login]);
 
   if (!isInitialized || !isAuthenticated) {
-    return <AuthLoading message="Redirecting to sign in…" />;
+    return <AuthLoading message={t("redirectingToSignIn")} />;
   }
   if (roles?.length && !roles.some((role) => userRoles.includes(role))) {
     return (
       <div className="flex min-h-screen items-center justify-center text-muted-foreground">
-        You don&apos;t have access to this page.
+        {t("noAccess")}
       </div>
     );
   }

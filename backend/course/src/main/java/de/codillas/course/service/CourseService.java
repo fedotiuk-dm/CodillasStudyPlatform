@@ -21,9 +21,15 @@ public interface CourseService {
 
   CourseResponse createCourse(CreateCourseRequest request);
 
-  CourseListResponse listCourses(Pageable pageable);
+  CourseListResponse listCourses(de.codillas.course.api.dto.CourseStatus status, Pageable pageable);
+
+  CourseResponse publishCourse(UUID courseId);
+
+  CourseResponse archiveCourse(UUID courseId);
 
   CourseDetailResponse getCourse(UUID courseId);
+
+  void deleteCourse(UUID courseId);
 
   SectionResponse createSection(UUID courseId, CreateSectionRequest request);
 

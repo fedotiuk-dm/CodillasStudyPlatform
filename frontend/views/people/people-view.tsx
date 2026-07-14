@@ -24,7 +24,10 @@ export function PeopleView() {
   const [query, setQuery] = useState("");
   const debounced = useDebounced(query.trim());
 
-  const { data, isLoading, isError } = useListProfiles({ q: debounced || undefined, size: 50 });
+  const { data, isLoading, isError, refetch } = useListProfiles({
+    q: debounced || undefined,
+    size: 50,
+  });
   const people = data?.content ?? [];
 
   return (
@@ -48,6 +51,8 @@ export function PeopleView() {
             isError={isError}
             isEmpty={people.length === 0}
             emptyMessage={t("empty")}
+            variant="table"
+            onRetry={refetch}
           >
             <Table>
               <TableHeader>

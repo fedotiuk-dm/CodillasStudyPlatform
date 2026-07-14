@@ -20,6 +20,12 @@ public interface ChatService {
 
   ChatMessageResponse postMessage(UUID senderId, UUID roomId, String content);
 
+  /** True if {@code userId} is a member of {@code roomId} — the chat access-control predicate. */
+  boolean isMember(UUID roomId, UUID userId);
+
   /** Ensure the group's channel exists and the student is a member (fed by StudentEnrolled). */
   void onStudentEnrolled(UUID groupId, UUID userId);
+
+  /** Drop the group's chat room with its members and messages (fed by GroupDeleted). */
+  void onGroupDeleted(UUID groupId);
 }

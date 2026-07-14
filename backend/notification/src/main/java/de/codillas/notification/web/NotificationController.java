@@ -35,4 +35,11 @@ public class NotificationController implements NotificationApi {
     notificationService.markRead(currentUser.id(), notificationId);
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
+
+  @Override
+  @RequiresAuthenticated
+  public ResponseEntity<Void> markAllRead() {
+    notificationService.markAllRead(currentUser.id());
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+  }
 }

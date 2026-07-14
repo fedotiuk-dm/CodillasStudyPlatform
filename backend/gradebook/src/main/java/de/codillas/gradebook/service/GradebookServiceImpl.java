@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import de.codillas.gradebook.api.dto.GroupGradebookResponse;
 import de.codillas.gradebook.api.dto.StudentGradebookResponse;
+import de.codillas.gradebook.domain.WeightedGrade;
+import de.codillas.gradebook.domain.WeightedGradeCalculator;
 import de.codillas.gradebook.domain.model.GradeSource;
 import de.codillas.gradebook.domain.model.GradebookMembership;
 import de.codillas.gradebook.domain.model.ProgressEntry;
@@ -17,8 +19,11 @@ import de.codillas.gradebook.domain.repository.GradebookMembershipRepository;
 import de.codillas.gradebook.domain.repository.ProgressEntryRepository;
 import de.codillas.gradebook.mapper.GradebookMapper;
 import de.codillas.shared.event.AttemptCompleted;
+import de.codillas.shared.event.GroupDeleted;
 import de.codillas.shared.event.StudentEnrolled;
 import de.codillas.shared.event.SubmissionGraded;
+import de.codillas.shared.exception.NotFoundException;
+import de.codillas.shared.security.CurrentUser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,17 +35,41 @@ public class GradebookServiceImpl implements GradebookService {
   private final ProgressEntryRepository repository;
   private final GradebookMembershipRepository membershipRepository;
   private final GradebookMapper mapper;
+  private final WeightedGradeCalculator weightedGradeCalculator;
+  private final CurrentUser currentUser;
 
   @Override
   @Transactional
   public void recordSubmissionGrade(SubmissionGraded event) {
-    upsert(GradeSource.HOMEWORK, event.submissionId(), event.score(), mapper.toEntry(event));
+    ProgressEntry fresh = mapper.toEntry(event);
+    resolveGroup(fresh);
+    ProgressEntry entry =
+        repository
+            .findBySourceAndSourceId(GradeSource.HOMEWORK, event.submissionId())
+            .orElse(fresh);
+    entry.setScore(fresh.getScore());
+    entry.setMaxPoints(fresh.getMaxPoints());
+    entry.setGroupId(fresh.getGroupId());
+    repository.save(entry);
   }
 
   @Override
   @Transactional
   public void recordAttempt(AttemptCompleted event) {
-    upsert(GradeSource.TEST, event.attemptId(), event.score(), mapper.toEntry(event));
+    ProgressEntry fresh = mapper.toEntry(event);
+    resolveGroup(fresh);
+    ProgressEntry entry =
+        repository
+            .findBySourceAndReferenceIdAndStudentId(
+                GradeSource.TEST, event.testId(), event.studentId())
+            .orElse(fresh);
+    if (entry.getId() == null || fresh.getScore() > entry.getScore()) {
+      entry.setScore(fresh.getScore());
+      entry.setMaxPoints(fresh.getMaxPoints());
+      entry.setGroupId(fresh.getGroupId());
+      entry.setSourceId(event.attemptId()); // point at the best attempt
+      repository.save(entry);
+    }
   }
 
   @Override
@@ -52,40 +81,67 @@ public class GradebookServiceImpl implements GradebookService {
   }
 
   @Override
+  @Transactional
+  public void purgeGroup(GroupDeleted event) {
+    membershipRepository.deleteByGroupId(event.groupId());
+  }
+
+  @Override
   public StudentGradebookResponse getStudentGradebook(UUID studentId) {
-    return mapper.toStudentGradebook(
-        studentId,
-        mapper.toEntryResponses(
-            repository.findByStudentId(studentId, ProgressEntryRepository.BY_RECORDED)));
+    if (!currentUser.isStaff() && !studentId.equals(currentUser.id())) {
+      throw new NotFoundException("Gradebook", studentId);
+    }
+    return studentGradebook(
+        studentId, repository.findByStudentId(studentId, ProgressEntryRepository.BY_RECORDED));
   }
 
   @Override
   public GroupGradebookResponse getGroupGradebook(UUID groupId) {
+    if (!currentUser.isStaff()
+        && !membershipRepository.existsByGroupIdAndStudentId(groupId, currentUser.id())) {
+      throw new NotFoundException("Gradebook", groupId);
+    }
     List<UUID> studentIds =
         membershipRepository.findByGroupId(groupId).stream()
             .map(GradebookMembership::getStudentId)
             .distinct()
             .toList();
+
+    // Scope each member's course grade to this group so it is per-(student, group). One query for
+    // all members, grouped in memory — never a per-student query in the loop.
     Map<UUID, List<ProgressEntry>> byStudent =
         studentIds.isEmpty()
             ? Map.of()
-            : repository.findByStudentIdIn(studentIds, ProgressEntryRepository.BY_RECORDED).stream()
+            : repository
+                .findByStudentIdInAndGroupId(
+                    studentIds, groupId, ProgressEntryRepository.BY_RECORDED)
+                .stream()
                 .collect(Collectors.groupingBy(ProgressEntry::getStudentId));
 
     List<StudentGradebookResponse> students =
         studentIds.stream()
-            .map(
-                id ->
-                    mapper.toStudentGradebook(
-                        id, mapper.toEntryResponses(byStudent.getOrDefault(id, List.of()))))
+            .map(id -> studentGradebook(id, byStudent.getOrDefault(id, List.of())))
             .toList();
     return mapper.toGroupGradebook(groupId, students);
   }
 
-  /** Insert or, on a re-grade of the same artefact, update the score in place. */
-  private void upsert(GradeSource source, UUID sourceId, int score, ProgressEntry fresh) {
-    ProgressEntry entry = repository.findBySourceAndSourceId(source, sourceId).orElse(fresh);
-    entry.setScore(score);
-    repository.save(entry);
+  /** Map a student's entries and attach the points-weighted course grade. */
+  private StudentGradebookResponse studentGradebook(UUID studentId, List<ProgressEntry> entries) {
+    WeightedGrade weighted = weightedGradeCalculator.compute(entries);
+    return mapper.toStudentGradebook(
+        studentId, mapper.toEntryResponses(entries), mapper.toCourseGrade(weighted));
+  }
+
+  /**
+   * Backfill a null event {@code groupId} from the student's own membership read model — assessment
+   * cannot know the group (a test is lesson-scoped and reused across cohorts). A student in
+   * multiple groups resolves to their first membership; multi-group precision is deferred.
+   */
+  private void resolveGroup(ProgressEntry fresh) {
+    if (fresh.getGroupId() == null) {
+      membershipRepository
+          .findFirstByStudentId(fresh.getStudentId())
+          .ifPresent(m -> fresh.setGroupId(m.getGroupId()));
+    }
   }
 }

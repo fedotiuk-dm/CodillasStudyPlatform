@@ -15,4 +15,6 @@ public interface NotificationMembershipRepository
   List<NotificationMembership> findByGroupId(UUID groupId);
 
   boolean existsByGroupIdAndStudentId(UUID groupId, UUID studentId);
+
+  void deleteByGroupId(UUID groupId);
 }

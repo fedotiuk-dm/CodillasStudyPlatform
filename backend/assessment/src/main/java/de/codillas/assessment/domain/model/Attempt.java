@@ -1,5 +1,6 @@
 package de.codillas.assessment.domain.model;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -24,7 +25,8 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(
     name = "attempts",
-    uniqueConstraints = @UniqueConstraint(columnNames = {"test_id", "student_id"}))
+    uniqueConstraints =
+        @UniqueConstraint(columnNames = {"test_id", "student_id", "attempt_number"}))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -45,4 +47,11 @@ public class Attempt extends BaseAuditableEntity {
   @Column(nullable = false)
   @Builder.Default
   private int score = 0;
+
+  @Column(name = "attempt_number", nullable = false)
+  @Builder.Default
+  private int attemptNumber = 1;
+
+  @Column(name = "started_at")
+  private Instant startedAt;
 }

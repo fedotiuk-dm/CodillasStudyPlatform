@@ -9,4 +9,4 @@ Build/fill with the **`new-modulith-module`** skill — do not scaffold blind.
 - **Consumes:** —
 - **Depends on (by id / events / API only):** course (lesson), files, user (by id)
 - **OpenAPI spec:** `backend/openapi/homework-paths.yaml` (+ `homework-schemas.yaml`)
-- **Status:** skeleton — implement in phase 3.
+- **Status:** implemented (full lifecycle, versioned submissions, rubrics, late penalties, reminders).

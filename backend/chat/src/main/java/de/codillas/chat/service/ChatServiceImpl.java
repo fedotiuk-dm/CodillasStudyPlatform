@@ -103,20 +103,16 @@ public class ChatServiceImpl implements ChatService {
     ChatMessageResponse dto = mapper.toMessageResponse(message);
     broadcast.broadcastMessage(roomId, dto);
     events.publishEvent(new MessagePosted(roomId, message.getId(), senderId));
-    notifyDirectRecipient(roomId, senderId);
+    notifyRecipients(roomId, senderId);
     return dto;
   }
 
   /**
-   * For a DIRECT room, alert the single other member — a DM has exactly one recipient, so we can
-   * notify without presence tracking and without spamming a group channel. GROUP /
-   * ASSIGNMENT_THREAD rooms rely on real-time delivery only.
+   * Notify every other member of the room about a posted message (any room type) so it surfaces in
+   * their in-app notification bell — the sender is excluded. Real-time STOMP delivery still happens
+   * separately via {@code broadcastMessage}.
    */
-  private void notifyDirectRecipient(UUID roomId, UUID senderId) {
-    ChatRoom room = roomRepository.findById(roomId).orElseThrow();
-    if (room.getType() != ChatRoomType.DIRECT) {
-      return;
-    }
+  private void notifyRecipients(UUID roomId, UUID senderId) {
     memberRepository.findByRoomId(roomId).stream()
         .map(ChatRoomMember::getUserId)
         .filter(userId -> !userId.equals(senderId))
@@ -135,15 +131,33 @@ public class ChatServiceImpl implements ChatService {
     addMember(room.getId(), userId);
   }
 
+  @Override
+  @Transactional
+  public void onGroupDeleted(UUID groupId) {
+    roomRepository
+        .findByTypeAndReferenceId(ChatRoomType.GROUP, groupId)
+        .ifPresent(
+            room -> {
+              messageRepository.deleteByRoomId(room.getId());
+              memberRepository.deleteByRoomId(room.getId());
+              roomRepository.delete(room);
+            });
+  }
+
   private void addMember(UUID roomId, UUID userId) {
     if (!memberRepository.existsByRoomIdAndUserId(roomId, userId)) {
       memberRepository.save(mapper.toMember(roomId, userId));
     }
   }
 
+  @Override
+  public boolean isMember(UUID roomId, UUID userId) {
+    return memberRepository.existsByRoomIdAndUserId(roomId, userId);
+  }
+
   /** Membership is the access control — non-members are told the room does not exist. */
   private void requireMember(UUID roomId, UUID userId) {
-    if (!memberRepository.existsByRoomIdAndUserId(roomId, userId)) {
+    if (!isMember(roomId, userId)) {
       throw new NotFoundException("Room", roomId);
     }
   }

@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useListCourses } from "@/lib/api/course/course/course";
+import { CourseStatus } from "@/lib/api/course/model";
 import { useCreateGroup } from "@/lib/api/enrollment/enrollment/enrollment";
 import { CreateGroupBody } from "@/lib/api/enrollment/zod/enrollment/enrollment.zod";
 
@@ -34,7 +35,7 @@ export function CreateGroupDialog({
   onCreated?: () => void;
 }) {
   const t = useTranslations("groups");
-  const { data: coursesData } = useListCourses();
+  const { data: coursesData } = useListCourses({ status: CourseStatus.PUBLISHED });
   const courses = coursesData?.content ?? [];
   const createGroup = useCreateGroup();
   const [teacherName, setTeacherName] = useState<string>();

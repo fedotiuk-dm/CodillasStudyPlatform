@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.5.0-create-course-status-view
+      author: codillas
+      comment: >-
+        Enrollment-owned read model of course lifecycle status, kept current by consuming course
+        events (CoursePublished/CourseArchived/CourseDeleted). Lets group-create validate a course
+        is PUBLISHED without depending on the course module. course_id is the natural PK. 0.5.0.
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: course_status_view
+      changes:
+        - createTable:
+            tableName: course_status_view
+            columns:
+              - column:
+                  name: course_id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(20)
+                  constraints:
+                    nullable: false

@@ -33,9 +33,10 @@ class NotificationEventListenerTest {
     AssignmentDueSoon dueSoon =
         new AssignmentDueSoon(UUID.randomUUID(), UUID.randomUUID(), java.time.Instant.now());
     SubmissionGraded graded =
-        new SubmissionGraded(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 7);
+        new SubmissionGraded(
+            UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 7, 10, UUID.randomUUID());
     AttemptCompleted completed =
-        new AttemptCompleted(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 9);
+        new AttemptCompleted(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 9, 10, null);
     DirectMessagePosted directMessage =
         new DirectMessagePosted(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID());
 

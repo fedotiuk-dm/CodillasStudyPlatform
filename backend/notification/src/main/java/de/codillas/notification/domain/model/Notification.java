@@ -1,5 +1,7 @@
 package de.codillas.notification.domain.model;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -15,6 +17,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /** A single in-app notification for one recipient. */
 @Entity
@@ -40,6 +45,12 @@ public class Notification extends BaseAuditableEntity {
 
   @Column(name = "reference_id")
   private UUID referenceId;
+
+  /** Structured render params, so the frontend can re-render the text in the viewer's locale. */
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(columnDefinition = "jsonb")
+  @Builder.Default
+  private Map<String, String> params = new HashMap<>();
 
   @Column(nullable = false)
   @Builder.Default

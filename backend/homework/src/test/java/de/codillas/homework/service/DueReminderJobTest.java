@@ -21,11 +21,11 @@ import de.codillas.homework.domain.model.AssignmentStatus;
 import de.codillas.homework.domain.repository.AssignmentRepository;
 import de.codillas.shared.event.AssignmentDueSoon;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -35,7 +35,12 @@ class DueReminderJobTest {
 
   @Mock private AssignmentRepository repository;
   @Mock private ApplicationEventPublisher events;
-  @InjectMocks private DueReminderJob job;
+  private DueReminderJob job;
+
+  @BeforeEach
+  void setUp() {
+    job = new DueReminderJob(repository, events, Duration.ofHours(24));
+  }
 
   @Test
   @DisplayName(

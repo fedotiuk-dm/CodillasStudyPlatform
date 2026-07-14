@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Version;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,4 +37,8 @@ public abstract class BaseAuditableEntity {
   @UpdateTimestamp
   @Column(name = "updated_at")
   private Instant updatedAt;
+
+  @Version
+  @Column(name = "lock_version", nullable = false)
+  private Long lockVersion;
 }

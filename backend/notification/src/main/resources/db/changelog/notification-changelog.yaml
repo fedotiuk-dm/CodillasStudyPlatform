@@ -11,3 +11,19 @@ databaseChangeLog:
   - include:
       file: changes/0.1.0/0.1.0-seed-notification.yaml
       relativeToChangelogFile: true
+  # 0.2.0 — recipient email read model (email channel)
+  - include:
+      file: changes/0.2.0/0.2.0-create-recipient-email.yaml
+      relativeToChangelogFile: true
+  # 0.3.0 — lock_version on all tables (lock lives on BaseAuditableEntity)
+  - include:
+      file: changes/0.3.0/0.3.0-add-notification-lock-version.yaml
+      relativeToChangelogFile: true
+  # 0.4.0 — structured render params (jsonb) on notifications
+  - include:
+      file: changes/0.4.0/0.4.0-add-notification-params.yaml
+      relativeToChangelogFile: true
+  # 0.5.0 — demo seed extras: params backfill + unread notifications (context: seed)
+  - include:
+      file: changes/0.5.0/0.5.0-seed-notification-extras.yaml
+      relativeToChangelogFile: true

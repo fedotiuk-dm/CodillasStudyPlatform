@@ -1,7 +1,7 @@
 openapi: 3.0.4
 info:
   title: Codillas Files schemas
-  version: 0.1.0
+  version: 0.2.0
 paths: {}
 components:
   schemas:
@@ -42,3 +42,14 @@ components:
         createdAt:
           type: string
           format: date-time
+    FileListResponse:
+      allOf:
+        - $ref: "common.yaml#/components/schemas/PageResponse"
+        - type: object
+          required:
+            - content
+          properties:
+            content:
+              type: array
+              items:
+                $ref: "#/components/schemas/StoredFileResponse"

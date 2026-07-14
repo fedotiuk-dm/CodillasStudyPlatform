@@ -1,0 +1,152 @@
+openapi: 3.0.4
+info:
+  title: Codillas Announcement API
+  description: Group-scoped announcements — the class stream (teachers post, members read).
+  version: 0.1.0
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  contact:
+    name: Codillas
+    email: support@codillas.de
+servers:
+  - url: http://localhost:8081
+    description: Local development
+tags:
+  - name: announcement
+    description: Class-stream announcements
+paths:
+  /api/groups/{groupId}/announcements:
+    get:
+      tags:
+        - announcement
+      operationId: listGroupAnnouncements
+      summary: A group's announcements (pinned first, then newest)
+      x-spring-paginated: true
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - $ref: "common.yaml#/components/parameters/PageNumber"
+        - $ref: "common.yaml#/components/parameters/PageSize"
+        - $ref: "common.yaml#/components/parameters/Sort"
+      responses:
+        "200":
+          description: Announcements
+          content:
+            application/json:
+              schema:
+                $ref: "announcement-schemas.yaml#/components/schemas/AnnouncementListResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+    post:
+      tags:
+        - announcement
+      operationId: createAnnouncement
+      summary: Post an announcement to a group
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "announcement-schemas.yaml#/components/schemas/CreateAnnouncementRequest"
+      responses:
+        "201":
+          description: Posted
+          content:
+            application/json:
+              schema:
+                $ref: "announcement-schemas.yaml#/components/schemas/AnnouncementResponse"
+        "400":
+          $ref: "common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+  /api/announcements/{announcementId}:
+    put:
+      tags:
+        - announcement
+      operationId: updateAnnouncement
+      summary: Edit an announcement (title, body, pinned)
+      parameters:
+        - name: announcementId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "announcement-schemas.yaml#/components/schemas/UpdateAnnouncementRequest"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "announcement-schemas.yaml#/components/schemas/AnnouncementResponse"
+        "400":
+          $ref: "common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+    delete:
+      tags:
+        - announcement
+      operationId: deleteAnnouncement
+      summary: Delete an announcement
+      parameters:
+        - name: announcementId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Deleted
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+  /api/me/announcements:
+    get:
+      tags:
+        - announcement
+      operationId: listMyAnnouncements
+      summary: Recent announcements across the caller's groups (staff sees all groups)
+      x-spring-paginated: true
+      parameters:
+        - $ref: "common.yaml#/components/parameters/PageNumber"
+        - $ref: "common.yaml#/components/parameters/PageSize"
+        - $ref: "common.yaml#/components/parameters/Sort"
+      responses:
+        "200":
+          description: Announcements
+          content:
+            application/json:
+              schema:
+                $ref: "announcement-schemas.yaml#/components/schemas/AnnouncementListResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"

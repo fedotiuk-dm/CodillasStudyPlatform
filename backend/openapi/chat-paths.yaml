@@ -18,7 +18,8 @@ tags:
 paths:
   /api/chat/rooms:
     get:
-      tags: [chat]
+      tags:
+        - chat
       operationId: listMyRooms
       summary: Rooms the current user belongs to
       responses:
@@ -33,7 +34,8 @@ paths:
         "401":
           $ref: "common.yaml#/components/responses/Unauthorized"
     post:
-      tags: [chat]
+      tags:
+        - chat
       operationId: createRoom
       summary: Create a chat room (DM or assignment thread)
       requestBody:
@@ -55,7 +57,8 @@ paths:
           $ref: "common.yaml#/components/responses/Unauthorized"
   /api/chat/rooms/{roomId}/messages:
     get:
-      tags: [chat]
+      tags:
+        - chat
       operationId: getMessages
       summary: A room's message history (paginated)
       x-spring-paginated: true
@@ -83,7 +86,8 @@ paths:
         "404":
           $ref: "common.yaml#/components/responses/NotFound"
     post:
-      tags: [chat]
+      tags:
+        - chat
       operationId: sendMessage
       summary: Post a message to a room (also broadcast over WebSocket)
       parameters:

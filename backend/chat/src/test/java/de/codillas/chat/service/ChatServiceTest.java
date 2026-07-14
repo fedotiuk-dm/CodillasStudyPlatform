@@ -50,10 +50,12 @@ class ChatServiceTest {
   @InjectMocks private ChatServiceImpl service;
 
   @Test
-  @DisplayName("posting to a GROUP room saves, broadcasts and publishes only MessagePosted")
-  void postMessage_groupRoom_savesBroadcastsPublishes() {
+  @DisplayName(
+      "posting a message notifies every other room member (for the bell), never the sender")
+  void postMessage_notifiesOtherMembers() {
     UUID roomId = UUID.randomUUID();
     UUID senderId = UUID.randomUUID();
+    UUID otherId = UUID.randomUUID();
     UUID messageId = UUID.randomUUID();
     ChatMessage message =
         ChatMessage.builder().id(messageId).roomId(roomId).senderId(senderId).build();
@@ -62,40 +64,16 @@ class ChatServiceTest {
     when(mapper.toMessage(roomId, senderId, "hi")).thenReturn(message);
     when(messageRepository.save(message)).thenReturn(message);
     when(mapper.toMessageResponse(message)).thenReturn(dto);
-    when(roomRepository.findById(roomId))
-        .thenReturn(Optional.of(ChatRoom.builder().id(roomId).type(ChatRoomType.GROUP).build()));
-
-    assertThat(service.postMessage(senderId, roomId, "hi")).isSameAs(dto);
-    verify(broadcast).broadcastMessage(roomId, dto);
-    verify(events).publishEvent(new MessagePosted(roomId, messageId, senderId));
-    verify(events, never()).publishEvent(any(DirectMessagePosted.class));
-  }
-
-  @Test
-  @DisplayName("posting to a DIRECT room publishes DirectMessagePosted to the other member only")
-  void postMessage_directRoom_notifiesOtherMember() {
-    UUID roomId = UUID.randomUUID();
-    UUID senderId = UUID.randomUUID();
-    UUID recipientId = UUID.randomUUID();
-    UUID messageId = UUID.randomUUID();
-    ChatMessage message =
-        ChatMessage.builder().id(messageId).roomId(roomId).senderId(senderId).build();
-    ChatMessageResponse dto = mock(ChatMessageResponse.class);
-    when(memberRepository.existsByRoomIdAndUserId(roomId, senderId)).thenReturn(true);
-    when(mapper.toMessage(roomId, senderId, "hi")).thenReturn(message);
-    when(messageRepository.save(message)).thenReturn(message);
-    when(mapper.toMessageResponse(message)).thenReturn(dto);
-    when(roomRepository.findById(roomId))
-        .thenReturn(Optional.of(ChatRoom.builder().id(roomId).type(ChatRoomType.DIRECT).build()));
     when(memberRepository.findByRoomId(roomId))
         .thenReturn(
             List.of(
                 ChatRoomMember.builder().roomId(roomId).userId(senderId).build(),
-                ChatRoomMember.builder().roomId(roomId).userId(recipientId).build()));
+                ChatRoomMember.builder().roomId(roomId).userId(otherId).build()));
 
     assertThat(service.postMessage(senderId, roomId, "hi")).isSameAs(dto);
+    verify(broadcast).broadcastMessage(roomId, dto);
     verify(events).publishEvent(new MessagePosted(roomId, messageId, senderId));
-    verify(events).publishEvent(new DirectMessagePosted(roomId, recipientId, senderId));
+    verify(events).publishEvent(new DirectMessagePosted(roomId, otherId, senderId));
     verify(events, never()).publishEvent(new DirectMessagePosted(roomId, senderId, senderId));
   }
 
@@ -180,6 +158,15 @@ class ChatServiceTest {
 
     verify(roomRepository).save(room);
     verify(memberRepository).save(any(ChatRoomMember.class));
+  }
+
+  @Test
+  @DisplayName("isMember reflects the membership row")
+  void isMember_reflectsMembership() {
+    UUID roomId = UUID.randomUUID();
+    UUID userId = UUID.randomUUID();
+    when(memberRepository.existsByRoomIdAndUserId(roomId, userId)).thenReturn(true);
+    assertThat(service.isMember(roomId, userId)).isTrue();
   }
 
   @Test

@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.3.0-add-course-status
+      author: codillas
+      comment: >-
+        Add courses.status lifecycle column. Rows that predate the lifecycle were already live, so
+        they are BACKFILLED to PUBLISHED; the DB default (and the entity @Builder.Default) make NEW
+        rows DRAFT. defaultValue is not used on addColumn so the backfill is not overwritten. 0.3.0.
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: courses
+                columnName: status
+      changes:
+        - addColumn:
+            tableName: courses
+            columns:
+              - column:
+                  name: status
+                  type: varchar(20)
+        - update:
+            tableName: courses
+            columns:
+              - column:
+                  name: status
+                  value: PUBLISHED
+            where: status IS NULL
+        - addDefaultValue:
+            tableName: courses
+            columnName: status
+            defaultValue: DRAFT
+        - addNotNullConstraint:
+            tableName: courses
+            columnName: status
+            columnDataType: varchar(20)

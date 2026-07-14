@@ -1,0 +1,77 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.4.0-add-study_groups-lock-version
+      author: codillas
+      comment: Add optimistic-lock version column to study_groups (0.4.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: study_groups
+                columnName: lock_version
+      changes:
+        - addColumn:
+            tableName: study_groups
+            columns:
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }
+  - changeSet:
+      id: 0.4.0-add-group_members-lock-version
+      author: codillas
+      comment: Add optimistic-lock version column to group_members (0.4.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: group_members
+                columnName: lock_version
+      changes:
+        - addColumn:
+            tableName: group_members
+            columns:
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }
+  - changeSet:
+      id: 0.4.0-add-scheduled_lessons-lock-version
+      author: codillas
+      comment: Add optimistic-lock version column to scheduled_lessons (0.4.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: scheduled_lessons
+                columnName: lock_version
+      changes:
+        - addColumn:
+            tableName: scheduled_lessons
+            columns:
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }
+  - changeSet:
+      id: 0.4.0-add-attendance-lock-version
+      author: codillas
+      comment: Add optimistic-lock version column to attendance (0.4.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: attendance
+                columnName: lock_version
+      changes:
+        - addColumn:
+            tableName: attendance
+            columns:
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }

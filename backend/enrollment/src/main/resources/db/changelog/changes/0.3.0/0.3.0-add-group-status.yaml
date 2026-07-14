@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.3.0-add-group-status
+      author: codillas
+      comment: >-
+        Add study_groups.status. Pre-lifecycle rows were active cohorts, so they are BACKFILLED to
+        RUNNING; DB default + entity @Builder.Default make NEW rows DRAFT. No defaultValue on
+        addColumn so the backfill survives. 0.3.0.
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: study_groups
+                columnName: status
+      changes:
+        - addColumn:
+            tableName: study_groups
+            columns:
+              - column:
+                  name: status
+                  type: varchar(20)
+        - update:
+            tableName: study_groups
+            columns:
+              - column:
+                  name: status
+                  value: RUNNING
+            where: status IS NULL
+        - addDefaultValue:
+            tableName: study_groups
+            columnName: status
+            defaultValue: DRAFT
+        - addNotNullConstraint:
+            tableName: study_groups
+            columnName: status
+            columnDataType: varchar(20)

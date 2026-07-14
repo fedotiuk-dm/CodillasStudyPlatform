@@ -2,7 +2,7 @@ openapi: 3.0.4
 info:
   title: Codillas Homework API
   description: Assignments, versioned submissions, teacher review and grading.
-  version: 0.1.0
+  version: 0.3.0
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -94,6 +94,63 @@ paths:
           $ref: "common.yaml#/components/responses/NotFound"
         "409":
           $ref: "common.yaml#/components/responses/Conflict"
+  /api/assignments/{assignmentId}/rubric:
+    post:
+      tags:
+        - homework
+      operationId: createRubric
+      summary: Attach (or replace) a grading rubric on an assignment
+      parameters:
+        - name: assignmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "homework-schemas.yaml#/components/schemas/CreateRubricRequest"
+      responses:
+        "201":
+          description: Rubric created
+          content:
+            application/json:
+              schema:
+                $ref: "homework-schemas.yaml#/components/schemas/RubricResponse"
+        "400":
+          $ref: "common.yaml#/components/responses/BadRequest"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+    get:
+      tags:
+        - homework
+      operationId: getRubric
+      summary: The assignment's rubric, if any
+      parameters:
+        - name: assignmentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Rubric
+          content:
+            application/json:
+              schema:
+                $ref: "homework-schemas.yaml#/components/schemas/RubricResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
   /api/assignments/{assignmentId}/submissions:
     post:
       tags:

@@ -14,17 +14,19 @@ import de.codillas.enrollment.api.dto.CreateGroupRequest;
 import de.codillas.enrollment.api.dto.EnrollStudentRequest;
 import de.codillas.enrollment.api.dto.GroupListResponse;
 import de.codillas.enrollment.api.dto.GroupResponse;
+import de.codillas.enrollment.api.dto.GroupStatus;
 import de.codillas.enrollment.api.dto.MarkAttendanceRequest;
 import de.codillas.enrollment.api.dto.MembershipResponse;
 import de.codillas.enrollment.api.dto.ScheduleLessonRequest;
 import de.codillas.enrollment.api.dto.ScheduledLessonResponse;
 import de.codillas.enrollment.service.AttendanceService;
 import de.codillas.enrollment.service.GroupService;
-import de.codillas.enrollment.service.MeService;
 import de.codillas.enrollment.service.MembershipService;
+import de.codillas.enrollment.service.MyEnrollmentService;
 import de.codillas.enrollment.service.ScheduledLessonService;
 import de.codillas.shared.security.RequiresAdmin;
 import de.codillas.shared.security.RequiresAuthenticated;
+import de.codillas.shared.security.RequiresTeacher;
 
 import lombok.RequiredArgsConstructor;
 
@@ -37,7 +39,7 @@ public class EnrollmentController implements EnrollmentApi {
   private final MembershipService membershipService;
   private final ScheduledLessonService scheduledLessonService;
   private final AttendanceService attendanceService;
-  private final MeService meService;
+  private final MyEnrollmentService myEnrollmentService;
 
   @Override
   @RequiresAdmin
@@ -48,20 +50,39 @@ public class EnrollmentController implements EnrollmentApi {
 
   @Override
   @RequiresAuthenticated
-  public ResponseEntity<GroupListResponse> listGroups(Pageable pageable) {
-    return ResponseEntity.ok(groupService.listGroups(pageable));
+  public ResponseEntity<GroupListResponse> listGroups(GroupStatus status, Pageable pageable) {
+    return ResponseEntity.ok(groupService.listGroups(status, pageable));
+  }
+
+  @Override
+  @RequiresAdmin
+  public ResponseEntity<GroupResponse> startGroup(UUID groupId) {
+    return ResponseEntity.ok(groupService.startGroup(groupId));
+  }
+
+  @Override
+  @RequiresAdmin
+  public ResponseEntity<GroupResponse> archiveGroup(UUID groupId) {
+    return ResponseEntity.ok(groupService.archiveGroup(groupId));
+  }
+
+  @Override
+  @RequiresAdmin
+  public ResponseEntity<Void> deleteGroup(UUID groupId) {
+    groupService.deleteGroup(groupId);
+    return ResponseEntity.noContent().build();
   }
 
   @Override
   @RequiresAuthenticated
   public ResponseEntity<List<GroupResponse>> listMyGroups() {
-    return ResponseEntity.ok(meService.listMyGroups());
+    return ResponseEntity.ok(myEnrollmentService.listMyGroups());
   }
 
   @Override
   @RequiresAuthenticated
   public ResponseEntity<List<ScheduledLessonResponse>> listMySchedule() {
-    return ResponseEntity.ok(meService.listMySchedule());
+    return ResponseEntity.ok(myEnrollmentService.listMySchedule());
   }
 
   @Override
@@ -93,7 +114,7 @@ public class EnrollmentController implements EnrollmentApi {
   }
 
   @Override
-  @RequiresAdmin
+  @RequiresTeacher
   public ResponseEntity<AttendanceResponse> markAttendance(
       UUID groupId, UUID scheduledLessonId, MarkAttendanceRequest markAttendanceRequest) {
     return ResponseEntity.ok(
@@ -101,7 +122,7 @@ public class EnrollmentController implements EnrollmentApi {
   }
 
   @Override
-  @RequiresAdmin
+  @RequiresTeacher
   public ResponseEntity<List<AttendanceResponse>> listAttendance(
       UUID groupId, UUID scheduledLessonId) {
     return ResponseEntity.ok(attendanceService.listAttendance(scheduledLessonId));

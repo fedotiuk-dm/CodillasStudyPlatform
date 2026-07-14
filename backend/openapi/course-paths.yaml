@@ -2,7 +2,7 @@ openapi: 3.0.4
 info:
   title: Codillas Course API
   description: Course template — admin-authored courses with a Section → Lesson → Material structure.
-  version: 0.2.0
+  version: 0.3.0
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -27,6 +27,12 @@ paths:
         - $ref: "common.yaml#/components/parameters/PageNumber"
         - $ref: "common.yaml#/components/parameters/PageSize"
         - $ref: "common.yaml#/components/parameters/Sort"
+        - name: status
+          in: query
+          required: false
+          description: Optional lifecycle filter. Non-staff callers never receive DRAFT regardless.
+          schema:
+            $ref: "course-schemas.yaml#/components/schemas/CourseStatus"
       responses:
         "200":
           description: Paginated courses
@@ -79,6 +85,66 @@ paths:
           $ref: "common.yaml#/components/responses/Unauthorized"
         "404":
           $ref: "common.yaml#/components/responses/NotFound"
+    delete:
+      tags:
+        - course
+      operationId: deleteCourse
+      summary: Delete a course and its entire Section → Lesson → Material structure
+      parameters:
+        - $ref: "#/components/parameters/CourseId"
+      responses:
+        "204":
+          description: Deleted
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+  /api/courses/{courseId}/publish:
+    post:
+      tags:
+        - course
+      operationId: publishCourse
+      summary: Publish a draft course (makes it selectable for groups)
+      parameters:
+        - $ref: "#/components/parameters/CourseId"
+      responses:
+        "200":
+          description: Published
+          content:
+            application/json:
+              schema:
+                $ref: "course-schemas.yaml#/components/schemas/CourseResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "common.yaml#/components/responses/Conflict"
+  /api/courses/{courseId}/archive:
+    post:
+      tags:
+        - course
+      operationId: archiveCourse
+      summary: Archive a course (retire it; read-only thereafter)
+      parameters:
+        - $ref: "#/components/parameters/CourseId"
+      responses:
+        "200":
+          description: Archived
+          content:
+            application/json:
+              schema:
+                $ref: "course-schemas.yaml#/components/schemas/CourseResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
+        "409":
+          $ref: "common.yaml#/components/responses/Conflict"
   /api/courses/{courseId}/sections:
     post:
       tags:

@@ -1,0 +1,75 @@
+openapi: 3.0.4
+info:
+  title: Codillas Announcement schemas
+  version: 0.1.0
+paths: {}
+components:
+  schemas:
+    AnnouncementResponse:
+      type: object
+      required:
+        - id
+        - groupId
+        - authorId
+        - title
+        - pinned
+      properties:
+        id:
+          type: string
+          format: uuid
+        groupId:
+          type: string
+          format: uuid
+        authorId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        body:
+          type: string
+        pinned:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    CreateAnnouncementRequest:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        body:
+          type: string
+          maxLength: 5000
+        pinned:
+          type: boolean
+          default: false
+    UpdateAnnouncementRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        body:
+          type: string
+          maxLength: 5000
+        pinned:
+          type: boolean
+    AnnouncementListResponse:
+      allOf:
+        - $ref: "common.yaml#/components/schemas/PageResponse"
+        - type: object
+          required:
+            - content
+          properties:
+            content:
+              type: array
+              items:
+                $ref: "#/components/schemas/AnnouncementResponse"

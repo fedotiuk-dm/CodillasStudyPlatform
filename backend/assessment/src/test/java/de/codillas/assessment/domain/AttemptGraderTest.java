@@ -48,13 +48,24 @@ class AttemptGraderTest {
   }
 
   @Test
-  @DisplayName("multiple choice: full points only when the selected set equals the correct set")
-  void multipleChoice() {
-    List<Option> options = List.of(option(A, true), option(B, false), option(C, true));
-    Question q = question(QuestionType.MULTIPLE_CHOICE, 4);
-    assertThat(grader.autoScore(q, options, answer(Set.of(A, C)))).isEqualTo(4);
-    assertThat(grader.autoScore(q, options, answer(Set.of(A)))).isZero();
-    assertThat(grader.autoScore(q, options, answer(Set.of(A, B, C)))).isZero();
+  @DisplayName(
+      "multiple choice: proportional partial credit, penalises wrong picks, never below zero")
+  void multipleChoice_partialCredit() {
+    // 3 correct (A, C, D), 2 incorrect (B, E); points = 6 → each correct worth 2.
+    UUID D = UUID.randomUUID();
+    UUID E = UUID.randomUUID();
+    List<Option> options =
+        List.of(
+            option(A, true), option(B, false), option(C, true), option(D, true), option(E, false));
+    Question q = question(QuestionType.MULTIPLE_CHOICE, 6);
+
+    assertThat(grader.autoScore(q, options, answer(Set.of(A, C, D)))).isEqualTo(6); // all correct
+    assertThat(grader.autoScore(q, options, answer(Set.of(A, C)))).isEqualTo(4); // partial 2/3
+    assertThat(grader.autoScore(q, options, answer(Set.of(A)))).isEqualTo(2); // partial 1/3
+    assertThat(grader.autoScore(q, options, answer(Set.of()))).isZero(); // empty selection
+    assertThat(grader.autoScore(q, options, answer(Set.of(B, E)))).isZero(); // all wrong → clamp
+    assertThat(grader.autoScore(q, options, answer(Set.of(A, C, D, B, E)))).isEqualTo(2); // (3-2)/3
+    assertThat(grader.autoScore(q, options, answer(Set.of(A, B)))).isZero(); // (1-1)/3 → 0
   }
 
   @Test

@@ -18,4 +18,6 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, UUID> 
   Sort NEWEST_FIRST = Sort.by(Sort.Order.desc(BaseAuditableEntity_.CREATED_AT));
 
   Page<ChatMessage> findByRoomId(UUID roomId, Pageable pageable);
+
+  void deleteByRoomId(UUID roomId);
 }

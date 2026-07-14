@@ -6,10 +6,18 @@ spring:
     problemdetails:
       enabled: true            # RFC 9457 ProblemDetail for framework exceptions
 
+  servlet:
+    multipart:
+      max-file-size: 25MB
+      max-request-size: 25MB
+
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/codillas}
     username: ${DB_USER:codillas}
     password: ${DB_PASSWORD:codillas}
+    # Boot 4.1: take a pooled connection only when a statement actually runs (not at
+    # @Transactional entry) via LazyConnectionDataSourceProxy. Effective because open-in-view=false.
+    connection-fetch: lazy
 
   jpa:
     hibernate:
@@ -41,6 +49,90 @@ codillas:
     region: ${FILES_REGION:us-east-1}
     access-key: ${FILES_ACCESS_KEY:minioadmin}
     secret-key: ${FILES_SECRET_KEY:minioadmin}
+    allowed-content-types:
+      - application/pdf
+      - image/png
+      - image/jpeg
+      - image/gif
+      - text/plain
+      - application/zip
+      - application/msword
+      - application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      - application/vnd.openxmlformats-officedocument.presentationml.presentation
+      - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+
+notification:
+  # i18n message templates (the "boosting" pattern): notification titles/bodies live here per
+  # locale, not hardcoded in Java. `default-locale` renders both the stored in-app text and the
+  # email; `{placeholder}` tokens are substituted at render time. Per-recipient locale is a future
+  # follow-up — for now everyone gets `default-locale`.
+  default-locale: ${NOTIFICATION_DEFAULT_LOCALE:uk}
+  from: ${NOTIFICATION_EMAIL_FROM:noreply@codillas.de}
+  templates:
+    en:
+      assignment-published:
+        title: "New assignment"
+        body: "A new assignment was published for your group."
+      assignment-due-soon:
+        title: "Assignment due soon"
+        body: "An assignment in your group is due soon."
+      submission-graded:
+        title: "Homework graded"
+        body: "Your submission was graded: {points} points."
+      attempt-completed:
+        title: "Test scored"
+        body: "Your test attempt scored {points} points."
+      direct-message:
+        title: "New message"
+        body: "You have a new chat message."
+      announcement-posted:
+        title: "New announcement"
+        body: "{title}"
+    uk:
+      assignment-published:
+        title: "Нове завдання"
+        body: "У вашій групі опубліковано нове завдання."
+      assignment-due-soon:
+        title: "Скоро дедлайн"
+        body: "У вашій групі скоро дедлайн завдання."
+      submission-graded:
+        title: "Роботу оцінено"
+        body: "Вашу роботу оцінено: {points} балів."
+      attempt-completed:
+        title: "Тест оцінено"
+        body: "Ваша спроба тесту: {points} балів."
+      direct-message:
+        title: "Нове повідомлення"
+        body: "У вас нове повідомлення в чаті."
+      announcement-posted:
+        title: "Нове оголошення"
+        body: "{title}"
+    de:
+      assignment-published:
+        title: "Neue Aufgabe"
+        body: "In deiner Gruppe wurde eine neue Aufgabe veröffentlicht."
+      assignment-due-soon:
+        title: "Abgabe bald fällig"
+        body: "Eine Aufgabe in deiner Gruppe ist bald fällig."
+      submission-graded:
+        title: "Hausaufgabe bewertet"
+        body: "Deine Abgabe wurde bewertet: {points} Punkte."
+      attempt-completed:
+        title: "Test bewertet"
+        body: "Dein Testversuch: {points} Punkte."
+      direct-message:
+        title: "Neue Nachricht"
+        body: "Du hast eine neue Chat-Nachricht."
+      announcement-posted:
+        title: "Neue Ankündigung"
+        body: "{title}"
+
+homework:
+  # Due-soon reminder job. `cron` is the schedule (Spring 6-field cron); `window` is how far ahead
+  # to look for deadlines (ISO-8601 duration). Both fall back to hourly / 24h when unset.
+  due-reminder:
+    cron: ${HOMEWORK_DUE_REMINDER_CRON:0 0 * * * *}
+    window: ${HOMEWORK_DUE_REMINDER_WINDOW:PT24H}
 
 server:
   port: ${SERVER_PORT:8081}

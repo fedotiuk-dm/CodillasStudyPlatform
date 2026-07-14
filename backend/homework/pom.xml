@@ -6,7 +6,7 @@
   <parent>
     <groupId>de.codillas</groupId>
     <artifactId>codillas-study-platform</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.2.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>codillas-homework</artifactId>
@@ -24,6 +24,16 @@
       <groupId>de.codillas</groupId>
       <artifactId>codillas-shared</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>de.codillas</groupId>
+      <artifactId>codillas-files</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- @ApplicationModuleListener for consuming GroupDeleted. -->
+    <dependency>
+      <groupId>org.springframework.modulith</groupId>
+      <artifactId>spring-modulith-events-api</artifactId>
     </dependency>
   </dependencies>
 </project>

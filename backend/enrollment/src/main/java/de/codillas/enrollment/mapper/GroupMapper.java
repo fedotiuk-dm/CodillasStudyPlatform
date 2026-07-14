@@ -25,4 +25,8 @@ public interface GroupMapper {
   Group toEntity(CreateGroupRequest request);
 
   GroupListResponse toListResponse(Page<Group> page);
+
+  /** Maps the generated DTO status enum to the domain enum (by name); null when no filter. */
+  de.codillas.enrollment.domain.model.GroupStatus toDomainStatus(
+      de.codillas.enrollment.api.dto.GroupStatus status);
 }

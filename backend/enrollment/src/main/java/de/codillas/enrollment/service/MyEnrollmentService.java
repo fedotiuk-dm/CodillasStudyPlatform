@@ -5,7 +5,8 @@ import java.util.List;
 import de.codillas.enrollment.api.dto.GroupResponse;
 import de.codillas.enrollment.api.dto.ScheduledLessonResponse;
 
-public interface MeService {
+/** Current-user-scoped enrollment views: the groups I belong to and my lesson schedule. */
+public interface MyEnrollmentService {
 
   List<GroupResponse> listMyGroups();
 

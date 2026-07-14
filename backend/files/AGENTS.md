@@ -21,5 +21,11 @@ Build/fill with the **`new-modulith-module`** skill — do not scaffold blind.
   (`S3Config`, `codillas.files.*`, minio path-style) is **lazy** — it builds in every profile but
   only connects on a real operation, so non-files contexts boot without minio. The bucket is created
   by infra/tests, not the app.
-- Delete is `@RequiresTeacher` (no per-file owner check yet); upload/download/metadata are
-  `@RequiresAuthenticated`. Integration-tested end-to-end against a MinIO Testcontainer.
+- Delete is `@RequiresTeacher`; upload/metadata are `@RequiresAuthenticated`. **Download is
+  object-level authorized:** `FileServiceImpl.download` resolves a `FileAccessAuthorizer` SPI by the
+  file's `FileReferenceType` and returns 404 (never leaks existence) when the caller may not read it.
+  Each owning module implements the SPI once — `homework` (HOMEWORK → owner-or-staff), `chat` (CHAT →
+  room member), `files` (MATERIAL → any authenticated). The SPI receives only ids, never the
+  `StoredFile` entity, so implementers import no files persistence type. A file with no matching
+  authorizer (loose upload) is readable only by its uploader or staff. Integration-tested end-to-end
+  against a MinIO Testcontainer.

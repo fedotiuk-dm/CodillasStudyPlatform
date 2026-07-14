@@ -6,7 +6,7 @@
   <parent>
     <groupId>de.codillas</groupId>
     <artifactId>codillas-study-platform</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.2.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>codillas-notification</artifactId>

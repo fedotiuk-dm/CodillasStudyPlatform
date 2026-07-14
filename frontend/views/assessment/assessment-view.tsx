@@ -6,7 +6,7 @@ import { toast } from "sonner";
 
 import { DataState } from "@/components/shared/data-state";
 import { PageHeader } from "@/components/shared/page-header";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -31,7 +31,7 @@ import { TestWizard } from "./test-wizard";
 
 export function AssessmentView() {
   const t = useTranslations("tests");
-  const { data, isLoading, isError } = useListTests();
+  const { data, isLoading, isError, refetch } = useListTests();
   const canManage = useHasAnyRole([Role.ADMIN, Role.TEACHER]);
   const [createOpen, setCreateOpen] = useState(false);
   const [manageTestId, setManageTestId] = useState<string | null>(null);
@@ -82,7 +82,13 @@ export function AssessmentView() {
 
       <Card>
         <CardContent className="pt-6">
-          <DataState isLoading={isLoading} isError={isError} isEmpty={tests.length === 0}>
+          <DataState
+            isLoading={isLoading}
+            isError={isError}
+            isEmpty={tests.length === 0}
+            variant="table"
+            onRetry={refetch}
+          >
             <Table>
               <TableHeader>
                 <TableRow>
@@ -96,9 +102,7 @@ export function AssessmentView() {
                   <TableRow key={test.id}>
                     <TableCell className="font-medium">{test.title}</TableCell>
                     <TableCell>
-                      <Badge variant={test.status === "PUBLISHED" ? "default" : "secondary"}>
-                        {test.status}
-                      </Badge>
+                      <StatusBadge status={test.status} label={t(`testStatus.${test.status}`)} />
                     </TableCell>
                     <TableCell className="space-x-2 text-right">
                       {canManage && test.status === "DRAFT" && (

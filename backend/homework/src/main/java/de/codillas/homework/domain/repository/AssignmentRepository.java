@@ -22,6 +22,10 @@ public interface AssignmentRepository extends JpaRepository<Assignment, UUID> {
 
   Page<Assignment> findByGroupId(UUID groupId, Pageable pageable);
 
+  List<Assignment> findByGroupId(UUID groupId);
+
+  void deleteByGroupId(UUID groupId);
+
   /**
    * Assignments whose deadline reminder is now due: a given status, not yet reminded, and a {@code
    * dueAt} within the {@code [from, to]} window. The {@link Sort} arg supplies the ordering (no

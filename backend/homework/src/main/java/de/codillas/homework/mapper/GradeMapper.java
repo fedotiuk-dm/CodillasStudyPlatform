@@ -1,21 +1,23 @@
 package de.codillas.homework.mapper;
 
-import java.util.UUID;
+import java.util.List;
 
-import de.codillas.homework.api.dto.CreateGradeRequest;
+import de.codillas.homework.api.dto.CriterionScoreResponse;
 import de.codillas.homework.api.dto.GradeResponse;
 import de.codillas.homework.domain.model.Grade;
+import de.codillas.homework.domain.model.GradeCriterion;
 import de.codillas.shared.mapper.CentralMapperConfig;
 
-import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.Mapping;
 
 @Mapper(config = CentralMapperConfig.class)
 public interface GradeMapper {
 
-  GradeResponse toResponse(Grade entity);
+  @Mapping(target = "criterionScores", source = "criteria")
+  GradeResponse toResponse(Grade entity, List<GradeCriterion> criteria);
 
-  @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
-  Grade toEntity(CreateGradeRequest request, UUID submissionId, UUID gradedBy);
+  CriterionScoreResponse toCriterionScore(GradeCriterion criterion);
+
+  List<CriterionScoreResponse> toCriterionScores(List<GradeCriterion> criteria);
 }

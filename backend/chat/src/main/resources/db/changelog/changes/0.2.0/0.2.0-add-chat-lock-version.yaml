@@ -1,0 +1,58 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.2.0-add-chat_rooms-lock-version
+      author: codillas
+      comment: Add optimistic-lock version column to chat_rooms (0.2.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: chat_rooms
+                columnName: lock_version
+      changes:
+        - addColumn:
+            tableName: chat_rooms
+            columns:
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }
+  - changeSet:
+      id: 0.2.0-add-chat_messages-lock-version
+      author: codillas
+      comment: Add optimistic-lock version column to chat_messages (0.2.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: chat_messages
+                columnName: lock_version
+      changes:
+        - addColumn:
+            tableName: chat_messages
+            columns:
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }
+  - changeSet:
+      id: 0.2.0-add-chat_room_members-lock-version
+      author: codillas
+      comment: Add optimistic-lock version column to chat_room_members (0.2.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: chat_room_members
+                columnName: lock_version
+      changes:
+        - addColumn:
+            tableName: chat_room_members
+            columns:
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }

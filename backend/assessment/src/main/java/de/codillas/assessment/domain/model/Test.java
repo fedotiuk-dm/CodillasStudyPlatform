@@ -1,5 +1,6 @@
 package de.codillas.assessment.domain.model;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -38,4 +39,24 @@ public class Test extends BaseAuditableEntity {
   @Column(nullable = false, length = 20)
   @Builder.Default
   private TestStatus status = TestStatus.DRAFT;
+
+  @Column(name = "max_attempts")
+  private Integer maxAttempts;
+
+  @Column(name = "duration_minutes")
+  private Integer durationMinutes;
+
+  @Column(name = "available_from")
+  private Instant availableFrom;
+
+  @Column(name = "available_until")
+  private Instant availableUntil;
+
+  @Column(name = "shuffle_questions", nullable = false)
+  @Builder.Default
+  private boolean shuffleQuestions = false;
+
+  @Column(name = "shuffle_options", nullable = false)
+  @Builder.Default
+  private boolean shuffleOptions = false;
 }

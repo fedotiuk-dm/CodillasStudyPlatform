@@ -1,0 +1,62 @@
+"use client";
+
+import { Download, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import { downloadFile, useDeleteFile } from "@/lib/api/files/files/files";
+import type { StoredFileResponse } from "@/lib/api/files/model";
+import { useHasRole } from "@/lib/auth";
+import { Role } from "@/lib/constants";
+
+/** One stored file's actions: download the blob, or delete it (teachers only, like the backend). */
+export function FileRowActions({ file }: { file: StoredFileResponse }) {
+  const t = useTranslations("files");
+  const remove = useDeleteFile();
+  const canDelete = useHasRole(Role.TEACHER);
+
+  async function onDownload() {
+    try {
+      const blob = await downloadFile(file.id);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = file.originalFilename;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      toast.error(t("downloadFailed"));
+    }
+  }
+
+  function onDelete() {
+    remove.mutate(
+      { fileId: file.id },
+      {
+        onSuccess: () => {
+          toast.success(t("deleted"));
+        },
+      },
+    );
+  }
+
+  return (
+    <div className="space-x-2 text-right">
+      <Button variant="outline" size="icon" onClick={onDownload} aria-label={t("download")}>
+        <Download className="size-4" />
+      </Button>
+      {canDelete ? (
+        <Button
+          variant="ghost"
+          size="icon"
+          disabled={remove.isPending}
+          onClick={onDelete}
+          aria-label={t("delete")}
+        >
+          <Trash2 className="size-4" />
+        </Button>
+      ) : null}
+    </div>
+  );
+}

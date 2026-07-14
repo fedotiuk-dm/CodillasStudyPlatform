@@ -1,5 +1,7 @@
 package de.codillas.assessment.service;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -56,11 +58,11 @@ public class AttemptServiceImpl implements AttemptService {
   @Transactional
   public AttemptResponse startAttempt(UUID testId) {
     UUID studentId = currentUser.id();
-    // One attempt per (test, student): resume the existing one (IN_PROGRESS to continue, or
-    // SUBMITTED/GRADED so the caller shows the result) instead of creating a duplicate.
-    Optional<Attempt> existing = repository.findByTestIdAndStudentId(testId, studentId);
-    if (existing.isPresent()) {
-      Attempt attempt = existing.get();
+    // Resume an in-progress attempt; never open a new number while one is unfinished.
+    Optional<Attempt> inProgress =
+        repository.findByTestIdAndStudentIdAndStatus(testId, studentId, AttemptStatus.IN_PROGRESS);
+    if (inProgress.isPresent()) {
+      Attempt attempt = inProgress.get();
       return mapper.toResponse(
           attempt, mapper.toAnswerResponses(answerRepository.findByAttemptId(attempt.getId())));
     }
@@ -69,15 +71,33 @@ public class AttemptServiceImpl implements AttemptService {
     if (test.getStatus() != TestStatus.PUBLISHED) {
       throw new ConflictException("Test is not published");
     }
-    Attempt saved = repository.save(mapper.toEntity(testId, studentId));
+    assertWithinWindow(test);
+
+    List<Attempt> attempts = repository.findByTestIdAndStudentId(testId, studentId);
+    if (test.getMaxAttempts() != null && attempts.size() >= test.getMaxAttempts()) {
+      throw new ConflictException("No attempts remaining for this test");
+    }
+    int next = attempts.stream().mapToInt(Attempt::getAttemptNumber).max().orElse(0) + 1;
+    Attempt saved = repository.save(mapper.toEntity(testId, studentId, next, Instant.now()));
     return mapper.toResponse(saved, List.of());
+  }
+
+  private void assertWithinWindow(Test test) {
+    Instant now = Instant.now();
+    if (test.getAvailableFrom() != null && now.isBefore(test.getAvailableFrom())) {
+      throw new ConflictException("Test is not yet available");
+    }
+    if (test.getAvailableUntil() != null && now.isAfter(test.getAvailableUntil())) {
+      throw new ConflictException("Test is no longer available");
+    }
   }
 
   @Override
   @Transactional
   public AnswerResponse saveAnswer(UUID attemptId, SaveAnswerRequest request) {
-    Attempt attempt = findByIdOrThrow(attemptId);
+    Attempt attempt = findByIdForCaller(attemptId);
     stateMachine.assertInProgress(attempt);
+    enforceDeadline(attempt);
     Answer answer =
         answerRepository
             .findByAttemptIdAndQuestionId(attemptId, request.getQuestionId())
@@ -93,10 +113,14 @@ public class AttemptServiceImpl implements AttemptService {
   @Override
   @Transactional
   public AttemptResponse submitAttempt(UUID attemptId) {
-    Attempt attempt = findByIdOrThrow(attemptId);
+    Attempt attempt = findByIdForCaller(attemptId);
     stateMachine.assertInProgress(attempt);
+    return finalizeAttempt(attempt);
+  }
 
-    List<Answer> answers = answerRepository.findByAttemptId(attemptId);
+  /** Grade every answer, score + transition the attempt, publish AttemptCompleted. */
+  private AttemptResponse finalizeAttempt(Attempt attempt) {
+    List<Answer> answers = answerRepository.findByAttemptId(attempt.getId());
     Map<UUID, Question> questionsById =
         questionRepository.findByTestId(attempt.getTestId(), QuestionRepository.BY_ORDER).stream()
             .collect(Collectors.toMap(Question::getId, q -> q));
@@ -120,17 +144,38 @@ public class AttemptServiceImpl implements AttemptService {
     stateMachine.transitionTo(
         attempt, grader.allGraded(answers) ? AttemptStatus.GRADED : AttemptStatus.SUBMITTED);
     repository.save(attempt);
-
+    int maxPoints = questionsById.values().stream().mapToInt(Question::getPoints).sum();
     events.publishEvent(
         new AttemptCompleted(
-            attemptId, attempt.getTestId(), attempt.getStudentId(), attempt.getScore()));
+            attempt.getId(),
+            attempt.getTestId(),
+            attempt.getStudentId(),
+            attempt.getScore(),
+            maxPoints,
+            null)); // groupId resolved by gradebook from its membership read model
     return mapper.toResponse(attempt, mapper.toAnswerResponses(answers));
+  }
+
+  /** When the time limit has elapsed, auto-finalize and reject further edits. */
+  private void enforceDeadline(Attempt attempt) {
+    Test test =
+        testRepository
+            .findById(attempt.getTestId())
+            .orElseThrow(() -> new NotFoundException("Test", attempt.getTestId()));
+    Integer minutes = test.getDurationMinutes();
+    if (minutes == null || attempt.getStartedAt() == null) {
+      return;
+    }
+    if (Instant.now().isAfter(attempt.getStartedAt().plus(Duration.ofMinutes(minutes)))) {
+      finalizeAttempt(attempt);
+      throw new ConflictException("Attempt time has expired");
+    }
   }
 
   @Override
   @Transactional
   public AnswerResponse gradeAnswer(UUID attemptId, UUID answerId, GradeAnswerRequest request) {
-    Attempt attempt = findByIdOrThrow(attemptId);
+    Attempt attempt = findByIdForCaller(attemptId);
     Answer answer =
         answerRepository
             .findById(answerId)
@@ -151,12 +196,18 @@ public class AttemptServiceImpl implements AttemptService {
 
   @Override
   public AttemptResponse getAttempt(UUID attemptId) {
-    Attempt attempt = findByIdOrThrow(attemptId);
+    Attempt attempt = findByIdForCaller(attemptId);
     return mapper.toResponse(
         attempt, mapper.toAnswerResponses(answerRepository.findByAttemptId(attemptId)));
   }
 
-  private Attempt findByIdOrThrow(UUID id) {
-    return repository.findById(id).orElseThrow(() -> new NotFoundException("Attempt", id));
+  /** Load an attempt the caller owns, or any attempt for staff. Otherwise 404 (no leak). */
+  private Attempt findByIdForCaller(UUID id) {
+    Attempt attempt =
+        repository.findById(id).orElseThrow(() -> new NotFoundException("Attempt", id));
+    if (!currentUser.isStaff() && !attempt.getStudentId().equals(currentUser.id())) {
+      throw new NotFoundException("Attempt", id);
+    }
+    return attempt;
   }
 }

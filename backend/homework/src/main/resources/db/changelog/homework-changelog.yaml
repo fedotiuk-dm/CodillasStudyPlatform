@@ -21,3 +21,34 @@ databaseChangeLog:
   - include:
       file: changes/0.2.0/0.2.0-add-due-reminder-sent.yaml
       relativeToChangelogFile: true
+  # 0.3.0 — optimistic locking + late submissions
+  - include:
+      file: changes/0.3.0/0.3.0-add-submission-lock-version.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/0.3.0/0.3.0-add-submission-late.yaml
+      relativeToChangelogFile: true
+  # 0.4.0 — lock_version on remaining tables (lock lives on BaseAuditableEntity)
+  - include:
+      file: changes/0.4.0/0.4.0-add-homework-lock-version.yaml
+      relativeToChangelogFile: true
+  # 0.5.0 — grading: late-penalty config + rubric authoring
+  - include:
+      file: changes/0.5.0/0.5.0-add-assignment-grading.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/0.5.0/0.5.0-create-rubrics.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/0.5.0/0.5.0-create-rubric-criteria.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/0.5.0/0.5.0-add-grade-effective.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/0.5.0/0.5.0-create-grade-criteria.yaml
+      relativeToChangelogFile: true
+  # 0.5.0 — demo seed extras: rubric-graded + late-penalty assignments (context: seed)
+  - include:
+      file: changes/0.5.0/0.5.0-seed-homework-extras.yaml
+      relativeToChangelogFile: true

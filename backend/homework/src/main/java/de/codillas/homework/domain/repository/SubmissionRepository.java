@@ -1,5 +1,6 @@
 package de.codillas.homework.domain.repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,6 +22,10 @@ public interface SubmissionRepository extends JpaRepository<Submission, UUID> {
   Sort BY_STUDENT_THEN_VERSION = Sort.by(Submission_.STUDENT_ID, Submission_.VERSION);
 
   List<Submission> findByAssignmentId(UUID assignmentId, Sort sort);
+
+  List<Submission> findByAssignmentIdIn(Collection<UUID> assignmentIds);
+
+  void deleteByAssignmentIdIn(Collection<UUID> assignmentIds);
 
   /**
    * Latest version for a student on an assignment, used to compute the next version number. {@code

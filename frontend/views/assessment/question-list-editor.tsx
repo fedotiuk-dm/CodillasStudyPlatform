@@ -16,7 +16,12 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { type CreateQuestionRequest, QuestionType } from "@/lib/api/assessment/model";
 
-export type DraftQuestion = CreateQuestionRequest & { _key: string };
+type ApiOption = NonNullable<CreateQuestionRequest["options"]>[number];
+export type DraftOption = ApiOption & { _key: string };
+export type DraftQuestion = Omit<CreateQuestionRequest, "options"> & {
+  _key: string;
+  options?: DraftOption[];
+};
 
 const NEEDS_OPTIONS: QuestionType[] = [
   QuestionType.SINGLE_CHOICE,
@@ -24,16 +29,17 @@ const NEEDS_OPTIONS: QuestionType[] = [
   QuestionType.TRUE_FALSE,
 ];
 
+export function newOption(correct = false): DraftOption {
+  return { _key: crypto.randomUUID(), text: "", correct };
+}
+
 export function newDraftQuestion(): DraftQuestion {
   return {
     _key: crypto.randomUUID(),
     type: QuestionType.SINGLE_CHOICE,
     prompt: "",
     points: 1,
-    options: [
-      { text: "", correct: true },
-      { text: "", correct: false },
-    ],
+    options: [newOption(true), newOption()],
   };
 }
 
@@ -117,10 +123,7 @@ export function QuestionListEditor({
                   options: becomesOptions
                     ? q.options?.length
                       ? q.options
-                      : [
-                          { text: "", correct: true },
-                          { text: "", correct: false },
-                        ]
+                      : [newOption(true), newOption()]
                     : undefined,
                 });
               }}
@@ -153,8 +156,7 @@ export function QuestionListEditor({
             {needsOptions && (
               <div className="grid gap-2">
                 {(q.options ?? []).map((o, oi) => (
-                  // biome-ignore lint/suspicious/noArrayIndexKey: options have no stable id pre-save
-                  <div key={oi} className="flex items-center gap-2">
+                  <div key={o._key} className="flex items-center gap-2">
                     <Checkbox
                       checked={o.correct}
                       onCheckedChange={(c) => patchOption(qi, oi, { correct: c === true })}
@@ -182,9 +184,7 @@ export function QuestionListEditor({
                   variant="outline"
                   size="sm"
                   className="justify-self-start"
-                  onClick={() =>
-                    patch(qi, { options: [...(q.options ?? []), { text: "", correct: false }] })
-                  }
+                  onClick={() => patch(qi, { options: [...(q.options ?? []), newOption()] })}
                 >
                   {t("addOption")}
                 </Button>

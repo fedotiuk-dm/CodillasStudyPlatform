@@ -2,11 +2,9 @@
 
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { toast } from "sonner";
 
 import { DataState } from "@/components/shared/data-state";
 import { PageHeader } from "@/components/shared/page-header";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -16,20 +14,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useListGroups } from "@/lib/api/enrollment/enrollment/enrollment";
-import { useListAssignments, usePublishAssignment } from "@/lib/api/homework/homework/homework";
+import { useListAssignments } from "@/lib/api/homework/homework/homework";
 import { useHasAnyRole } from "@/lib/auth";
 import { Role } from "@/lib/constants";
+
+import { AssignmentRow } from "./assignment-row";
 import { CreateAssignmentDialog } from "./create-assignment-dialog";
-import { SubmissionsDialog } from "./submissions-dialog";
 
 export function HomeworkView() {
   const t = useTranslations("homework");
@@ -38,25 +30,12 @@ export function HomeworkView() {
   const [groupId, setGroupId] = useState("");
   const canManage = useHasAnyRole([Role.ADMIN, Role.TEACHER]);
   const [open, setOpen] = useState(false);
-  const [subsFor, setSubsFor] = useState<{ id: string; title: string } | null>(null);
 
-  const { data, isLoading, isError } = useListAssignments(
+  const { data, isLoading, isError, refetch } = useListAssignments(
     { groupId },
     { query: { enabled: !!groupId } },
   );
-  const publish = usePublishAssignment();
   const assignments = data?.content ?? [];
-
-  function onPublish(assignmentId: string) {
-    publish.mutate(
-      { assignmentId },
-      {
-        onSuccess: () => {
-          toast.success(t("published"));
-        },
-      },
-    );
-  }
 
   return (
     <>
@@ -88,7 +67,13 @@ export function HomeworkView() {
       {groupId && (
         <Card>
           <CardContent className="pt-6">
-            <DataState isLoading={isLoading} isError={isError} isEmpty={assignments.length === 0}>
+            <DataState
+              isLoading={isLoading}
+              isError={isError}
+              isEmpty={assignments.length === 0}
+              variant="table"
+              onRetry={refetch}
+            >
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -100,36 +85,7 @@ export function HomeworkView() {
                 </TableHeader>
                 <TableBody>
                   {assignments.map((a) => (
-                    <TableRow key={a.id}>
-                      <TableCell className="font-medium">{a.title}</TableCell>
-                      <TableCell>
-                        <Badge variant={a.status === "PUBLISHED" ? "default" : "secondary"}>
-                          {a.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {a.dueAt ? new Date(a.dueAt).toLocaleString() : "—"}
-                      </TableCell>
-                      <TableCell className="space-x-2 text-right">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setSubsFor({ id: a.id, title: a.title })}
-                        >
-                          {t("submissions")}
-                        </Button>
-                        {canManage && a.status === "DRAFT" && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            disabled={publish.isPending}
-                            onClick={() => onPublish(a.id)}
-                          >
-                            {t("publish")}
-                          </Button>
-                        )}
-                      </TableCell>
-                    </TableRow>
+                    <AssignmentRow key={a.id} assignment={a} canManage={canManage} />
                   ))}
                 </TableBody>
               </Table>
@@ -139,16 +95,6 @@ export function HomeworkView() {
       )}
 
       {groupId && <CreateAssignmentDialog groupId={groupId} open={open} onOpenChange={setOpen} />}
-
-      {subsFor && (
-        <SubmissionsDialog
-          assignmentId={subsFor.id}
-          assignmentTitle={subsFor.title}
-          canManage={canManage}
-          open={!!subsFor}
-          onOpenChange={(o) => !o && setSubsFor(null)}
-        />
-      )}
     </>
   );
 }

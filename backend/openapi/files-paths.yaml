@@ -2,7 +2,7 @@ openapi: 3.0.4
 info:
   title: Codillas Files API
   description: File storage (S3/minio) for homework / materials / chat attachments.
-  version: 0.1.0
+  version: 0.2.0
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -18,7 +18,8 @@ tags:
 paths:
   /api/files:
     post:
-      tags: [files]
+      tags:
+        - files
       operationId: uploadFile
       summary: Upload a file
       requestBody:
@@ -50,9 +51,30 @@ paths:
           $ref: "common.yaml#/components/responses/BadRequest"
         "401":
           $ref: "common.yaml#/components/responses/Unauthorized"
+  /api/files/my:
+    get:
+      tags:
+        - files
+      operationId: listMyFiles
+      summary: The current user's uploads (paginated, newest first)
+      x-spring-paginated: true
+      parameters:
+        - $ref: "common.yaml#/components/parameters/PageNumber"
+        - $ref: "common.yaml#/components/parameters/PageSize"
+        - $ref: "common.yaml#/components/parameters/Sort"
+      responses:
+        "200":
+          description: Files uploaded by the caller
+          content:
+            application/json:
+              schema:
+                $ref: "files-schemas.yaml#/components/schemas/FileListResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
   /api/files/{fileId}:
     get:
-      tags: [files]
+      tags:
+        - files
       operationId: downloadFile
       summary: Download a file's content
       parameters:
@@ -75,7 +97,8 @@ paths:
         "404":
           $ref: "common.yaml#/components/responses/NotFound"
     delete:
-      tags: [files]
+      tags:
+        - files
       operationId: deleteFile
       summary: Delete a file
       parameters:
@@ -96,7 +119,8 @@ paths:
           $ref: "common.yaml#/components/responses/NotFound"
   /api/files/{fileId}/metadata:
     get:
-      tags: [files]
+      tags:
+        - files
       operationId: getFileMetadata
       summary: A file's metadata
       parameters:

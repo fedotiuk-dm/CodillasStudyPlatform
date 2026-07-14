@@ -1,0 +1,19 @@
+# Demo seed extras — runs ONLY under the `seed` Liquibase context (dev stack sets it).
+databaseChangeLog:
+  - changeSet:
+      id: 0.5.0-seed-assessment-extras
+      author: codillas
+      context: seed
+      comment: Demo configured test + MULTIPLE_CHOICE partial-credit attempt (dev only)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - sqlCheck:
+                expectedResult: 1
+                sql: SELECT count(*) FROM tests WHERE title = 'Java Control Test'
+      changes:
+        - sqlFile:
+            path: 0.5.0-seed-assessment-extras.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false

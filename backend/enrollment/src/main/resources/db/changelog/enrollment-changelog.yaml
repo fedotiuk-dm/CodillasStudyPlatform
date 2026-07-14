@@ -21,3 +21,23 @@ databaseChangeLog:
   - include:
       file: changes/0.2.0/0.2.0-add-scheduled-lesson-lesson-id.yaml
       relativeToChangelogFile: true
+  # 0.3.0 — intra-module FK cascade + group delete
+  - include:
+      file: changes/0.3.0/0.3.0-add-enrollment-fk-cascade.yaml
+      relativeToChangelogFile: true
+  # 0.4.0 — lock_version on all tables (lock lives on BaseAuditableEntity)
+  - include:
+      file: changes/0.4.0/0.4.0-add-enrollment-lock-version.yaml
+      relativeToChangelogFile: true
+  # 0.3.0 — group lifecycle status
+  - include:
+      file: changes/0.3.0/0.3.0-add-group-status.yaml
+      relativeToChangelogFile: true
+  # 0.5.0 — local course-status read model (fed by course events)
+  - include:
+      file: changes/0.5.0/0.5.0-create-course-status-view.yaml
+      relativeToChangelogFile: true
+  # 0.5.0 — demo seed extras: DRAFT/ARCHIVED cohorts + scheduled-lesson links (context: seed)
+  - include:
+      file: changes/0.5.0/0.5.0-seed-enrollment-extras.yaml
+      relativeToChangelogFile: true

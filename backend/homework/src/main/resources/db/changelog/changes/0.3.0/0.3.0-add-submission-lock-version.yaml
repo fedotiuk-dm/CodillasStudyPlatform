@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.3.0-add-submission-lock-version
+      author: codillas
+      comment: Add optimistic-lock version column to submissions (0.3.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: submissions
+                columnName: lock_version
+      changes:
+        - addColumn:
+            tableName: submissions
+            columns:
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }

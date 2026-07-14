@@ -50,4 +50,13 @@ public class Assignment extends BaseAuditableEntity {
   @Column(name = "due_reminder_sent", nullable = false)
   @Builder.Default
   private boolean dueReminderSent = false;
+
+  @Column(name = "late_penalty_pct_per_day")
+  private Integer latePenaltyPctPerDay;
+
+  @Column(name = "max_late_penalty_pct")
+  private Integer maxLatePenaltyPct;
+
+  @Column(name = "rubric_id")
+  private UUID rubricId;
 }

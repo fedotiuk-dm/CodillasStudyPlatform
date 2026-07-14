@@ -27,34 +27,67 @@ Deliberately deferred (YAGNI / your call): admin-panel shell, master OpenAPI agg
 file versioning/preview, assessment metadata-FieldRenderer + code question type, `MessagePosted`
 notifications (needs presence). **Future vision** (multi-tenant + payments) is separate, below.
 
+## ✅ Hardening to production — DONE (implemented 2026-06-29…07-01 on `feat/lms-hardening`)
+
+The 2026-06-28 backend audit found three gap classes blocking real use
+(master spec: [`specs/2026-06-28-lms-hardening-design.md`](../superpowers/specs/2026-06-28-lms-hardening-design.md)).
+All five plans are **implemented** — backend in commit `6af4743`, frontend integration in the
+commits that follow it on `feat/lms-hardening`:
+
+1. **P0 — object-level authorization** ✅ — owner-or-staff checks (`findByIdForCaller`, 404 not
+   403), `FileAccessAuthorizer` SPI, WS subscription authz.
+2. **P1 — correctness & integrity** ✅ — optimistic locking (`@Version` on the shared base),
+   late-flag, grade upsert, upload size/type limits, deletes + cascades, and the email channel
+   is live (`DbRecipientEmailResolver` fed by `UserEmailChanged`).
+3. **P2a — assessment depth** ✅ — attempt limits, timer + availability window, partial credit,
+   deterministic shuffle (`ShuffleOrder`).
+4. **P2b — grading model** ✅ — late penalties, rubrics, weighted course grade.
+5. **P2c — lifecycle** ✅ — `CourseStateMachine` + `GroupStateMachine` (DRAFT/PUBLISHED/ARCHIVED,
+   DRAFT/RUNNING/ARCHIVED).
+
+## ✅ Classroom-parity final mile (2026-07-03)
+
+The last visible gaps against Google Classroom, closed on `feat/lms-hardening`:
+
+- **Announcements** — new `announcement` module (the class stream): teacher posts with pin,
+  member-scoped reads (404 outside), `AnnouncementPosted` → notification fan-out (in-app +
+  email), frontend stream view + dashboard feed + bell deep-link. uk/en/de.
+- **Files page persistent** — `GET /api/files/my` (uploader-scoped, paginated); the page no
+  longer forgets uploads on refresh; delete is teacher-gated in UI like the backend.
+- **Attendance for teachers** — mark/read relaxed from `@RequiresAdmin` to `@RequiresTeacher`.
+- **Profile edit** — dialog on the user menu over the existing `PUT /api/users/me`.
+- **Schedule month view + `.ics` export** — calendar grid with lesson dots + client-side
+  RFC 5545 export (bridge for Google Calendar users).
+- **PWA manifest + icon** — installable, branded.
+- **Modulith boundary test** — `ModulithArchitectureTest` now actually enforces the §6 rules in
+  the build (files SPI exposed via `@NamedInterface`; `main`'s `config` wiring excluded).
+- **Ops docs** — [`operations/accounts.md`](../operations/accounts.md) (Keycloak provisioning for
+  non-devs) + [`operations/deployment.md`](../operations/deployment.md) (go-live checklist).
+
+**What actually remains before the school can drop Google:** the deploy itself — follow
+[`operations/deployment.md`](../operations/deployment.md) (TLS, real secrets, backups, smoke test).
+
 ## Legend
 
 - **stub** — scaffold only (entity + CRUD plumbing), no real domain logic.
 - **partial** — real domain logic exists, but core flows or UI are missing.
 - **done** — core flows work end-to-end (backend + UI + tests); only polish remains.
 
-## Module status at a glance
+## Module status at a glance (refreshed 2026-07-03)
 
-| Module         | Backend  | Frontend | Notes                                                              |
-|----------------|----------|----------|--------------------------------------------------------------------|
-| `shared`       | done     | —        | Kernel: events, security, error handling, API conventions.         |
-| `user`         | stub     | partial  | Only `Profile`. No account provisioning, no profile edit.          |
-| `course`       | partial  | done     | Backbone + builder UI done. TODO: re-point homework; controller IT tests.  |
-| `enrollment`   | partial  | partial  | Group/Membership/ScheduledLesson/Attendance exist; no schedule UI.  |
-| `homework`     | done     | done     | Full lifecycle + versioned submissions + review/grade. State machine.|
-| `assessment`   | done     | done     | Test/Question/Attempt + auto-grade. Strongest module.               |
-| `gradebook`    | partial  | partial  | Event-fed read model; no analytics/export.                          |
-| `chat`         | partial  | done     | Group rooms + WebSocket. No DM / per-assignment thread.             |
-| `notification` | partial  | done     | In-app works. Email + deadline reminders not wired.                 |
-| `files`        | partial  | done     | Upload/download/delete. No versioning, no preview.                  |
-
-## The #1 gap: the course backbone
-
-`overview.md` makes `Lesson` the hub everything hangs off — materials, per-lesson
-assignments, per-lesson tests, `ScheduledLesson` (Meet link), attendance. Today
-`course` has only the `Course` entity. **`Section`, `Lesson`, `Material` do not
-exist**, so homework, tests, and the schedule float free of course structure.
-This is the central missing piece; most of the roadmap below depends on it.
+| Module         | Backend | Frontend | Notes                                                               |
+|----------------|---------|----------|----------------------------------------------------------------------|
+| `shared`       | done    | —        | Kernel: events, security, error handling, `@Version` base.          |
+| `user`         | done    | done     | Profile + roles on `/me`; edit dialog. Provisioning stays in Keycloak (see operations/accounts.md). |
+| `course`       | done    | done     | Backbone + builder UI + DRAFT/PUBLISHED/ARCHIVED lifecycle.         |
+| `enrollment`   | done    | done     | Groups + lifecycle, schedule UI, attendance (teacher-markable).     |
+| `homework`     | done    | done     | Full lifecycle, versioned submissions, rubrics, late penalties.     |
+| `assessment`   | done    | done     | Builder + attempts, timer/window/limits, partial credit, CODE type. |
+| `gradebook`    | done    | done     | Event-fed read model; analytics + CSV export (client-side).         |
+| `chat`         | done    | done     | Group rooms + canonical DM, WebSocket, object-level WS authz.       |
+| `notification` | done    | done     | In-app + email + deadline reminders + viewer-locale templates.      |
+| `announcement` | done    | done     | Class stream: teacher posts, member reads, notification fan-out.    |
+| `files`        | done    | done     | Upload/download/delete + "my uploads" list. No versioning/preview (deliberate). |
 
 ## Per-module detail & TODOs
 
@@ -72,7 +105,7 @@ This is the central missing piece; most of the roadmap below depends on it.
 - [x] Wire `ScheduledLesson` to a real `Lesson` (optional `lessonId` by-id ref). Committed `f90dd25`.
 - [x] Confirm `StudentEnrolled` event fans out — verified: consumed by `gradebook`, `chat`, `notification`.
 - [x] Student-facing views: "My courses" + "My schedule" (backend `/api/me/groups` + `/api/me/schedule`, current-user scoped; frontend views + nav). Committed `0f308b2`.
-- [x] Attendance: read endpoint `listAttendance` + current-state display in the group dialog. Committed `0fd4c37`. Note: attendance is `@RequiresAdmin` (matches all enrollment writes in this module) — opening it to teachers, and i18n for the groups views, are separate follow-ups.
+- [x] Attendance: read endpoint `listAttendance` + current-state display in the group dialog. Committed `0fd4c37`. Opened to teachers (`@RequiresTeacher`) in the 2026-07-03 final-mile batch.
 
 **Enrollment P1 block done.**
 
@@ -114,9 +147,11 @@ This is the central missing piece; most of the roadmap below depends on it.
 
 ## Prioritized roadmap
 
-1. **P0 — `course` backbone** (`Section/Lesson/Material`) + re-point homework/tests at lessons. Unblocks everything structural.
-2. **P1 — connect the dots:** lesson↔schedule↔group, student "my courses/schedule" views, account provisioning, email + deadline notifications.
-3. **P2 — polish:** attendance UI, gradebook analytics/export, DM chat, admin panel, file preview.
+1. **Deploy** — follow [`operations/deployment.md`](../operations/deployment.md); the feature
+   surface is done, hosting it reliably (TLS, secrets, backups, smoke test) is what's left.
+2. **Run the school on it** — feedback from real lessons drives the next items, not this doc.
+3. **Then** revisit the deferred niceties (file preview, per-assignment auto-threads, presence)
+   and the future vision below.
 
 ## Future vision (post-completion — NOT scheduled, do not build yet)
 

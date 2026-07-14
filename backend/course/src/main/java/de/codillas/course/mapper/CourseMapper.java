@@ -25,6 +25,9 @@ public interface CourseMapper {
 
   CourseResponse toResponse(Course entity);
 
+  de.codillas.course.domain.model.CourseStatus toDomainStatus(
+      de.codillas.course.api.dto.CourseStatus status);
+
   @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
   Course toEntity(CreateCourseRequest request);
 

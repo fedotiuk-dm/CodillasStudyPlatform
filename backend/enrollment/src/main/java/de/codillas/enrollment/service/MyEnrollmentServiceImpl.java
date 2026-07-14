@@ -1,5 +1,6 @@
 package de.codillas.enrollment.service;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -8,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import de.codillas.enrollment.api.dto.GroupResponse;
 import de.codillas.enrollment.api.dto.ScheduledLessonResponse;
+import de.codillas.enrollment.domain.model.GroupStatus;
 import de.codillas.enrollment.domain.model.Membership;
 import de.codillas.enrollment.domain.repository.GroupRepository;
 import de.codillas.enrollment.domain.repository.MembershipRepository;
@@ -24,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 @Transactional(readOnly = true)
-public class MeServiceImpl implements MeService {
+public class MyEnrollmentServiceImpl implements MyEnrollmentService {
 
   private final MembershipRepository membershipRepository;
   private final GroupRepository groupRepository;
@@ -40,7 +42,10 @@ public class MeServiceImpl implements MeService {
       return List.of();
     }
     return groupMapper.toResponseList(
-        groupRepository.findByIdIn(groupIds, GroupRepository.BY_NAME));
+        groupRepository.findByIdInAndStatusIn(
+            groupIds,
+            EnumSet.of(GroupStatus.RUNNING, GroupStatus.ARCHIVED),
+            GroupRepository.BY_NAME));
   }
 
   @Override

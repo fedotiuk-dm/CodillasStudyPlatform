@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.3.0-add-user_profiles-lock-version
+      author: codillas
+      comment: Add optimistic-lock version column to user_profiles (0.3.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: user_profiles
+                columnName: lock_version
+      changes:
+        - addColumn:
+            tableName: user_profiles
+            columns:
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }

@@ -1,0 +1,37 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0.3.0-add-test-config
+      author: codillas
+      comment: Test depth — attempt cap, timer, availability window, shuffle (0.3.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: tests
+                columnName: max_attempts
+      changes:
+        - addColumn:
+            tableName: tests
+            columns:
+              - column:
+                  name: max_attempts
+                  type: int
+              - column:
+                  name: duration_minutes
+                  type: int
+              - column:
+                  name: available_from
+                  type: timestamptz
+              - column:
+                  name: available_until
+                  type: timestamptz
+              - column:
+                  name: shuffle_questions
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints: { nullable: false }
+              - column:
+                  name: shuffle_options
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints: { nullable: false }

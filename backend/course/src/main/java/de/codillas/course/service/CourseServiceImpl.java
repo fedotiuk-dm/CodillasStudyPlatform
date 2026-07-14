@@ -1,10 +1,14 @@
 package de.codillas.course.service;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +26,9 @@ import de.codillas.course.api.dto.MaterialType;
 import de.codillas.course.api.dto.SectionResponse;
 import de.codillas.course.api.dto.UpdateLessonRequest;
 import de.codillas.course.api.dto.UpdateSectionRequest;
+import de.codillas.course.domain.CourseStateMachine;
 import de.codillas.course.domain.model.Course;
+import de.codillas.course.domain.model.CourseStatus;
 import de.codillas.course.domain.model.Lesson;
 import de.codillas.course.domain.model.Material;
 import de.codillas.course.domain.model.Section;
@@ -32,8 +38,12 @@ import de.codillas.course.domain.repository.MaterialRepository;
 import de.codillas.course.domain.repository.SectionRepository;
 import de.codillas.course.mapper.CourseMapper;
 import de.codillas.course.mapper.LessonMapper;
+import de.codillas.shared.event.CourseArchived;
+import de.codillas.shared.event.CourseDeleted;
+import de.codillas.shared.event.CoursePublished;
 import de.codillas.shared.exception.BadRequestException;
 import de.codillas.shared.exception.NotFoundException;
+import de.codillas.shared.security.CurrentUser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -48,6 +58,9 @@ public class CourseServiceImpl implements CourseService {
   private final MaterialRepository materialRepository;
   private final CourseMapper courseMapper;
   private final LessonMapper lessonMapper;
+  private final ApplicationEventPublisher events;
+  private final CourseStateMachine stateMachine;
+  private final CurrentUser currentUser;
 
   @Override
   @Transactional
@@ -56,8 +69,49 @@ public class CourseServiceImpl implements CourseService {
   }
 
   @Override
-  public CourseListResponse listCourses(Pageable pageable) {
-    return courseMapper.toListResponse(courseRepository.findAll(pageable));
+  public CourseListResponse listCourses(
+      de.codillas.course.api.dto.CourseStatus status, Pageable pageable) {
+    CourseStatus filter = courseMapper.toDomainStatus(status); // null when no filter
+    return courseMapper.toListResponse(findVisible(filter, pageable));
+  }
+
+  /**
+   * Staff list any status; everyone else only PUBLISHED/ARCHIVED. A filter outside what the caller
+   * may see yields an empty page rather than leaking that drafts exist.
+   */
+  private Page<Course> findVisible(CourseStatus filter, Pageable pageable) {
+    if (currentUser.isStaff()) {
+      return filter == null
+          ? courseRepository.findAll(pageable)
+          : courseRepository.findByStatus(filter, pageable);
+    }
+    Set<CourseStatus> visible = EnumSet.of(CourseStatus.PUBLISHED, CourseStatus.ARCHIVED);
+    if (filter == null) {
+      return courseRepository.findByStatusIn(visible, pageable);
+    }
+    return visible.contains(filter)
+        ? courseRepository.findByStatus(filter, pageable)
+        : Page.empty(pageable);
+  }
+
+  @Override
+  @Transactional
+  public CourseResponse publishCourse(UUID courseId) {
+    Course course = findCourseOrThrow(courseId);
+    stateMachine.transitionTo(course, CourseStatus.PUBLISHED);
+    CourseResponse response = courseMapper.toResponse(courseRepository.save(course));
+    events.publishEvent(new CoursePublished(courseId));
+    return response;
+  }
+
+  @Override
+  @Transactional
+  public CourseResponse archiveCourse(UUID courseId) {
+    Course course = findCourseOrThrow(courseId);
+    stateMachine.transitionTo(course, CourseStatus.ARCHIVED);
+    CourseResponse response = courseMapper.toResponse(courseRepository.save(course));
+    events.publishEvent(new CourseArchived(courseId));
+    return response;
   }
 
   @Override
@@ -81,6 +135,14 @@ public class CourseServiceImpl implements CourseService {
                         section, lessonsBySection.getOrDefault(section.getId(), List.of())))
             .toList();
     return courseMapper.toDetailResponse(course, sectionResponses);
+  }
+
+  @Override
+  @Transactional
+  public void deleteCourse(UUID courseId) {
+    Course course = findCourseOrThrow(courseId);
+    courseRepository.delete(course); // sections/lessons/materials removed by FK ON DELETE CASCADE
+    events.publishEvent(new CourseDeleted(courseId));
   }
 
   @Override

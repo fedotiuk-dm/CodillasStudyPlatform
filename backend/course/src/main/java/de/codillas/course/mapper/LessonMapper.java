@@ -22,7 +22,6 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(config = CentralMapperConfig.class)
 public interface LessonMapper {
 
-  @Mapping(target = "materials", source = "materials")
   LessonResponse toResponse(Lesson lesson, List<MaterialResponse> materials);
 
   MaterialResponse toMaterialResponse(Material material);
