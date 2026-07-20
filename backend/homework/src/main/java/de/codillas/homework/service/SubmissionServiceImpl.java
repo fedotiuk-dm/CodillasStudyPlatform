@@ -70,6 +70,9 @@ public class SubmissionServiceImpl implements SubmissionService {
   @Override
   @Transactional
   public SubmissionResponse createSubmission(UUID assignmentId, CreateSubmissionRequest request) {
+    if (!assignmentRepository.existsById(assignmentId)) {
+      throw new NotFoundException("Assignment", assignmentId);
+    }
     UUID studentId = currentUser.id();
     int nextVersion =
         repository
@@ -98,7 +101,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     Submission submission = findByIdForCaller(submissionId);
     stateMachine.transitionTo(submission, SubmissionStatus.SUBMITTED);
     Instant submittedAt = Instant.now();
-    // Flag, don't block: a missing assignment row or absent due date simply means "not late".
+    // Flag, don't block: an assignment with no due date simply means "not late".
     submission.setSubmittedAt(submittedAt);
     submission.setLate(
         assignmentRepository

@@ -24,6 +24,8 @@ public interface ProgressEntryRepository extends JpaRepository<ProgressEntry, UU
   List<ProgressEntry> findByStudentIdInAndGroupId(
       Collection<UUID> studentIds, UUID groupId, Sort sort);
 
+  void deleteByGroupId(UUID groupId);
+
   Optional<ProgressEntry> findBySourceAndSourceId(GradeSource source, UUID sourceId);
 
   Optional<ProgressEntry> findBySourceAndReferenceIdAndStudentId(

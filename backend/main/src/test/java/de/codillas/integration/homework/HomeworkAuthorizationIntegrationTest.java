@@ -35,7 +35,7 @@ class HomeworkAuthorizationIntegrationTest extends BaseIntegrationTest {
   void otherStudentCannotTouchSubmission() throws Exception {
     UUID studentA = UUID.randomUUID();
     UUID studentB = UUID.randomUUID();
-    UUID assignmentId = UUID.randomUUID();
+    UUID assignmentId = createAssignment(UUID.randomUUID());
 
     String created =
         mockMvc
@@ -64,7 +64,7 @@ class HomeworkAuthorizationIntegrationTest extends BaseIntegrationTest {
   void teacherMayGradeAnySubmission() throws Exception {
     UUID studentA = UUID.randomUUID();
     UUID teacher = UUID.randomUUID();
-    UUID assignmentId = UUID.randomUUID();
+    UUID assignmentId = createAssignment(teacher);
 
     String created =
         mockMvc
@@ -89,5 +89,21 @@ class HomeworkAuthorizationIntegrationTest extends BaseIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"score\":91}"))
         .andExpect(status().isCreated());
+  }
+
+  /** Submissions now carry a real FK to their assignment, so tests must author one first. */
+  private UUID createAssignment(UUID teacher) throws Exception {
+    String created =
+        mockMvc
+            .perform(
+                post("/api/assignments")
+                    .with(as(teacher, "TEACHER"))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"groupId\":\"%s\",\"title\":\"HW\"}".formatted(UUID.randomUUID())))
+            .andExpect(status().isCreated())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    return UUID.fromString(JsonPath.read(created, "$.id"));
   }
 }

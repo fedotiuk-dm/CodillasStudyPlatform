@@ -1,6 +1,7 @@
 package de.codillas.homework.domain.repository;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,6 +26,9 @@ public interface AssignmentRepository extends JpaRepository<Assignment, UUID> {
   List<Assignment> findByGroupId(UUID groupId);
 
   void deleteByGroupId(UUID groupId);
+
+  /** Assignments still pointing at lessons that were deleted upstream in course. */
+  List<Assignment> findByLessonIdIn(Collection<UUID> lessonIds);
 
   /**
    * Assignments whose deadline reminder is now due: a given status, not yet reminded, and a {@code

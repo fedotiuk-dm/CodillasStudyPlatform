@@ -84,6 +84,7 @@ public class GradebookServiceImpl implements GradebookService {
   @Transactional
   public void purgeGroup(GroupDeleted event) {
     membershipRepository.deleteByGroupId(event.groupId());
+    repository.deleteByGroupId(event.groupId());
   }
 
   @Override

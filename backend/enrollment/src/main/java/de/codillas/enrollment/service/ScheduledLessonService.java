@@ -11,4 +11,6 @@ public interface ScheduledLessonService {
   ScheduledLessonResponse scheduleLesson(UUID groupId, ScheduleLessonRequest request);
 
   List<ScheduledLessonResponse> listScheduledLessons(UUID groupId);
+
+  void onLessonsDeleted(List<UUID> lessonIds);
 }

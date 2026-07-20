@@ -1,0 +1,61 @@
+# Intra-module referential integrity for chat. sender_id / user_id / chat_rooms.reference_id are
+# cross-module (or polymorphic) ids and stay FK-free by design.
+databaseChangeLog:
+  - changeSet:
+      id: 0.6.0-fk-chat-messages-room
+      author: codillas
+      comment: FK chat_messages.room_id -> chat_rooms.id ON DELETE CASCADE (0.6.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - foreignKeyConstraintExists: { foreignKeyName: fk_chat_messages_room }
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_chat_messages_room
+            baseTableName: chat_messages
+            baseColumnNames: room_id
+            referencedTableName: chat_rooms
+            referencedColumnNames: id
+            onDelete: CASCADE
+  - changeSet:
+      id: 0.6.0-fk-chat-room-members-room
+      author: codillas
+      comment: FK chat_room_members.room_id -> chat_rooms.id ON DELETE CASCADE (0.6.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - foreignKeyConstraintExists: { foreignKeyName: fk_chat_room_members_room }
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_chat_room_members_room
+            baseTableName: chat_room_members
+            baseColumnNames: room_id
+            referencedTableName: chat_rooms
+            referencedColumnNames: id
+            onDelete: CASCADE
+  - changeSet:
+      id: 0.6.0-index-chat-lookups
+      author: codillas
+      comment: Room history is always read newest-first per room, hence the composite (0.6.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - indexExists: { indexName: idx_chat_messages_room_created }
+      changes:
+        - createIndex:
+            indexName: idx_chat_messages_room_created
+            tableName: chat_messages
+            columns:
+              - column: { name: room_id }
+              - column: { name: created_at, descending: true }
+        - createIndex:
+            indexName: idx_chat_room_members_user
+            tableName: chat_room_members
+            columns:
+              - column: { name: user_id }
+        - createIndex:
+            indexName: idx_chat_rooms_reference
+            tableName: chat_rooms
+            columns:
+              - column: { name: type }
+              - column: { name: reference_id }

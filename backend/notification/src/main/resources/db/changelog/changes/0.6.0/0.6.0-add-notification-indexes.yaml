@@ -1,0 +1,37 @@
+# recipient_id / reference_id are cross-module ids (no FK by design). The unread badge polls
+# countByRecipientIdAndReadFalse on every page load, hence the partial index.
+databaseChangeLog:
+  - changeSet:
+      id: 0.6.0-index-notification-lookups
+      author: codillas
+      comment: Index the recipient inbox, the unread count and the membership lookup (0.6.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - indexExists: { indexName: idx_notifications_recipient_created }
+      changes:
+        - createIndex:
+            indexName: idx_notifications_recipient_created
+            tableName: notifications
+            columns:
+              - column: { name: recipient_id }
+              - column: { name: created_at, descending: true }
+        - createIndex:
+            indexName: idx_notification_memberships_student
+            tableName: notification_memberships
+            columns:
+              - column: { name: student_id }
+  - changeSet:
+      id: 0.6.0-index-notifications-unread
+      author: codillas
+      comment: Partial index for the unread badge — only unread rows are ever counted (0.6.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - indexExists: { indexName: idx_notifications_unread }
+      changes:
+        - sql:
+            sql: >-
+              CREATE INDEX idx_notifications_unread ON notifications (recipient_id)
+              WHERE read = false
+            rollback: DROP INDEX idx_notifications_unread

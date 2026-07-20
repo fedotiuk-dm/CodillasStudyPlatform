@@ -10,6 +10,7 @@ import de.codillas.enrollment.api.dto.ScheduleLessonRequest;
 import de.codillas.enrollment.api.dto.ScheduledLessonResponse;
 import de.codillas.enrollment.domain.GroupStateMachine;
 import de.codillas.enrollment.domain.model.Group;
+import de.codillas.enrollment.domain.model.ScheduledLesson;
 import de.codillas.enrollment.domain.repository.GroupRepository;
 import de.codillas.enrollment.domain.repository.ScheduledLessonRepository;
 import de.codillas.enrollment.mapper.ScheduledLessonMapper;
@@ -42,5 +43,17 @@ public class ScheduledLessonServiceImpl implements ScheduledLessonService {
   public List<ScheduledLessonResponse> listScheduledLessons(UUID groupId) {
     return mapper.toResponseList(
         repository.findByGroupId(groupId, ScheduledLessonRepository.BY_TIME));
+  }
+
+  /**
+   * A deleted lesson does not cancel the session — the slot keeps its own title and time, it just
+   * stops pointing at course content.
+   */
+  @Override
+  @Transactional
+  public void onLessonsDeleted(List<UUID> lessonIds) {
+    List<ScheduledLesson> affected = repository.findByLessonIdIn(lessonIds);
+    affected.forEach(scheduled -> scheduled.setLessonId(null));
+    repository.saveAll(affected);
   }
 }

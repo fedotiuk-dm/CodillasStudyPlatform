@@ -1,0 +1,42 @@
+# scheduled_lessons.group_id carries a FK (0.3.0) but no index; the rest are cross-module ids
+# that every roster/schedule query filters on.
+databaseChangeLog:
+  - changeSet:
+      id: 0.6.0-index-enrollment-lookups
+      author: codillas
+      comment: Index the FK referencing side + the course/teacher/user lookups (0.6.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - indexExists: { indexName: idx_scheduled_lessons_group }
+      changes:
+        - createIndex:
+            indexName: idx_scheduled_lessons_group
+            tableName: scheduled_lessons
+            columns:
+              - column: { name: group_id }
+        - createIndex:
+            indexName: idx_scheduled_lessons_lesson
+            tableName: scheduled_lessons
+            columns:
+              - column: { name: lesson_id }
+        - createIndex:
+            indexName: idx_study_groups_course
+            tableName: study_groups
+            columns:
+              - column: { name: course_id }
+        - createIndex:
+            indexName: idx_study_groups_teacher
+            tableName: study_groups
+            columns:
+              - column: { name: teacher_id }
+        - createIndex:
+            indexName: idx_group_members_user
+            tableName: group_members
+            columns:
+              - column: { name: user_id }
+        - createIndex:
+            indexName: idx_attendance_user
+            tableName: attendance
+            columns:
+              - column: { name: user_id }

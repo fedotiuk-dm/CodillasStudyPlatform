@@ -166,6 +166,18 @@ public class TestServiceImpl implements TestService {
     }
   }
 
+  /**
+   * A deleted lesson does not delete the test — attempts and their grades must survive; only the
+   * course-content back-pointer is cleared.
+   */
+  @Override
+  @Transactional
+  public void onLessonsDeleted(List<UUID> lessonIds) {
+    List<Test> affected = repository.findByLessonIdIn(lessonIds);
+    affected.forEach(test -> test.setLessonId(null));
+    repository.saveAll(affected);
+  }
+
   private Test findByIdOrThrow(UUID id) {
     return repository.findById(id).orElseThrow(() -> new NotFoundException("Test", id));
   }

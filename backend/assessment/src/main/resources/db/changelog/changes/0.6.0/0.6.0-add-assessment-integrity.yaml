@@ -1,0 +1,162 @@
+# Intra-module referential integrity for assessment. Cross-module ids (attempts.student_id,
+# tests.lesson_id) stay FK-free by design — see backend/AGENTS.md "cross-module references by id".
+databaseChangeLog:
+  - changeSet:
+      id: 0.6.0-fk-questions-test
+      author: codillas
+      comment: FK questions.test_id -> tests.id ON DELETE CASCADE (0.6.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - foreignKeyConstraintExists: { foreignKeyName: fk_questions_test }
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_questions_test
+            baseTableName: questions
+            baseColumnNames: test_id
+            referencedTableName: tests
+            referencedColumnNames: id
+            onDelete: CASCADE
+  - changeSet:
+      id: 0.6.0-fk-options-question
+      author: codillas
+      comment: FK options.question_id -> questions.id ON DELETE CASCADE (0.6.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - foreignKeyConstraintExists: { foreignKeyName: fk_options_question }
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_options_question
+            baseTableName: options
+            baseColumnNames: question_id
+            referencedTableName: questions
+            referencedColumnNames: id
+            onDelete: CASCADE
+  - changeSet:
+      id: 0.6.0-fk-attempts-test
+      author: codillas
+      comment: FK attempts.test_id -> tests.id ON DELETE CASCADE (0.6.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - foreignKeyConstraintExists: { foreignKeyName: fk_attempts_test }
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_attempts_test
+            baseTableName: attempts
+            baseColumnNames: test_id
+            referencedTableName: tests
+            referencedColumnNames: id
+            onDelete: CASCADE
+  - changeSet:
+      id: 0.6.0-fk-answers-attempt
+      author: codillas
+      comment: FK answers.attempt_id -> attempts.id ON DELETE CASCADE (0.6.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - foreignKeyConstraintExists: { foreignKeyName: fk_answers_attempt }
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_answers_attempt
+            baseTableName: answers
+            baseColumnNames: attempt_id
+            referencedTableName: attempts
+            referencedColumnNames: id
+            onDelete: CASCADE
+  - changeSet:
+      id: 0.6.0-fk-answers-question
+      author: codillas
+      comment: FK answers.question_id -> questions.id ON DELETE CASCADE (0.6.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - foreignKeyConstraintExists: { foreignKeyName: fk_answers_question }
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_answers_question
+            baseTableName: answers
+            baseColumnNames: question_id
+            referencedTableName: questions
+            referencedColumnNames: id
+            onDelete: CASCADE
+  # answer_selected_options is a @ElementCollection join table: it shipped with no PK at all,
+  # so a repeated (answer_id, option_id) pair could double-count a MULTIPLE_CHOICE selection.
+  - changeSet:
+      id: 0.6.0-pk-answer-selected-options
+      author: codillas
+      comment: Composite PK on answer_selected_options (0.6.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - primaryKeyExists: { tableName: answer_selected_options }
+      changes:
+        - addPrimaryKey:
+            constraintName: pk_answer_selected_options
+            tableName: answer_selected_options
+            columnNames: answer_id, option_id
+  - changeSet:
+      id: 0.6.0-fk-answer-selected-options
+      author: codillas
+      comment: FKs answer_selected_options -> answers/options ON DELETE CASCADE (0.6.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - foreignKeyConstraintExists: { foreignKeyName: fk_answer_selected_options_answer }
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_answer_selected_options_answer
+            baseTableName: answer_selected_options
+            baseColumnNames: answer_id
+            referencedTableName: answers
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            constraintName: fk_answer_selected_options_option
+            baseTableName: answer_selected_options
+            baseColumnNames: option_id
+            referencedTableName: options
+            referencedColumnNames: id
+            onDelete: CASCADE
+  # Postgres does not index the referencing side of a FK: without these every cascade delete
+  # (and every findByTestId / findByQuestionIdIn) is a seq scan.
+  - changeSet:
+      id: 0.6.0-index-assessment-fk-columns
+      author: codillas
+      comment: Index the referencing side of each assessment FK + the student lookup (0.6.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - indexExists: { indexName: idx_questions_test }
+      changes:
+        - createIndex:
+            indexName: idx_questions_test
+            tableName: questions
+            columns:
+              - column: { name: test_id }
+        - createIndex:
+            indexName: idx_options_question
+            tableName: options
+            columns:
+              - column: { name: question_id }
+        - createIndex:
+            indexName: idx_answers_question
+            tableName: answers
+            columns:
+              - column: { name: question_id }
+        - createIndex:
+            indexName: idx_answer_selected_options_option
+            tableName: answer_selected_options
+            columns:
+              - column: { name: option_id }
+        - createIndex:
+            indexName: idx_attempts_student
+            tableName: attempts
+            columns:
+              - column: { name: student_id }
+        - createIndex:
+            indexName: idx_tests_lesson
+            tableName: tests
+            columns:
+              - column: { name: lesson_id }

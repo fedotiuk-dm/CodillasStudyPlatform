@@ -23,4 +23,7 @@ public interface ScheduledLessonRepository extends JpaRepository<ScheduledLesson
   List<ScheduledLesson> findByGroupId(UUID groupId, Sort sort);
 
   List<ScheduledLesson> findByGroupIdIn(Collection<UUID> groupIds, Sort sort);
+
+  /** Sessions still pointing at lessons that were deleted upstream in course. */
+  List<ScheduledLesson> findByLessonIdIn(Collection<UUID> lessonIds);
 }

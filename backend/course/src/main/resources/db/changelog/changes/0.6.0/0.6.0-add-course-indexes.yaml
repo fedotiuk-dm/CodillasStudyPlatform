@@ -1,0 +1,32 @@
+# The 0.3.0 FKs cascade course -> sections -> lessons -> materials, but Postgres does not index
+# the referencing side of a FK: deleting a course seq-scanned all three child tables.
+databaseChangeLog:
+  - changeSet:
+      id: 0.6.0-index-course-fk-columns
+      author: codillas
+      comment: Index the referencing side of each course FK + materials.file_id (0.6.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - indexExists: { indexName: idx_sections_course }
+      changes:
+        - createIndex:
+            indexName: idx_sections_course
+            tableName: sections
+            columns:
+              - column: { name: course_id }
+        - createIndex:
+            indexName: idx_lessons_section
+            tableName: lessons
+            columns:
+              - column: { name: section_id }
+        - createIndex:
+            indexName: idx_materials_lesson
+            tableName: materials
+            columns:
+              - column: { name: lesson_id }
+        - createIndex:
+            indexName: idx_materials_file
+            tableName: materials
+            columns:
+              - column: { name: file_id }

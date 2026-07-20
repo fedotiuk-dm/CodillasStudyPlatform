@@ -41,6 +41,7 @@ import de.codillas.course.mapper.LessonMapper;
 import de.codillas.shared.event.CourseArchived;
 import de.codillas.shared.event.CourseDeleted;
 import de.codillas.shared.event.CoursePublished;
+import de.codillas.shared.event.LessonsDeleted;
 import de.codillas.shared.exception.BadRequestException;
 import de.codillas.shared.exception.NotFoundException;
 import de.codillas.shared.security.CurrentUser;
@@ -141,7 +142,11 @@ public class CourseServiceImpl implements CourseService {
   @Transactional
   public void deleteCourse(UUID courseId) {
     Course course = findCourseOrThrow(courseId);
+    // The lessons vanish inside the database, so no listener could ever observe them — collect
+    // the ids before the cascade fires.
+    List<UUID> lessonIds = lessonIdsOfCourse(courseId);
     courseRepository.delete(course); // sections/lessons/materials removed by FK ON DELETE CASCADE
+    publishLessonsDeleted(lessonIds);
     events.publishEvent(new CourseDeleted(courseId));
   }
 
@@ -175,6 +180,7 @@ public class CourseServiceImpl implements CourseService {
       lessonRepository.deleteBySectionId(sectionId);
     }
     sectionRepository.delete(section);
+    publishLessonsDeleted(lessons.stream().map(Lesson::getId).toList());
   }
 
   @Override
@@ -206,6 +212,26 @@ public class CourseServiceImpl implements CourseService {
     Lesson lesson = findLessonOrThrow(lessonId);
     materialRepository.deleteByLessonId(lessonId);
     lessonRepository.delete(lesson);
+    publishLessonsDeleted(List.of(lessonId));
+  }
+
+  /** Lesson ids across every section of a course — read before a cascading delete, never after. */
+  private List<UUID> lessonIdsOfCourse(UUID courseId) {
+    List<UUID> sectionIds =
+        sectionRepository.findByCourseId(courseId, SectionRepository.BY_ORDER).stream()
+            .map(Section::getId)
+            .toList();
+    return sectionIds.isEmpty()
+        ? List.of()
+        : lessonRepository.findBySectionIdIn(sectionIds, LessonRepository.BY_ORDER).stream()
+            .map(Lesson::getId)
+            .toList();
+  }
+
+  private void publishLessonsDeleted(List<UUID> lessonIds) {
+    if (!lessonIds.isEmpty()) {
+      events.publishEvent(new LessonsDeleted(lessonIds));
+    }
   }
 
   @Override

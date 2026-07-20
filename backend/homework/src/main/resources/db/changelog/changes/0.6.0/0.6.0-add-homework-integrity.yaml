@@ -1,0 +1,182 @@
+# Intra-module referential integrity for homework. Cross-module ids (assignments.group_id,
+# assignments.lesson_id, submissions.student_id, reviews.reviewer_id) stay FK-free by design.
+databaseChangeLog:
+  - changeSet:
+      id: 0.6.0-fk-submissions-assignment
+      author: codillas
+      comment: FK submissions.assignment_id -> assignments.id ON DELETE CASCADE (0.6.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - foreignKeyConstraintExists: { foreignKeyName: fk_submissions_assignment }
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_submissions_assignment
+            baseTableName: submissions
+            baseColumnNames: assignment_id
+            referencedTableName: assignments
+            referencedColumnNames: id
+            onDelete: CASCADE
+  - changeSet:
+      id: 0.6.0-fk-reviews-submission
+      author: codillas
+      comment: FK reviews.submission_id -> submissions.id ON DELETE CASCADE (0.6.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - foreignKeyConstraintExists: { foreignKeyName: fk_reviews_submission }
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_reviews_submission
+            baseTableName: reviews
+            baseColumnNames: submission_id
+            referencedTableName: submissions
+            referencedColumnNames: id
+            onDelete: CASCADE
+  - changeSet:
+      id: 0.6.0-fk-grades-submission
+      author: codillas
+      comment: FK grades.submission_id -> submissions.id ON DELETE CASCADE (0.6.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - foreignKeyConstraintExists: { foreignKeyName: fk_grades_submission }
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_grades_submission
+            baseTableName: grades
+            baseColumnNames: submission_id
+            referencedTableName: submissions
+            referencedColumnNames: id
+            onDelete: CASCADE
+  # rubrics.assignment_id is the canonical direction of the assignment<->rubric link and is 1:1.
+  # Without UNIQUE, two concurrent createRubric calls leave two rows and RubricRepository
+  # .findByAssignmentId (Optional) then throws NonUniqueResultException on every later read.
+  # assignments.rubric_id stays as a read cache, no FK — see RubricServiceImpl.
+  - changeSet:
+      id: 0.6.0-uq-rubrics-assignment
+      author: codillas
+      comment: One rubric per assignment (0.6.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - uniqueConstraintExists: { tableName: rubrics, constraintName: uq_rubrics_assignment }
+      changes:
+        - addUniqueConstraint:
+            constraintName: uq_rubrics_assignment
+            tableName: rubrics
+            columnNames: assignment_id
+  - changeSet:
+      id: 0.6.0-fk-rubrics-assignment
+      author: codillas
+      comment: FK rubrics.assignment_id -> assignments.id ON DELETE CASCADE (0.6.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - foreignKeyConstraintExists: { foreignKeyName: fk_rubrics_assignment }
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_rubrics_assignment
+            baseTableName: rubrics
+            baseColumnNames: assignment_id
+            referencedTableName: assignments
+            referencedColumnNames: id
+            onDelete: CASCADE
+  - changeSet:
+      id: 0.6.0-fk-rubric-criteria-rubric
+      author: codillas
+      comment: FK rubric_criteria.rubric_id -> rubrics.id ON DELETE CASCADE (0.6.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - foreignKeyConstraintExists: { foreignKeyName: fk_rubric_criteria_rubric }
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_rubric_criteria_rubric
+            baseTableName: rubric_criteria
+            baseColumnNames: rubric_id
+            referencedTableName: rubrics
+            referencedColumnNames: id
+            onDelete: CASCADE
+  - changeSet:
+      id: 0.6.0-uq-grade-criteria
+      author: codillas
+      comment: One score per (grade, criterion) — a duplicate row would inflate the total (0.6.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - uniqueConstraintExists:
+                tableName: grade_criteria
+                constraintName: uq_grade_criteria_grade_criterion
+      changes:
+        - addUniqueConstraint:
+            constraintName: uq_grade_criteria_grade_criterion
+            tableName: grade_criteria
+            columnNames: grade_id, criterion_id
+  - changeSet:
+      id: 0.6.0-fk-grade-criteria
+      author: codillas
+      comment: FKs grade_criteria -> grades/rubric_criteria ON DELETE CASCADE (0.6.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - foreignKeyConstraintExists: { foreignKeyName: fk_grade_criteria_grade }
+      changes:
+        - addForeignKeyConstraint:
+            constraintName: fk_grade_criteria_grade
+            baseTableName: grade_criteria
+            baseColumnNames: grade_id
+            referencedTableName: grades
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            constraintName: fk_grade_criteria_criterion
+            baseTableName: grade_criteria
+            baseColumnNames: criterion_id
+            referencedTableName: rubric_criteria
+            referencedColumnNames: id
+            onDelete: CASCADE
+  - changeSet:
+      id: 0.6.0-index-homework-fk-columns
+      author: codillas
+      comment: Index the referencing side of each homework FK + the group/student lookups (0.6.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - indexExists: { indexName: idx_reviews_submission }
+      changes:
+        - createIndex:
+            indexName: idx_reviews_submission
+            tableName: reviews
+            columns:
+              - column: { name: submission_id }
+        - createIndex:
+            indexName: idx_rubric_criteria_rubric
+            tableName: rubric_criteria
+            columns:
+              - column: { name: rubric_id }
+        - createIndex:
+            indexName: idx_grade_criteria_criterion
+            tableName: grade_criteria
+            columns:
+              - column: { name: criterion_id }
+        - createIndex:
+            indexName: idx_assignments_group
+            tableName: assignments
+            columns:
+              - column: { name: group_id }
+        - createIndex:
+            indexName: idx_assignments_lesson
+            tableName: assignments
+            columns:
+              - column: { name: lesson_id }
+        - createIndex:
+            indexName: idx_submissions_student
+            tableName: submissions
+            columns:
+              - column: { name: student_id }
+        - createIndex:
+            indexName: idx_reviews_reviewer
+            tableName: reviews
+            columns:
+              - column: { name: reviewer_id }

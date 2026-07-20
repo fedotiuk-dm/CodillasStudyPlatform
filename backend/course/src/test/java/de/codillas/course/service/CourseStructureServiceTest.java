@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.context.ApplicationEventPublisher;
+
 import de.codillas.course.api.dto.CreateMaterialRequest;
 import de.codillas.course.api.dto.MaterialType;
 import de.codillas.course.domain.model.Lesson;
@@ -20,6 +22,7 @@ import de.codillas.course.domain.repository.MaterialRepository;
 import de.codillas.course.domain.repository.SectionRepository;
 import de.codillas.course.mapper.CourseMapper;
 import de.codillas.course.mapper.LessonMapper;
+import de.codillas.shared.event.LessonsDeleted;
 import de.codillas.shared.exception.BadRequestException;
 
 import org.junit.jupiter.api.DisplayName;
@@ -40,6 +43,7 @@ class CourseStructureServiceTest {
   @Mock private MaterialRepository materialRepository;
   @Mock private CourseMapper courseMapper;
   @Mock private LessonMapper lessonMapper;
+  @Mock private ApplicationEventPublisher events;
   @InjectMocks private CourseServiceImpl service;
 
   @Test
@@ -87,5 +91,8 @@ class CourseStructureServiceTest {
     assertThat(ids.getValue()).containsExactlyInAnyOrder(lessonA, lessonB);
     verify(lessonRepository).deleteBySectionId(sectionId);
     verify(sectionRepository).delete(section);
+    // Downstream modules (enrollment/homework/assessment) hold a lessonId; without this event
+    // they would keep pointing at rows that no longer exist.
+    verify(events).publishEvent(new LessonsDeleted(List.of(lessonA, lessonB)));
   }
 }

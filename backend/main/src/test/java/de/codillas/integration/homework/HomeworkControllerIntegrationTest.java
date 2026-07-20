@@ -106,7 +106,7 @@ class HomeworkControllerIntegrationTest extends BaseIntegrationTest {
   void grade_draftSubmission_returns409() throws Exception {
     UUID teacher = UUID.randomUUID();
     UUID student = UUID.randomUUID();
-    UUID assignmentId = UUID.randomUUID();
+    UUID assignmentId = createAssignment(teacher);
 
     String submission =
         mockMvc
@@ -128,5 +128,21 @@ class HomeworkControllerIntegrationTest extends BaseIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"score\":50}"))
         .andExpect(status().isConflict());
+  }
+
+  /** Submissions now carry a real FK to their assignment, so tests must author one first. */
+  private UUID createAssignment(UUID teacher) throws Exception {
+    String created =
+        mockMvc
+            .perform(
+                post("/api/assignments")
+                    .with(as(teacher, "TEACHER"))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"groupId\":\"%s\",\"title\":\"HW\"}".formatted(UUID.randomUUID())))
+            .andExpect(status().isCreated())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    return UUID.fromString(JsonPath.read(created, "$.id"));
   }
 }

@@ -22,3 +22,7 @@ databaseChangeLog:
   - include:
       file: changes/0.5.0/0.5.0-seed-chat-extras.yaml
       relativeToChangelogFile: true
+  # 0.6.0 — intra-module FKs + room/user lookup indexes
+  - include:
+      file: changes/0.6.0/0.6.0-add-chat-integrity.yaml
+      relativeToChangelogFile: true

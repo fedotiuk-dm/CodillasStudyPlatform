@@ -52,3 +52,7 @@ databaseChangeLog:
   - include:
       file: changes/0.5.0/0.5.0-seed-homework-extras.yaml
       relativeToChangelogFile: true
+  # 0.6.0 — intra-module FKs, one-rubric-per-assignment, FK/lookup indexes
+  - include:
+      file: changes/0.6.0/0.6.0-add-homework-integrity.yaml
+      relativeToChangelogFile: true

@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import de.codillas.assessment.domain.model.Attempt;
 import de.codillas.assessment.domain.model.AttemptStatus;
 import de.codillas.assessment.domain.repository.AttemptRepository;
+import de.codillas.assessment.domain.repository.TestRepository;
 import de.codillas.integration.BaseIntegrationTest;
 
 import org.junit.jupiter.api.DisplayName;
@@ -23,16 +24,22 @@ import org.junit.jupiter.api.Test;
 class AttemptOptimisticLockIntegrationTest extends BaseIntegrationTest {
 
   @Autowired AttemptRepository repository;
+  @Autowired TestRepository testRepository;
   @Autowired EntityManager em;
 
   @Test
   @DisplayName("a stale write over a newer version raises an optimistic-lock failure")
   void staleWriteIsRejected() {
+    // attempts.test_id carries a FK since 0.6.0 — the parent row has to exist.
+    UUID testId =
+        testRepository
+            .saveAndFlush(de.codillas.assessment.domain.model.Test.builder().title("T").build())
+            .getId();
     UUID id =
         repository
             .saveAndFlush(
                 Attempt.builder()
-                    .testId(UUID.randomUUID())
+                    .testId(testId)
                     .studentId(UUID.randomUUID())
                     .status(AttemptStatus.IN_PROGRESS)
                     .build())

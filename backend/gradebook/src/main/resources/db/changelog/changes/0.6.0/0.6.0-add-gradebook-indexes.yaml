@@ -1,0 +1,33 @@
+# gradebook is an event-fed read model — every column here is a cross-module id by design, so
+# there are no FKs to add, only the indexes its projections read by.
+databaseChangeLog:
+  - changeSet:
+      id: 0.6.0-index-gradebook-lookups
+      author: codillas
+      comment: Index the student/group lookups the progress projections filter on (0.6.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - indexExists: { indexName: idx_progress_entries_student }
+      changes:
+        - createIndex:
+            indexName: idx_progress_entries_student
+            tableName: progress_entries
+            columns:
+              - column: { name: student_id }
+        - createIndex:
+            indexName: idx_progress_entries_group
+            tableName: progress_entries
+            columns:
+              - column: { name: group_id }
+        - createIndex:
+            indexName: idx_progress_entries_reference
+            tableName: progress_entries
+            columns:
+              - column: { name: source }
+              - column: { name: reference_id }
+        - createIndex:
+            indexName: idx_gradebook_memberships_student
+            tableName: gradebook_memberships
+            columns:
+              - column: { name: student_id }

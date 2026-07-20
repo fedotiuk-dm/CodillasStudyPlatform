@@ -1,9 +1,11 @@
 package de.codillas.homework.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,6 +36,7 @@ import de.codillas.homework.mapper.GradeMapper;
 import de.codillas.homework.mapper.ReviewMapper;
 import de.codillas.homework.mapper.SubmissionMapper;
 import de.codillas.shared.event.SubmissionGraded;
+import de.codillas.shared.exception.NotFoundException;
 import de.codillas.shared.security.CurrentUser;
 
 import org.junit.jupiter.api.DisplayName;
@@ -78,6 +81,7 @@ class SubmissionServiceTest {
     CreateSubmissionRequest request = mock(CreateSubmissionRequest.class);
     Submission saved = Submission.builder().version(1).build();
     SubmissionResponse dto = mock(SubmissionResponse.class);
+    when(assignmentRepository.existsById(assignmentId)).thenReturn(true);
     when(currentUser.id()).thenReturn(studentId);
     when(repository.findFirstByAssignmentIdAndStudentId(assignmentId, studentId, VERSION_DESC))
         .thenReturn(Optional.empty());
@@ -97,6 +101,7 @@ class SubmissionServiceTest {
     Submission previous = Submission.builder().version(2).build();
     Submission saved = Submission.builder().version(3).build();
     SubmissionResponse dto = mock(SubmissionResponse.class);
+    when(assignmentRepository.existsById(assignmentId)).thenReturn(true);
     when(currentUser.id()).thenReturn(studentId);
     when(repository.findFirstByAssignmentIdAndStudentId(assignmentId, studentId, VERSION_DESC))
         .thenReturn(Optional.of(previous));
@@ -105,6 +110,18 @@ class SubmissionServiceTest {
     when(mapper.toResponse(saved)).thenReturn(dto);
 
     assertThat(service.createSubmission(assignmentId, request)).isSameAs(dto);
+  }
+
+  @Test
+  @DisplayName("createSubmission 404s on an unknown assignment instead of orphaning a row")
+  void createSubmission_unknownAssignment_throws() {
+    UUID assignmentId = UUID.randomUUID();
+    when(assignmentRepository.existsById(assignmentId)).thenReturn(false);
+
+    assertThatThrownBy(
+            () -> service.createSubmission(assignmentId, mock(CreateSubmissionRequest.class)))
+        .isInstanceOf(NotFoundException.class);
+    verify(repository, never()).save(org.mockito.ArgumentMatchers.any());
   }
 
   @Test

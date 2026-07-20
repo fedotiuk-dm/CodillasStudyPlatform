@@ -1,5 +1,6 @@
 package de.codillas.assessment.service;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Pageable;
@@ -21,4 +22,6 @@ public interface TestService {
   TestResponse getTest(UUID testId);
 
   TestListResponse listTests(UUID lessonId, Pageable pageable);
+
+  void onLessonsDeleted(List<UUID> lessonIds);
 }

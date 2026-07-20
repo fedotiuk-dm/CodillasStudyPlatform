@@ -25,5 +25,10 @@
       <artifactId>codillas-shared</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- @ApplicationModuleListener for consuming LessonsDeleted. -->
+    <dependency>
+      <groupId>org.springframework.modulith</groupId>
+      <artifactId>spring-modulith-events-api</artifactId>
+    </dependency>
   </dependencies>
 </project>

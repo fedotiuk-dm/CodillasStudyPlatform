@@ -35,3 +35,7 @@ databaseChangeLog:
   - include:
       file: changes/0.5.0/0.5.0-seed-course-extras.yaml
       relativeToChangelogFile: true
+  # 0.6.0 — indexes on the referencing side of the 0.3.0 cascade FKs
+  - include:
+      file: changes/0.6.0/0.6.0-add-course-indexes.yaml
+      relativeToChangelogFile: true

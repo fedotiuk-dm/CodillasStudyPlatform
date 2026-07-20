@@ -23,3 +23,7 @@ databaseChangeLog:
   - include:
       file: changes/0.5.0/0.5.0-seed-gradebook-extras.yaml
       relativeToChangelogFile: true
+  # 0.6.0 — indexes for the read-model lookups
+  - include:
+      file: changes/0.6.0/0.6.0-add-gradebook-indexes.yaml
+      relativeToChangelogFile: true

@@ -1,0 +1,23 @@
+# reference_type/reference_id is a polymorphic back-pointer (no FK is possible); uploaded_by is a
+# cross-module user id.
+databaseChangeLog:
+  - changeSet:
+      id: 0.6.0-index-stored-files-lookups
+      author: codillas
+      comment: Index the polymorphic owner lookup and the uploader lookup (0.6.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - indexExists: { indexName: idx_stored_files_reference }
+      changes:
+        - createIndex:
+            indexName: idx_stored_files_reference
+            tableName: stored_files
+            columns:
+              - column: { name: reference_type }
+              - column: { name: reference_id }
+        - createIndex:
+            indexName: idx_stored_files_uploaded_by
+            tableName: stored_files
+            columns:
+              - column: { name: uploaded_by }

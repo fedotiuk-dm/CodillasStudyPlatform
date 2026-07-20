@@ -41,3 +41,7 @@ databaseChangeLog:
   - include:
       file: changes/0.5.0/0.5.0-seed-enrollment-extras.yaml
       relativeToChangelogFile: true
+  # 0.6.0 — indexes on the FK referencing side + cross-module lookups
+  - include:
+      file: changes/0.6.0/0.6.0-add-enrollment-indexes.yaml
+      relativeToChangelogFile: true

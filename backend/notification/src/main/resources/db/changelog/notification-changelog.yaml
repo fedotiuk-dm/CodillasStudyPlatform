@@ -27,3 +27,7 @@ databaseChangeLog:
   - include:
       file: changes/0.5.0/0.5.0-seed-notification-extras.yaml
       relativeToChangelogFile: true
+  # 0.6.0 — inbox + unread-badge indexes
+  - include:
+      file: changes/0.6.0/0.6.0-add-notification-indexes.yaml
+      relativeToChangelogFile: true

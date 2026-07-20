@@ -176,6 +176,7 @@ The glue. Publishers don't know their consumers.
 | `CourseArchived`      | course       | enrollment (course-status read model)                      |
 | `CourseDeleted`       | course       | enrollment (cascade-delete its cohorts)                    |
 | `GroupDeleted`        | enrollment   | chat, gradebook, homework, notification, announcement (purge read models) |
+| `LessonsDeleted`      | course       | enrollment, homework, assessment (clear the `lessonId` back-pointer) |
 
 Events are persisted via Spring Modulith's event publication registry
 (at-least-once, retried on restart) so a consumer failure never silently drops

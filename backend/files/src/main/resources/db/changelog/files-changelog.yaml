@@ -8,3 +8,7 @@ databaseChangeLog:
   - include:
       file: changes/0.2.0/0.2.0-add-files-lock-version.yaml
       relativeToChangelogFile: true
+  # 0.6.0 — polymorphic owner + uploader indexes
+  - include:
+      file: changes/0.6.0/0.6.0-add-files-indexes.yaml
+      relativeToChangelogFile: true

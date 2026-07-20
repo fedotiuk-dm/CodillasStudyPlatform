@@ -1,5 +1,6 @@
 package de.codillas.homework.service;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.context.ApplicationEventPublisher;
@@ -49,6 +50,18 @@ public class AssignmentServiceImpl implements AssignmentService {
   @Override
   public AssignmentListResponse listAssignments(UUID groupId, Pageable pageable) {
     return mapper.toListResponse(repository.findByGroupId(groupId, pageable));
+  }
+
+  /**
+   * A deleted lesson does not delete the assignment — it belongs to a group and keeps its own
+   * brief, deadline and submissions; only the course-content back-pointer is cleared.
+   */
+  @Override
+  @Transactional
+  public void onLessonsDeleted(List<UUID> lessonIds) {
+    List<Assignment> affected = repository.findByLessonIdIn(lessonIds);
+    affected.forEach(assignment -> assignment.setLessonId(null));
+    repository.saveAll(affected);
   }
 
   private Assignment findByIdOrThrow(UUID id) {
