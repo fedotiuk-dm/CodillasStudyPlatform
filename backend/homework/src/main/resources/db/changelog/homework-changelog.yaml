@@ -60,3 +60,7 @@ databaseChangeLog:
   - include:
       file: changes/0.7.0/0.7.0-create-archived-groups.yaml
       relativeToChangelogFile: true
+  # 0.7.0 — CHECK constraints (enum + score guards for assignments, submissions and grading)
+  - include:
+      file: changes/0.7.0/0.7.0-add-homework-checks.yaml
+      relativeToChangelogFile: true

@@ -1,0 +1,23 @@
+# CHECK constraints for stored files. reference_type is nullable (a loose upload is attached to
+# nothing); the list mirrors FileReferenceType and EnumCheckConstraintTest in `main` fails the
+# build if they drift.
+databaseChangeLog:
+  - changeSet:
+      id: 0.7.0-add-files-checks
+      author: codillas
+      comment: Enum + size guards for stored files (0.7.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT count(*) FROM pg_constraint WHERE conname = 'ck_stored_files_size'
+      changes:
+        - sql:
+            sql: >-
+              ALTER TABLE stored_files
+                ADD CONSTRAINT ck_stored_files_size CHECK (file_size >= 0),
+                ADD CONSTRAINT ck_stored_files_reference_type CHECK (reference_type IS NULL
+                  OR reference_type IN ('HOMEWORK','CHAT','MATERIAL'))
+            rollback: >-
+              ALTER TABLE stored_files DROP CONSTRAINT ck_stored_files_size,
+                DROP CONSTRAINT ck_stored_files_reference_type

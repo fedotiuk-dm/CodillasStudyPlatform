@@ -16,3 +16,7 @@ databaseChangeLog:
   - include:
       file: changes/0.6.0/0.6.0-seed-files-placeholder.yaml
       relativeToChangelogFile: true
+  # 0.7.0 — CHECK constraints (enum + size guards for stored files)
+  - include:
+      file: changes/0.7.0/0.7.0-add-files-checks.yaml
+      relativeToChangelogFile: true

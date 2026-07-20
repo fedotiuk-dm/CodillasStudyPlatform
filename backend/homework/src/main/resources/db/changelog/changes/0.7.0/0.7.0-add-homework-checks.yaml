@@ -1,0 +1,47 @@
+# CHECK constraints for assignments, submissions and grading. Enum lists mirror the module's Java
+# enums (AssignmentStatus, SubmissionStatus — RETURNED included, SubmissionStateMachine allows
+# SUBMITTED/IN_REVIEW → RETURNED); EnumCheckConstraintTest in `main` fails the build if they drift.
+databaseChangeLog:
+  - changeSet:
+      id: 0.7.0-add-homework-checks
+      author: codillas
+      comment: Enum + score guards for assignments, submissions and grading (0.7.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT count(*) FROM pg_constraint WHERE conname = 'ck_assignments_status'
+      changes:
+        - sql:
+            sql: >-
+              ALTER TABLE assignments
+                ADD CONSTRAINT ck_assignments_status CHECK (status IN ('DRAFT','PUBLISHED')),
+                ADD CONSTRAINT ck_assignments_late_penalty CHECK (max_late_penalty_pct IS NULL
+                  OR (max_late_penalty_pct >= 0 AND max_late_penalty_pct <= 100))
+            rollback: >-
+              ALTER TABLE assignments DROP CONSTRAINT ck_assignments_status,
+                DROP CONSTRAINT ck_assignments_late_penalty
+        - sql:
+            sql: >-
+              ALTER TABLE submissions
+                ADD CONSTRAINT ck_submissions_status
+                  CHECK (status IN ('DRAFT','SUBMITTED','IN_REVIEW','GRADED','RETURNED')),
+                ADD CONSTRAINT ck_submissions_version CHECK (version > 0)
+            rollback: >-
+              ALTER TABLE submissions DROP CONSTRAINT ck_submissions_status,
+                DROP CONSTRAINT ck_submissions_version
+        - sql:
+            sql: >-
+              ALTER TABLE grades ADD CONSTRAINT ck_grades_bounds CHECK (
+                max_points > 0
+                AND score BETWEEN 0 AND max_points
+                AND effective_score BETWEEN 0 AND max_points)
+            rollback: ALTER TABLE grades DROP CONSTRAINT ck_grades_bounds
+        - sql:
+            sql: ALTER TABLE grade_criteria ADD CONSTRAINT ck_grade_criteria_points CHECK (points >= 0)
+            rollback: ALTER TABLE grade_criteria DROP CONSTRAINT ck_grade_criteria_points
+        - sql:
+            sql: >-
+              ALTER TABLE rubric_criteria ADD CONSTRAINT ck_rubric_criteria_bounds
+                CHECK (max_points > 0 AND "position" >= 0)
+            rollback: ALTER TABLE rubric_criteria DROP CONSTRAINT ck_rubric_criteria_bounds

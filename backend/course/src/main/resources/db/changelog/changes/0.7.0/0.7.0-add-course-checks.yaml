@@ -1,0 +1,38 @@
+# CHECK constraints for the course tree. ck_materials_shape is the interesting one: it encodes the
+# FILE/LINK XOR (a FILE material carries file_id and no url, a LINK the reverse), which until now
+# only CourseServiceImpl enforced. ck_materials_type is logically subsumed by it and rejects nothing
+# on its own — it is kept as the machine-readable MaterialType vocabulary that
+# EnumCheckConstraintTest in `main` diffs against the Java enum, so a new constant can't drift in.
+databaseChangeLog:
+  - changeSet:
+      id: 0.7.0-add-course-checks
+      author: codillas
+      comment: Enum + range guards for the course tree (0.7.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT count(*) FROM pg_constraint WHERE conname = 'ck_courses_status'
+      changes:
+        - sql:
+            sql: >-
+              ALTER TABLE courses ADD CONSTRAINT ck_courses_status
+                CHECK (status IN ('DRAFT','PUBLISHED','ARCHIVED'))
+            rollback: ALTER TABLE courses DROP CONSTRAINT ck_courses_status
+        - sql:
+            sql: >-
+              ALTER TABLE materials
+                ADD CONSTRAINT ck_materials_type CHECK (type IN ('FILE','LINK')),
+                ADD CONSTRAINT ck_materials_shape CHECK (
+                  (type = 'FILE' AND file_id IS NOT NULL AND url IS NULL)
+                  OR (type = 'LINK' AND url IS NOT NULL AND file_id IS NULL)),
+                ADD CONSTRAINT ck_materials_sort_order CHECK (sort_order >= 0)
+            rollback: >-
+              ALTER TABLE materials DROP CONSTRAINT ck_materials_type,
+                DROP CONSTRAINT ck_materials_shape, DROP CONSTRAINT ck_materials_sort_order
+        - sql:
+            sql: ALTER TABLE sections ADD CONSTRAINT ck_sections_sort_order CHECK (sort_order >= 0)
+            rollback: ALTER TABLE sections DROP CONSTRAINT ck_sections_sort_order
+        - sql:
+            sql: ALTER TABLE lessons ADD CONSTRAINT ck_lessons_sort_order CHECK (sort_order >= 0)
+            rollback: ALTER TABLE lessons DROP CONSTRAINT ck_lessons_sort_order

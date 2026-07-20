@@ -27,3 +27,7 @@ databaseChangeLog:
   - include:
       file: changes/0.6.0/0.6.0-add-gradebook-indexes.yaml
       relativeToChangelogFile: true
+  # 0.7.0 — CHECK constraints (enum + score guards for the progress read model)
+  - include:
+      file: changes/0.7.0/0.7.0-add-gradebook-checks.yaml
+      relativeToChangelogFile: true

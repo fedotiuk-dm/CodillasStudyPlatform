@@ -9,7 +9,8 @@ Build/fill with the **`new-modulith-module`** skill — do not scaffold blind.
   `shared.Sortable`. Delete cascades run in the database (`ON DELETE CASCADE`, since 0.3.0), not
   via JPA cascade — so a deleting writer must publish `LessonsDeleted` itself, reading the ids
   *before* the delete. `Material` is `FILE` (carries `fileId` into files) or `LINK` (carries `url`) —
-  which field is required is enforced in the service, not the schema.
+  which field is required is enforced in the service and, since 0.7.0, in the schema
+  (`ck_materials_shape`).
 - **Referenced by id (downstream):** `homework.Assignment` and `assessment.Test` point at a
   `lessonId`. A lesson is the hub; do not break that contract without re-pointing those modules.
 - **Publishes:** `CourseDeleted`, `CoursePublished`, `CourseArchived`, `LessonsDeleted` (all in

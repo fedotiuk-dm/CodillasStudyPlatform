@@ -1,0 +1,19 @@
+# CHECK constraint for room kinds. The list mirrors ChatRoomType — ASSIGNMENT_THREAD included:
+# nothing constructs one yet, but it is a published value in backend/openapi/chat-schemas.yaml, so
+# the schema must not veto it. EnumCheckConstraintTest in `main` fails the build if they drift.
+databaseChangeLog:
+  - changeSet:
+      id: 0.7.0-add-chat-checks
+      author: codillas
+      comment: Enum guard for room kinds (0.7.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT count(*) FROM pg_constraint WHERE conname = 'ck_chat_rooms_type'
+      changes:
+        - sql:
+            sql: >-
+              ALTER TABLE chat_rooms ADD CONSTRAINT ck_chat_rooms_type
+                CHECK (type IN ('GROUP','DIRECT','ASSIGNMENT_THREAD'))
+            rollback: ALTER TABLE chat_rooms DROP CONSTRAINT ck_chat_rooms_type

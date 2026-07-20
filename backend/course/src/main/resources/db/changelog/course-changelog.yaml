@@ -39,3 +39,7 @@ databaseChangeLog:
   - include:
       file: changes/0.6.0/0.6.0-add-course-indexes.yaml
       relativeToChangelogFile: true
+  # 0.7.0 — CHECK constraints (enum + range guards for the course tree)
+  - include:
+      file: changes/0.7.0/0.7.0-add-course-checks.yaml
+      relativeToChangelogFile: true

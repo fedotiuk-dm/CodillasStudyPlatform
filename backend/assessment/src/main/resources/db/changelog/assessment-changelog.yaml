@@ -43,3 +43,7 @@ databaseChangeLog:
   - include:
       file: changes/0.6.0/0.6.0-add-assessment-integrity.yaml
       relativeToChangelogFile: true
+  # 0.7.0 — CHECK constraints (enum + score/window guards for tests and attempts)
+  - include:
+      file: changes/0.7.0/0.7.0-add-assessment-checks.yaml
+      relativeToChangelogFile: true

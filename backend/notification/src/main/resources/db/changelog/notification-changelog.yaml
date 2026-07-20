@@ -31,3 +31,7 @@ databaseChangeLog:
   - include:
       file: changes/0.6.0/0.6.0-add-notification-indexes.yaml
       relativeToChangelogFile: true
+  # 0.7.0 — CHECK constraints (enum guard for notification kinds)
+  - include:
+      file: changes/0.7.0/0.7.0-add-notification-checks.yaml
+      relativeToChangelogFile: true

@@ -1,0 +1,23 @@
+# CHECK constraints for the progress read model. The source list mirrors GradeSource
+# (EnumCheckConstraintTest in `main` fails the build if they drift). Unlike enrollment's
+# course_status_view, GradeSource is gradebook's own enum, so constraining it couples nothing.
+databaseChangeLog:
+  - changeSet:
+      id: 0.7.0-add-gradebook-checks
+      author: codillas
+      comment: Enum + score guards for the progress read model (0.7.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT count(*) FROM pg_constraint WHERE conname = 'ck_progress_entries_source'
+      changes:
+        - sql:
+            sql: >-
+              ALTER TABLE progress_entries
+                ADD CONSTRAINT ck_progress_entries_source CHECK (source IN ('HOMEWORK','TEST')),
+                ADD CONSTRAINT ck_progress_entries_score CHECK (max_points > 0
+                  AND score BETWEEN 0 AND max_points)
+            rollback: >-
+              ALTER TABLE progress_entries DROP CONSTRAINT ck_progress_entries_source,
+                DROP CONSTRAINT ck_progress_entries_score

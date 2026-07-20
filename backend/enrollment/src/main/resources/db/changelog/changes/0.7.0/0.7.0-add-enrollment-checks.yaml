@@ -1,0 +1,24 @@
+# CHECK constraint for cohort status, mirroring GroupStatus (EnumCheckConstraintTest in `main`
+# fails the build if they drift).
+#
+# course_status_view is deliberately NOT constrained: it is an event-fed projection of another
+# module's vocabulary, stored as a raw String precisely so enrollment never imports CourseStatus.
+# A CHECK there would turn an unrecognized status into a listener exception inside the Modulith
+# event-publication registry — a poison message that retries forever — instead of a row this module
+# simply never matches on. Vocabulary is owned by the publisher; the projection stays permissive.
+databaseChangeLog:
+  - changeSet:
+      id: 0.7.0-add-enrollment-checks
+      author: codillas
+      comment: Enum guard for cohort status (0.7.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - sqlCheck:
+            expectedResult: 0
+            sql: SELECT count(*) FROM pg_constraint WHERE conname = 'ck_study_groups_status'
+      changes:
+        - sql:
+            sql: >-
+              ALTER TABLE study_groups ADD CONSTRAINT ck_study_groups_status
+                CHECK (status IN ('DRAFT','RUNNING','ARCHIVED'))
+            rollback: ALTER TABLE study_groups DROP CONSTRAINT ck_study_groups_status
