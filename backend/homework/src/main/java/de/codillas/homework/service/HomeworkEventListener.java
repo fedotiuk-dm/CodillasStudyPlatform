@@ -3,6 +3,7 @@ package de.codillas.homework.service;
 import org.springframework.modulith.events.ApplicationModuleListener;
 import org.springframework.stereotype.Component;
 
+import de.codillas.shared.event.GroupArchived;
 import de.codillas.shared.event.GroupDeleted;
 import de.codillas.shared.event.LessonsDeleted;
 
@@ -26,5 +27,10 @@ class HomeworkEventListener {
   @ApplicationModuleListener
   void on(LessonsDeleted event) {
     assignmentService.onLessonsDeleted(event.lessonIds());
+  }
+
+  @ApplicationModuleListener
+  void on(GroupArchived event) {
+    assignmentService.onGroupArchived(event.groupId());
   }
 }

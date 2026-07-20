@@ -18,6 +18,7 @@ import de.codillas.enrollment.domain.repository.CourseStatusViewRepository;
 import de.codillas.enrollment.domain.repository.GroupRepository;
 import de.codillas.enrollment.mapper.GroupMapper;
 import de.codillas.shared.event.CourseDeleted;
+import de.codillas.shared.event.GroupArchived;
 import de.codillas.shared.event.GroupDeleted;
 import de.codillas.shared.exception.ConflictException;
 import de.codillas.shared.exception.NotFoundException;
@@ -75,7 +76,9 @@ public class GroupServiceImpl implements GroupService {
   public GroupResponse archiveGroup(UUID groupId) {
     Group group = findByIdOrThrow(groupId);
     stateMachine.transitionTo(group, GroupStatus.ARCHIVED);
-    return mapper.toResponse(repository.save(group));
+    GroupResponse response = mapper.toResponse(repository.save(group));
+    events.publishEvent(new GroupArchived(groupId));
+    return response;
   }
 
   @Override

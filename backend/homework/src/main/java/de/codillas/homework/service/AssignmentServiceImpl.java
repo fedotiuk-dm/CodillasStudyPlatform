@@ -64,6 +64,19 @@ public class AssignmentServiceImpl implements AssignmentService {
     repository.saveAll(affected);
   }
 
+  /**
+   * A finished course stops chasing people. ARCHIVED is terminal, so flipping the reminder flag —
+   * the same flag the job uses to avoid reminding twice — is enough to mute the group for good.
+   */
+  @Override
+  @Transactional
+  public void onGroupArchived(UUID groupId) {
+    List<Assignment> pending =
+        repository.findByGroupId(groupId).stream().filter(a -> !a.isDueReminderSent()).toList();
+    pending.forEach(assignment -> assignment.setDueReminderSent(true));
+    repository.saveAll(pending);
+  }
+
   private Assignment findByIdOrThrow(UUID id) {
     return repository.findById(id).orElseThrow(() -> new NotFoundException("Assignment", id));
   }

@@ -18,4 +18,6 @@ public interface AssignmentService {
   AssignmentListResponse listAssignments(UUID groupId, Pageable pageable);
 
   void onLessonsDeleted(List<UUID> lessonIds);
+
+  void onGroupArchived(UUID groupId);
 }
