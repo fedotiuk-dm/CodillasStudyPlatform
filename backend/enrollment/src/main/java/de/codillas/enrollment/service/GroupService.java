@@ -8,6 +8,7 @@ import de.codillas.enrollment.api.dto.CreateGroupRequest;
 import de.codillas.enrollment.api.dto.GroupListResponse;
 import de.codillas.enrollment.api.dto.GroupResponse;
 import de.codillas.enrollment.api.dto.GroupStatus;
+import de.codillas.shared.event.CourseArchived;
 import de.codillas.shared.event.CourseDeleted;
 
 public interface GroupService {
@@ -23,4 +24,6 @@ public interface GroupService {
   void deleteGroup(UUID groupId);
 
   void onCourseDeleted(CourseDeleted event);
+
+  void onCourseArchived(CourseArchived event);
 }

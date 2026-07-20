@@ -173,7 +173,7 @@ The glue. Publishers don't know their consumers.
 | `AnnouncementPosted`  | announcement | notification (fan-out to the group)                        |
 | `UserEmailChanged`    | user         | notification (recipient-email read model)                  |
 | `CoursePublished`     | course       | enrollment (course-status read model → group-create guard) |
-| `CourseArchived`      | course       | enrollment (course-status read model)                      |
+| `CourseArchived`      | course       | enrollment (course-status read model + archive its cohorts) |
 | `CourseDeleted`       | course       | enrollment (cascade-delete its cohorts)                    |
 | `GroupDeleted`        | enrollment   | chat, gradebook, homework, notification, announcement (purge read models) |
 | `LessonsDeleted`      | course       | enrollment, homework, assessment (clear the `lessonId` back-pointer) |

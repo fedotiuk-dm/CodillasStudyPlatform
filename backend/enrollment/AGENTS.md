@@ -7,7 +7,9 @@ Build/fill with the **`new-modulith-module`** skill — do not scaffold blind.
 - **Key entities:** Group, Membership, ScheduledLesson, Attendance
 - **Publishes:** StudentEnrolled, GroupDeleted, `GroupArchived`
 - **Consumes:** CoursePublished / CourseArchived / CourseDeleted (local `course_status_view` read
-  model), `LessonsDeleted` (clears `ScheduledLesson.lessonId`; the slot keeps its title and time)
+  model; `CourseArchived` additionally retires the cohorts running the course, `CourseDeleted`
+  deletes them), `LessonsDeleted` (clears `ScheduledLesson.lessonId`; the slot keeps its title
+  and time)
 - **Depends on (by id / events / API only):** course, user (by id)
 - **OpenAPI spec:** `backend/openapi/enrollment-paths.yaml` (+ `enrollment-schemas.yaml`)
 - **Status:** implemented (groups + lifecycle, membership, schedule, attendance; teachers mark attendance).

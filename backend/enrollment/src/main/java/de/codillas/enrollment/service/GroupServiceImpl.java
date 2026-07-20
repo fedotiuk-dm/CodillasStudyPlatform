@@ -17,6 +17,7 @@ import de.codillas.enrollment.domain.model.GroupStatus;
 import de.codillas.enrollment.domain.repository.CourseStatusViewRepository;
 import de.codillas.enrollment.domain.repository.GroupRepository;
 import de.codillas.enrollment.mapper.GroupMapper;
+import de.codillas.shared.event.CourseArchived;
 import de.codillas.shared.event.CourseDeleted;
 import de.codillas.shared.event.GroupArchived;
 import de.codillas.shared.event.GroupDeleted;
@@ -94,6 +95,19 @@ public class GroupServiceImpl implements GroupService {
   @Transactional
   public void onCourseDeleted(CourseDeleted event) {
     repository.findByCourseId(event.courseId()).forEach(group -> deleteGroup(group.getId()));
+  }
+
+  /**
+   * Archiving the course retires the cohorts running it — otherwise they stay RUNNING and their
+   * students keep getting deadline mail for a course nobody teaches any more. Groups already
+   * ARCHIVED are skipped: that transition is terminal and the state machine would reject it.
+   */
+  @Override
+  @Transactional
+  public void onCourseArchived(CourseArchived event) {
+    repository.findByCourseId(event.courseId()).stream()
+        .filter(group -> group.getStatus() != GroupStatus.ARCHIVED)
+        .forEach(group -> archiveGroup(group.getId()));
   }
 
   private Group findByIdOrThrow(UUID id) {
