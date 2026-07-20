@@ -215,6 +215,17 @@ public class CourseServiceImpl implements CourseService {
     publishLessonsDeleted(List.of(lessonId));
   }
 
+  /**
+   * A FILE material is nothing but a pointer at the file — with the file gone there is no material
+   * left to show, and the service refuses to author one without a fileId anyway. So drop the row
+   * rather than leave an unopenable entry in the lesson.
+   */
+  @Override
+  @Transactional
+  public void onFileDeleted(UUID fileId) {
+    materialRepository.deleteByFileId(fileId);
+  }
+
   /** Lesson ids across every section of a course — read before a cascading delete, never after. */
   private List<UUID> lessonIdsOfCourse(UUID courseId) {
     List<UUID> sectionIds =

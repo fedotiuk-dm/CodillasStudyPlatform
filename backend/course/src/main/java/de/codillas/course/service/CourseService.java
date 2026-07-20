@@ -48,4 +48,6 @@ public interface CourseService {
   MaterialResponse addMaterial(UUID lessonId, CreateMaterialRequest request);
 
   void deleteMaterial(UUID materialId);
+
+  void onFileDeleted(UUID fileId);
 }

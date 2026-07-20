@@ -12,3 +12,7 @@ databaseChangeLog:
   - include:
       file: changes/0.6.0/0.6.0-add-files-indexes.yaml
       relativeToChangelogFile: true
+  # 0.6.0 — demo seed: metadata for the placeholder material file (context: seed)
+  - include:
+      file: changes/0.6.0/0.6.0-seed-files-placeholder.yaml
+      relativeToChangelogFile: true

@@ -23,5 +23,8 @@ public interface MaterialRepository
 
   void deleteByLessonId(UUID lessonId);
 
+  /** Materials orphaned by a file deleted upstream in files. */
+  void deleteByFileId(UUID fileId);
+
   void deleteByLessonIdIn(Collection<UUID> lessonIds);
 }

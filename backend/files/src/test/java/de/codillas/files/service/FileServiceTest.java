@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.multipart.MultipartFile;
 
 import de.codillas.files.api.dto.StoredFileResponse;
@@ -37,6 +38,7 @@ class FileServiceTest {
   @Mock private ObjectStorage storage;
   @Mock private StoredFileMapper mapper;
   @Mock private CurrentUser currentUser;
+  @Mock private ApplicationEventPublisher events;
   private FileServiceImpl service;
 
   @org.junit.jupiter.api.BeforeEach
@@ -48,7 +50,8 @@ class FileServiceTest {
             mapper,
             currentUser,
             java.util.List.of(),
-            new de.codillas.files.config.FilesProperties("b", "e", "r", "a", "s", null));
+            new de.codillas.files.config.FilesProperties("b", "e", "r", "a", "s", null),
+            events);
   }
 
   @Test
@@ -85,7 +88,8 @@ class FileServiceTest {
             currentUser,
             java.util.List.of(),
             new de.codillas.files.config.FilesProperties(
-                "b", "e", "r", "a", "s", java.util.List.of("text/plain")));
+                "b", "e", "r", "a", "s", java.util.List.of("text/plain")),
+            events);
 
     UUID uploader = UUID.randomUUID();
     byte[] bytes = "hello".getBytes();
@@ -118,7 +122,8 @@ class FileServiceTest {
             currentUser,
             java.util.List.of(),
             new de.codillas.files.config.FilesProperties(
-                "b", "e", "r", "a", "s", java.util.List.of("text/plain")));
+                "b", "e", "r", "a", "s", java.util.List.of("text/plain")),
+            events);
 
     MultipartFile file = mock(MultipartFile.class);
     when(file.isEmpty()).thenReturn(false);
@@ -211,5 +216,19 @@ class FileServiceTest {
     when(repository.findById(fileId)).thenReturn(Optional.empty());
     assertThatExceptionOfType(NotFoundException.class)
         .isThrownBy(() -> service.getMetadata(fileId));
+  }
+
+  @Test
+  @DisplayName("delete announces FileDeleted so course can drop the orphaned materials")
+  void delete_publishesFileDeleted() {
+    UUID fileId = UUID.randomUUID();
+    StoredFile file = StoredFile.builder().storageKey("k").build();
+    when(repository.findById(fileId)).thenReturn(java.util.Optional.of(file));
+
+    service.delete(fileId);
+
+    verify(storage).delete("k");
+    verify(repository).delete(file);
+    verify(events).publishEvent(new de.codillas.shared.event.FileDeleted(fileId));
   }
 }

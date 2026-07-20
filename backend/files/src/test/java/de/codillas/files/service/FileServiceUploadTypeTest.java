@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.mock.web.MockMultipartFile;
 
 import de.codillas.files.api.dto.FileReferenceType;
@@ -30,6 +31,7 @@ class FileServiceUploadTypeTest {
   @Mock ObjectStorage storage;
   @Mock StoredFileMapper mapper;
   @Mock CurrentUser currentUser;
+  @Mock ApplicationEventPublisher events;
   FileServiceImpl service;
 
   @BeforeEach
@@ -41,7 +43,8 @@ class FileServiceUploadTypeTest {
             mapper,
             currentUser,
             List.of(),
-            new FilesProperties("b", "e", "r", "a", "s", List.of("application/pdf")));
+            new FilesProperties("b", "e", "r", "a", "s", List.of("application/pdf")),
+            events);
   }
 
   @Test

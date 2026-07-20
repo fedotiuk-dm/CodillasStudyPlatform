@@ -17,7 +17,7 @@ Build/fill with the **`new-modulith-module`** skill — do not scaffold blind.
   read port; `LessonsDeleted` lets enrollment/homework/assessment clear their `lessonId`). The
   publish/archive writers emit them inside the transaction, after the state-machine transition; a
   startup reconciler republishes `CoursePublished` for every already-PUBLISHED course.
-- **Consumes:** —
+- **Consumes:** `FileDeleted` (drops the orphaned FILE materials)
 - **Depends on (by id / events / API only):** files (materials, by API)
 - **OpenAPI spec:** `backend/openapi/course-paths.yaml` (+ `course-schemas.yaml`) — single `course`
   tag (one tag = one generated `*Api` interface; never add a second tag per module).

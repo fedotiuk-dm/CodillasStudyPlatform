@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import de.codillas.files.domain.model.StoredFile;
 import de.codillas.files.domain.repository.StoredFileRepository;
 import de.codillas.files.mapper.StoredFileMapper;
 import de.codillas.shared.domain.repository.GenericSpecification;
+import de.codillas.shared.event.FileDeleted;
 import de.codillas.shared.exception.BadRequestException;
 import de.codillas.shared.exception.NotFoundException;
 import de.codillas.shared.security.CurrentUser;
@@ -37,6 +39,7 @@ public class FileServiceImpl implements FileService {
   private final CurrentUser currentUser;
   private final List<FileAccessAuthorizer> authorizers;
   private final FilesProperties properties;
+  private final ApplicationEventPublisher events;
 
   @Override
   @Transactional
@@ -119,6 +122,7 @@ public class FileServiceImpl implements FileService {
     StoredFile file = findByIdOrThrow(fileId);
     storage.delete(file.getStorageKey());
     repository.delete(file);
+    events.publishEvent(new FileDeleted(fileId));
   }
 
   private StoredFile findByIdOrThrow(UUID id) {

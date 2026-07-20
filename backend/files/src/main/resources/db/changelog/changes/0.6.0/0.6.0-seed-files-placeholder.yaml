@@ -1,0 +1,21 @@
+# Demo seed extras — runs ONLY under the `seed` Liquibase context (dev stack sets it).
+databaseChangeLog:
+  - changeSet:
+      id: 0.6.0-seed-files-placeholder
+      author: codillas
+      context: seed
+      comment: Metadata row for the placeholder fileId the course demo material points at
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - sqlCheck:
+                expectedResult: 1
+                sql: >-
+                  SELECT count(*) FROM stored_files
+                  WHERE id = '11111111-1111-1111-1111-111111111111'
+      changes:
+        - sqlFile:
+            path: 0.6.0-seed-files-placeholder.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false
