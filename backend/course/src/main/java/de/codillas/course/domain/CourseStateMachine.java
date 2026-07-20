@@ -20,7 +20,10 @@ public class CourseStateMachine {
   private static final Map<CourseStatus, Set<CourseStatus>> ALLOWED =
       Map.of(
           CourseStatus.DRAFT, EnumSet.of(CourseStatus.PUBLISHED, CourseStatus.ARCHIVED),
-          CourseStatus.PUBLISHED, EnumSet.of(CourseStatus.ARCHIVED));
+          CourseStatus.PUBLISHED, EnumSet.of(CourseStatus.ARCHIVED),
+          // Un-archiving is just publishing again; it deliberately does NOT revive the cohorts,
+          // since a group may have been archived on its own long before the course was.
+          CourseStatus.ARCHIVED, EnumSet.of(CourseStatus.PUBLISHED));
 
   public void transitionTo(Course course, CourseStatus target) {
     StateMachines.transition("course", course.getStatus(), target, ALLOWED, course::setStatus);

@@ -11,13 +11,16 @@ import static org.mockito.Mockito.when;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Sort;
 
+import de.codillas.homework.domain.model.ArchivedGroup;
 import de.codillas.homework.domain.model.Assignment;
 import de.codillas.homework.domain.model.AssignmentStatus;
+import de.codillas.homework.domain.repository.ArchivedGroupRepository;
 import de.codillas.homework.domain.repository.AssignmentRepository;
 import de.codillas.shared.event.AssignmentDueSoon;
 
@@ -34,12 +37,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class DueReminderJobTest {
 
   @Mock private AssignmentRepository repository;
+  @Mock private ArchivedGroupRepository archivedGroups;
   @Mock private ApplicationEventPublisher events;
   private DueReminderJob job;
 
   @BeforeEach
   void setUp() {
-    job = new DueReminderJob(repository, events, Duration.ofHours(24));
+    job = new DueReminderJob(repository, archivedGroups, events, Duration.ofHours(24));
   }
 
   @Test
@@ -129,5 +133,30 @@ class DueReminderJobTest {
         .status(AssignmentStatus.PUBLISHED)
         .dueAt(dueAt)
         .build();
+  }
+
+  @Test
+  @DisplayName("an assignment of a retired cohort is skipped — no event, flag untouched")
+  void archivedGroup_isSkipped() {
+    UUID groupId = UUID.randomUUID();
+    Assignment assignment =
+        Assignment.builder()
+            .id(UUID.randomUUID())
+            .groupId(groupId)
+            .title("HW1")
+            .status(AssignmentStatus.PUBLISHED)
+            .dueAt(Instant.now().plus(Duration.ofHours(12)))
+            .build();
+    when(repository.findByStatusAndDueReminderSentFalseAndDueAtBetween(
+            eq(AssignmentStatus.PUBLISHED), any(), any(), eq(AssignmentRepository.BY_DUE_AT)))
+        .thenReturn(List.of(assignment));
+    when(archivedGroups.findByGroupIdIn(Set.of(groupId)))
+        .thenReturn(List.of(ArchivedGroup.builder().groupId(groupId).build()));
+
+    job.remindDueSoon();
+
+    verify(events, never()).publishEvent(any(AssignmentDueSoon.class));
+    verify(repository, never()).save(any());
+    assertThat(assignment.isDueReminderSent()).isFalse();
   }
 }

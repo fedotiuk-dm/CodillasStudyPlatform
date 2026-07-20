@@ -20,4 +20,6 @@ public interface AssignmentService {
   void onLessonsDeleted(List<UUID> lessonIds);
 
   void onGroupArchived(UUID groupId);
+
+  void onGroupResumed(UUID groupId);
 }

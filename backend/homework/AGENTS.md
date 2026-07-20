@@ -8,7 +8,8 @@ Build/fill with the **`new-modulith-module`** skill — do not scaffold blind.
 - **Publishes:** AssignmentPublished, SubmissionGraded
 - **Consumes:** `GroupDeleted` (purge the group's assignments + submissions/reviews/grades),
   `LessonsDeleted` (clears `Assignment.lessonId`; the assignment survives), `GroupArchived`
-  (mutes deadline reminders — a finished cohort stops being chased)
+  / `GroupResumed` (mute/un-mute deadline reminders via the local `archived_groups` read model —
+  a retired cohort stops being chased, a resumed one starts again)
 - **Depends on (by id / events / API only):** course (lesson), files, user (by id)
 - **OpenAPI spec:** `backend/openapi/homework-paths.yaml` (+ `homework-schemas.yaml`)
 - **Status:** implemented (full lifecycle, versioned submissions, rubrics, late penalties, reminders).

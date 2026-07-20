@@ -53,7 +53,14 @@ class CourseStateMachineTest {
             () -> stateMachine.transitionTo(inStatus(CourseStatus.PUBLISHED), CourseStatus.DRAFT));
     assertThatExceptionOfType(ConflictException.class)
         .isThrownBy(
-            () ->
-                stateMachine.transitionTo(inStatus(CourseStatus.ARCHIVED), CourseStatus.PUBLISHED));
+            () -> stateMachine.transitionTo(inStatus(CourseStatus.ARCHIVED), CourseStatus.DRAFT));
+  }
+
+  @Test
+  @DisplayName("publishing an archived course un-archives it — the cohorts stay retired")
+  void archivedCourseCanBeRepublished() {
+    Course archived = inStatus(CourseStatus.ARCHIVED);
+    stateMachine.transitionTo(archived, CourseStatus.PUBLISHED);
+    assertThat(archived.getStatus()).isEqualTo(CourseStatus.PUBLISHED);
   }
 }

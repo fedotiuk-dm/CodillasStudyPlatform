@@ -1,0 +1,35 @@
+# Local read model: which cohorts are currently archived. Fed by GroupArchived / GroupResumed —
+# homework may not read enrollment, and the due-reminder job needs the answer every hour.
+databaseChangeLog:
+  - changeSet:
+      id: 0.7.0-create-archived-groups
+      author: codillas
+      comment: Archived-cohort read model for muting deadline reminders (0.7.0)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: archived_groups
+      changes:
+        - createTable:
+            tableName: archived_groups
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints: { primaryKey: true, nullable: false }
+              - column:
+                  name: group_id
+                  type: uuid
+                  constraints: { nullable: false, unique: true, uniqueConstraintName: uq_archived_groups_group }
+              - column:
+                  name: created_at
+                  type: timestamptz
+              - column:
+                  name: updated_at
+                  type: timestamptz
+              - column:
+                  name: lock_version
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints: { nullable: false }

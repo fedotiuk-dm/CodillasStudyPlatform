@@ -179,6 +179,7 @@ The glue. Publishers don't know their consumers.
 | `LessonsDeleted`      | course       | enrollment, homework, assessment (clear the `lessonId` back-pointer) |
 | `FileDeleted`         | files        | course (drop the materials pointing at the file)          |
 | `GroupArchived`       | enrollment   | homework (mute the group's deadline reminders)            |
+| `GroupResumed`        | enrollment   | homework (un-mute them — archiving is reversible)         |
 
 Events are persisted via Spring Modulith's event publication registry
 (at-least-once, retried on restart) so a consumer failure never silently drops

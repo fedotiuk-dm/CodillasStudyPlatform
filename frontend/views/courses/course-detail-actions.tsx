@@ -27,14 +27,14 @@ export function CourseDetailActions({ course }: { course: CourseDetailResponse }
 
   return (
     <div className="flex items-center gap-2">
-      {course.status === CourseStatus.DRAFT && (
+      {course.status !== CourseStatus.PUBLISHED && (
         <Button
           variant="outline"
           size="sm"
           disabled={pending}
           onClick={() => publish.mutate({ courseId })}
         >
-          {t("publish")}
+          {course.status === CourseStatus.ARCHIVED ? t("restore") : t("publish")}
         </Button>
       )}
       {course.status === CourseStatus.PUBLISHED && (

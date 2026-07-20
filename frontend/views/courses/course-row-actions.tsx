@@ -39,9 +39,9 @@ export function CourseRowActions({ course }: { course: CourseResponse }) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          {course.status === CourseStatus.DRAFT && (
+          {course.status !== CourseStatus.PUBLISHED && (
             <DropdownMenuItem onClick={() => publish.mutate({ courseId })}>
-              {t("publish")}
+              {course.status === CourseStatus.ARCHIVED ? t("restore") : t("publish")}
             </DropdownMenuItem>
           )}
           {course.status === CourseStatus.PUBLISHED && (

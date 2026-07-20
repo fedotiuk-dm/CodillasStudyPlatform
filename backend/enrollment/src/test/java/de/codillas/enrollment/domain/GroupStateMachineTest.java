@@ -38,14 +38,18 @@ class GroupStateMachineTest {
     assertThatNoException()
         .isThrownBy(
             () -> stateMachine.transitionTo(inStatus(GroupStatus.RUNNING), GroupStatus.ARCHIVED));
+    // Resuming a retired cohort — the reason homework's muted reminders must be reversible.
+    Group resumed = inStatus(GroupStatus.ARCHIVED);
+    stateMachine.transitionTo(resumed, GroupStatus.RUNNING);
+    assertThat(resumed.getStatus()).isEqualTo(GroupStatus.RUNNING);
   }
 
   @Test
-  @DisplayName("un-archiving and restarting are conflicts")
+  @DisplayName("reverting to DRAFT is a conflict, in either direction")
   void illegalTransitions_conflict() {
     assertThatExceptionOfType(ConflictException.class)
         .isThrownBy(
-            () -> stateMachine.transitionTo(inStatus(GroupStatus.ARCHIVED), GroupStatus.RUNNING));
+            () -> stateMachine.transitionTo(inStatus(GroupStatus.ARCHIVED), GroupStatus.DRAFT));
     assertThatExceptionOfType(ConflictException.class)
         .isThrownBy(
             () -> stateMachine.transitionTo(inStatus(GroupStatus.RUNNING), GroupStatus.DRAFT));

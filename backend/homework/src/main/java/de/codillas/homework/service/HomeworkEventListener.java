@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import de.codillas.shared.event.GroupArchived;
 import de.codillas.shared.event.GroupDeleted;
+import de.codillas.shared.event.GroupResumed;
 import de.codillas.shared.event.LessonsDeleted;
 
 import lombok.RequiredArgsConstructor;
@@ -32,5 +33,10 @@ class HomeworkEventListener {
   @ApplicationModuleListener
   void on(GroupArchived event) {
     assignmentService.onGroupArchived(event.groupId());
+  }
+
+  @ApplicationModuleListener
+  void on(GroupResumed event) {
+    assignmentService.onGroupResumed(event.groupId());
   }
 }

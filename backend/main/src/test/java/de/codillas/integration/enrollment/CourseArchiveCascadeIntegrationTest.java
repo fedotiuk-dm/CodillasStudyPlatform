@@ -20,8 +20,7 @@ import de.codillas.enrollment.domain.model.Group;
 import de.codillas.enrollment.domain.model.GroupStatus;
 import de.codillas.enrollment.domain.repository.CourseStatusViewRepository;
 import de.codillas.enrollment.domain.repository.GroupRepository;
-import de.codillas.homework.domain.model.Assignment;
-import de.codillas.homework.domain.repository.AssignmentRepository;
+import de.codillas.homework.domain.repository.ArchivedGroupRepository;
 import de.codillas.integration.BaseIntegrationTest;
 
 import com.jayway.jsonpath.JsonPath;
@@ -33,7 +32,7 @@ class CourseArchiveCascadeIntegrationTest extends BaseIntegrationTest {
 
   @Autowired MockMvc mockMvc;
   @Autowired GroupRepository groups;
-  @Autowired AssignmentRepository assignments;
+  @Autowired ArchivedGroupRepository archivedGroups;
   @Autowired CourseStatusViewRepository courseStatus;
 
   private static JwtRequestPostProcessor as(UUID userId, String role) {
@@ -69,24 +68,16 @@ class CourseArchiveCascadeIntegrationTest extends BaseIntegrationTest {
             .getContentAsString();
     UUID groupId = UUID.fromString(JsonPath.read(group, "$.id"));
 
-    String assignment =
-        mockMvc
-            .perform(
-                post("/api/assignments")
-                    .with(as(teacher, "TEACHER"))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(
-                        "{\"groupId\":\"%s\",\"title\":\"HW1\",\"dueAt\":\"2026-12-01T10:00:00Z\"}"
-                            .formatted(groupId)))
-            .andExpect(status().isCreated())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-    UUID assignmentId = UUID.fromString(JsonPath.read(assignment, "$.id"));
-    assertThat(assignments.findById(assignmentId))
-        .get()
-        .extracting(Assignment::isDueReminderSent)
-        .isEqualTo(false);
+    mockMvc
+        .perform(
+            post("/api/assignments")
+                .with(as(teacher, "TEACHER"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    "{\"groupId\":\"%s\",\"title\":\"HW1\",\"dueAt\":\"2026-12-01T10:00:00Z\"}"
+                        .formatted(groupId)))
+        .andExpect(status().isCreated());
+    assertThat(archivedGroups.existsByGroupId(groupId)).isFalse();
 
     mockMvc
         .perform(post("/api/courses/{id}/archive", courseId).with(as(admin, "ADMIN")))
@@ -100,11 +91,18 @@ class CourseArchiveCascadeIntegrationTest extends BaseIntegrationTest {
                   .get()
                   .extracting(Group::getStatus)
                   .isEqualTo(GroupStatus.ARCHIVED);
-              assertThat(assignments.findById(assignmentId))
-                  .get()
-                  .extracting(Assignment::isDueReminderSent)
-                  .isEqualTo(true);
+              assertThat(archivedGroups.existsByGroupId(groupId)).isTrue();
             });
+
+    // ...and all the way back: resuming the cohort has to un-mute it, which is why the mute is a
+    // read model and not a one-way flag on each assignment.
+    mockMvc
+        .perform(post("/api/groups/{id}/start", groupId).with(as(admin, "ADMIN")))
+        .andExpect(status().isOk());
+
+    await()
+        .atMost(Duration.ofSeconds(15))
+        .untilAsserted(() -> assertThat(archivedGroups.existsByGroupId(groupId)).isFalse());
   }
 
   private UUID createPublishedCourse(UUID admin) throws Exception {

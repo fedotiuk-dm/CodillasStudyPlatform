@@ -19,7 +19,10 @@ import {
 } from "@/lib/api/enrollment/enrollment/enrollment";
 import { type GroupResponse, GroupStatus } from "@/lib/api/enrollment/model";
 
-/** One group's lifecycle actions: start a draft, archive a running one, delete (confirmed). */
+/**
+ * One group's lifecycle actions: archive a running cohort, delete (confirmed), and start —
+ * which both launches a DRAFT and resumes an ARCHIVED one, since the backend allows the way back.
+ */
 export function GroupRowActions({ group }: { group: GroupResponse }) {
   const t = useTranslations("groups");
   const start = useStartGroup();
@@ -39,9 +42,9 @@ export function GroupRowActions({ group }: { group: GroupResponse }) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          {group.status === GroupStatus.DRAFT && (
+          {group.status !== GroupStatus.RUNNING && (
             <DropdownMenuItem onClick={() => start.mutate({ groupId })}>
-              {t("start")}
+              {group.status === GroupStatus.ARCHIVED ? t("resume") : t("start")}
             </DropdownMenuItem>
           )}
           {group.status === GroupStatus.RUNNING && (

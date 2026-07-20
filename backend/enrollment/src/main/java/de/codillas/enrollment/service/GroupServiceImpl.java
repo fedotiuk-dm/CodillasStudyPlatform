@@ -21,6 +21,7 @@ import de.codillas.shared.event.CourseArchived;
 import de.codillas.shared.event.CourseDeleted;
 import de.codillas.shared.event.GroupArchived;
 import de.codillas.shared.event.GroupDeleted;
+import de.codillas.shared.event.GroupResumed;
 import de.codillas.shared.exception.ConflictException;
 import de.codillas.shared.exception.NotFoundException;
 
@@ -68,8 +69,15 @@ public class GroupServiceImpl implements GroupService {
   @Transactional
   public GroupResponse startGroup(UUID groupId) {
     Group group = findByIdOrThrow(groupId);
+    // Same endpoint starts a DRAFT cohort and resumes an ARCHIVED one; only the latter has to be
+    // announced, since only it had downstream state (muted reminders) switched off.
+    boolean resuming = group.getStatus() == GroupStatus.ARCHIVED;
     stateMachine.transitionTo(group, GroupStatus.RUNNING);
-    return mapper.toResponse(repository.save(group));
+    GroupResponse response = mapper.toResponse(repository.save(group));
+    if (resuming) {
+      events.publishEvent(new GroupResumed(groupId));
+    }
+    return response;
   }
 
   @Override

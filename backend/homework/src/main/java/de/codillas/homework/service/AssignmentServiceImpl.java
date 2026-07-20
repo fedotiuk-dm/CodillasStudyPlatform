@@ -12,8 +12,10 @@ import de.codillas.homework.api.dto.AssignmentListResponse;
 import de.codillas.homework.api.dto.AssignmentResponse;
 import de.codillas.homework.api.dto.CreateAssignmentRequest;
 import de.codillas.homework.domain.AssignmentStateMachine;
+import de.codillas.homework.domain.model.ArchivedGroup;
 import de.codillas.homework.domain.model.Assignment;
 import de.codillas.homework.domain.model.AssignmentStatus;
+import de.codillas.homework.domain.repository.ArchivedGroupRepository;
 import de.codillas.homework.domain.repository.AssignmentRepository;
 import de.codillas.homework.mapper.AssignmentMapper;
 import de.codillas.shared.event.AssignmentPublished;
@@ -27,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class AssignmentServiceImpl implements AssignmentService {
 
   private final AssignmentRepository repository;
+  private final ArchivedGroupRepository archivedGroups;
   private final AssignmentMapper mapper;
   private final AssignmentStateMachine stateMachine;
   private final ApplicationEventPublisher events;
@@ -65,16 +68,22 @@ public class AssignmentServiceImpl implements AssignmentService {
   }
 
   /**
-   * A finished course stops chasing people. ARCHIVED is terminal, so flipping the reminder flag —
-   * the same flag the job uses to avoid reminding twice — is enough to mute the group for good.
+   * A retired cohort stops being chased about deadlines. Recorded as a read model rather than a
+   * flag on each assignment: archiving is reversible, and an assignment authored while the cohort
+   * was archived must be muted too.
    */
   @Override
   @Transactional
   public void onGroupArchived(UUID groupId) {
-    List<Assignment> pending =
-        repository.findByGroupId(groupId).stream().filter(a -> !a.isDueReminderSent()).toList();
-    pending.forEach(assignment -> assignment.setDueReminderSent(true));
-    repository.saveAll(pending);
+    if (!archivedGroups.existsByGroupId(groupId)) {
+      archivedGroups.save(ArchivedGroup.builder().groupId(groupId).build());
+    }
+  }
+
+  @Override
+  @Transactional
+  public void onGroupResumed(UUID groupId) {
+    archivedGroups.deleteByGroupId(groupId);
   }
 
   private Assignment findByIdOrThrow(UUID id) {

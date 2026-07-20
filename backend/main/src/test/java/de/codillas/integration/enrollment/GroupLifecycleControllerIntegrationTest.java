@@ -145,15 +145,17 @@ class GroupLifecycleControllerIntegrationTest extends BaseIntegrationTest {
   }
 
   @Test
-  @DisplayName("restarting an ARCHIVED group is a 409 conflict")
-  void restartArchived_conflicts() throws Exception {
+  @DisplayName("starting an ARCHIVED group resumes it — the same endpoint un-archives")
+  void restartArchived_resumes() throws Exception {
     UUID group = createGroupFor(createPublishedCourse());
     mockMvc
         .perform(post("/api/groups/{id}/archive", group).with(withRole("ADMIN")))
-        .andExpect(status().isOk());
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.status").value("ARCHIVED"));
     mockMvc
         .perform(post("/api/groups/{id}/start", group).with(withRole("ADMIN")))
-        .andExpect(status().isConflict());
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.status").value("RUNNING"));
   }
 
   @Test
