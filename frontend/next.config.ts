@@ -16,10 +16,6 @@ const nextConfig: NextConfig = {
   devIndicators: {
     position: "bottom-right",
   },
-  // Smooth page transitions via the View Transitions API (cross-fade on navigation).
-  experimental: {
-    viewTransition: true,
-  },
 };
 
 export default withNextIntl(nextConfig);

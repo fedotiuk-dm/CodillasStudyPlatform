@@ -24,7 +24,10 @@ const MODULES = [
 ] as const;
 
 function moduleConfig(module: string): Config {
-  const input = { target: `${SPECS}/${module}-paths.yaml` };
+  const input = {
+    target: `${SPECS}/${module}-paths.yaml`,
+    parserOptions: { externalRefs: { allow: ["common.yaml", `${module}-schemas.yaml`] } },
+  };
 
   const config: Config = {
     [module]: {
@@ -50,6 +53,7 @@ function moduleConfig(module: string): Config {
       output: {
         mode: "tags-split",
         target: `./lib/api/${module}/zod`,
+        clean: true,
         client: "zod",
         fileExtension: ".zod.ts",
       },

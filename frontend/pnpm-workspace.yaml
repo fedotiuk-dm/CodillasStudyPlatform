@@ -9,3 +9,6 @@ onlyBuiltDependencies:
   - "@swc/core"
   - esbuild
   - sharp
+updateConfig:
+  ignoreDependencies:
+    - orval

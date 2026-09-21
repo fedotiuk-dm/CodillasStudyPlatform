@@ -1,5 +1,4 @@
 import Axios, { type AxiosError, type AxiosRequestConfig } from "axios";
-import { stringify } from "qs";
 
 import { ensureValidToken, handleSessionExpired, keycloak } from "@/lib/auth";
 
@@ -12,8 +11,8 @@ export const AXIOS_INSTANCE = Axios.create({
     Accept: "application/json",
   },
   timeout: API_TIMEOUT,
-  // Repeat-style arrays match Spring's binding (?sort=a&sort=b); skip nulls.
-  paramsSerializer: (params) => stringify(params, { arrayFormat: "repeat", skipNulls: true }),
+  // Repeat-style arrays match Spring's binding (?sort=a&sort=b).
+  paramsSerializer: { indexes: null },
 });
 
 AXIOS_INSTANCE.interceptors.request.use(async (config) => {
