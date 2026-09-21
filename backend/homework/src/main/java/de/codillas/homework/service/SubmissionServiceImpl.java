@@ -116,7 +116,6 @@ public class SubmissionServiceImpl implements SubmissionService {
   @Override
   public List<SubmissionResponse> listSubmissions(UUID assignmentId) {
     Sort order = SubmissionRepository.BY_STUDENT_THEN_VERSION;
-    // Staff review every submission; a student sees only their own versions.
     return mapper.toResponseList(
         currentUser.isStaff()
             ? repository.findByAssignmentId(assignmentId, order)

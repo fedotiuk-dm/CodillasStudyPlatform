@@ -1,9 +1,5 @@
 name: CI/CD
 
-# Build + test on every push and pull request. The deploy job is wired but switched off: it runs
-# only once the repository variable DEPLOY_ENABLED is "true" and the DEPLOY_* secrets exist.
-# There is no production server yet, so on GitHub it shows as "skipped".
-
 on:
   push:
     branches: [master]
@@ -30,7 +26,6 @@ jobs:
           distribution: temurin
           java-version: 25
           cache: maven
-      # Integration tests start Postgres 18 / MinIO via Testcontainers on the runner's Docker.
       - name: Spotless check + tests
         working-directory: backend
         run: ./mvnw -B -ntp spotless:check verify
@@ -54,7 +49,6 @@ jobs:
           node-version: 24
           cache: pnpm
           cache-dependency-path: frontend/pnpm-lock.yaml
-      # Same install + direct bins as frontend/Dockerfile (no postinstalls, no run-time deps check).
       - run: pnpm install --frozen-lockfile --ignore-scripts
       - name: Generate the API client from backend/openapi
         run: ./node_modules/.bin/orval
@@ -89,7 +83,6 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/codillas-backend:${{ github.sha }}
             ${{ env.REGISTRY }}/codillas-backend:latest
-      # Build context is the repo root: the frontend image generates its client from backend/openapi.
       - name: Build + push the frontend image
         uses: docker/build-push-action@v6
         with:
@@ -99,7 +92,6 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/codillas-frontend:${{ github.sha }}
             ${{ env.REGISTRY }}/codillas-frontend:latest
-      # The server keeps its own compose file + .env (docs/operations/deployment.md).
       - name: Roll out on the server
         uses: appleboy/ssh-action@v1
         with:

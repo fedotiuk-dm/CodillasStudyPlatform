@@ -39,7 +39,6 @@ class FileAccessAuthorizationIntegrationTest extends BaseIntegrationTest {
   @Container
   static final MinIOContainer MINIO =
       new MinIOContainer(
-          // Docker Hub no longer serves minio/minio; MinIO publishes to quay.io.
           DockerImageName.parse("quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z")
               .asCompatibleSubstituteFor("minio/minio"));
 

@@ -120,7 +120,7 @@ export function SubmissionRow({
           </div>
         )}
 
-        {/* Teacher return — the state machine allows it from SUBMITTED / IN_REVIEW only */}
+        {/* Teacher return */}
         {canManage && inReview && (
           <Button
             variant="outline"
