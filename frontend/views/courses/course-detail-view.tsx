@@ -27,7 +27,7 @@ export function CourseDetailView({ courseId }: { courseId: string }) {
 
   // Archived courses are read-only: hide every edit/add affordance.
   const canEdit = isTeacher && data?.status !== CourseStatus.ARCHIVED;
-  const sections = [...(data?.sections ?? [])].sort((a, b) => a.sortOrder - b.sortOrder);
+  const sections = data?.sections ?? [];
 
   return (
     <>

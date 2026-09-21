@@ -2,7 +2,6 @@
 
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
 import type { ReactNode } from "react";
 
 import { ProfileInit } from "@/components/auth/profile-init";
@@ -18,16 +17,14 @@ const queryClient = createQueryClient();
 export function RootProviders({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-      <NuqsAdapter>
-        <QueryClientProvider client={queryClient}>
-          <KeycloakProvider>
-            <ProfileInit />
-            {children}
-            <Toaster richColors position="top-right" />
-            {process.env.NODE_ENV === "development" && <ReactQueryDevtools initialIsOpen={false} />}
-          </KeycloakProvider>
-        </QueryClientProvider>
-      </NuqsAdapter>
+      <QueryClientProvider client={queryClient}>
+        <KeycloakProvider>
+          <ProfileInit />
+          {children}
+          <Toaster richColors position="top-right" />
+          {process.env.NODE_ENV === "development" && <ReactQueryDevtools initialIsOpen={false} />}
+        </KeycloakProvider>
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }

@@ -25,7 +25,7 @@ export function SectionBlock({
   const del = useDeleteSection();
   const [addLesson, setAddLesson] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const lessons = [...section.lessons].sort((a, b) => a.sortOrder - b.sortOrder);
+  const lessons = section.lessons;
 
   return (
     <div className="rounded-lg border">

@@ -19,6 +19,8 @@ Codex read the same contract. Edit `AGENTS.md`; the two never drift.
 - Modules talk via domain **events + by-id references only** — never import another module's `@Entity`.
 - **API-first**: change the OpenAPI spec under `backend/openapi/`, then regenerate; generated code
   is read-only.
+- **Sorting is the backend's job.** Every list and nested collection comes back from the API already
+  in display order (named `Sort` constants / `Pageable` `sort` param); the frontend never re-sorts.
 - Build or fill a module with the **`new-modulith-module`** skill — do not scaffold blind.
 - **Don't commit unless asked.** Format the backend with `mvn spotless:apply`.
 

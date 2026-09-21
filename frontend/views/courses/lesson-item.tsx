@@ -33,7 +33,7 @@ export function LessonItem({
   const { data: detail, isLoading } = useGetLesson(lesson.id, { query: { enabled: open } });
   const delLesson = useDeleteLesson();
 
-  const materials = [...(detail?.materials ?? [])].sort((a, b) => a.sortOrder - b.sortOrder);
+  const materials = detail?.materials ?? [];
   const meetingHref = detail?.meetingUrl ? safeHref(detail.meetingUrl) : undefined;
   const recordingHref = detail?.recordingUrl ? safeHref(detail.recordingUrl) : undefined;
 
