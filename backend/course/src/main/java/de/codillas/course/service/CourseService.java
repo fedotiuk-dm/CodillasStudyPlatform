@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import de.codillas.course.api.dto.CourseDetailResponse;
 import de.codillas.course.api.dto.CourseListResponse;
 import de.codillas.course.api.dto.CourseResponse;
+import de.codillas.course.api.dto.CourseStatus;
 import de.codillas.course.api.dto.CreateCourseRequest;
 import de.codillas.course.api.dto.CreateLessonRequest;
 import de.codillas.course.api.dto.CreateMaterialRequest;
@@ -21,7 +22,7 @@ public interface CourseService {
 
   CourseResponse createCourse(CreateCourseRequest request);
 
-  CourseListResponse listCourses(de.codillas.course.api.dto.CourseStatus status, Pageable pageable);
+  CourseListResponse listCourses(CourseStatus status, Pageable pageable);
 
   CourseResponse publishCourse(UUID courseId);
 
