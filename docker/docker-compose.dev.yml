@@ -54,7 +54,7 @@ services:
       start_period: 30s
 
   minio:
-    image: minio/minio:latest
+    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
     container_name: codillas-minio
     restart: unless-stopped
     # Host ports 9100/9101 (9000 is commonly taken — e.g. Portainer). In-container stays 9000/9001.
@@ -67,7 +67,7 @@ services:
       - minio_data:/data
 
   minio-init:
-    image: minio/mc:latest
+    image: quay.io/minio/mc:RELEASE.2025-08-13T08-35-41Z
     container_name: codillas-minio-init
     restart: "no"
     depends_on: { minio: { condition: service_started } }

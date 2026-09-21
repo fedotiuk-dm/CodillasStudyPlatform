@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.MinIOContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.BucketAlreadyOwnedByYouException;
 
@@ -35,7 +36,12 @@ class FileAccessAuthorizationIntegrationTest extends BaseIntegrationTest {
 
   private static final String BUCKET = "codillas";
 
-  @Container static final MinIOContainer MINIO = new MinIOContainer("minio/minio:latest");
+  @Container
+  static final MinIOContainer MINIO =
+      new MinIOContainer(
+          // Docker Hub no longer serves minio/minio; MinIO publishes to quay.io.
+          DockerImageName.parse("quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z")
+              .asCompatibleSubstituteFor("minio/minio"));
 
   @DynamicPropertySource
   static void minioProperties(DynamicPropertyRegistry registry) {
