@@ -1,0 +1,115 @@
+name: CI/CD
+
+# Build + test on every push and pull request. The deploy job is wired but switched off: it runs
+# only once the repository variable DEPLOY_ENABLED is "true" and the DEPLOY_* secrets exist.
+# There is no production server yet, so on GitHub it shows as "skipped".
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  backend:
+    name: Backend (format + unit + integration tests)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: maven
+      # Integration tests start Postgres 18 / MinIO via Testcontainers on the runner's Docker.
+      - name: Spotless check + tests
+        working-directory: backend
+        run: ./mvnw -B -ntp spotless:check verify
+
+  frontend:
+    name: Frontend (lint + type-check)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      # Same install + direct bins as frontend/Dockerfile (no postinstalls, no run-time deps check).
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Generate the API client from backend/openapi
+        run: ./node_modules/.bin/orval
+      - run: ./node_modules/.bin/biome check .
+      - run: ./node_modules/.bin/tsc --noEmit
+
+  deploy:
+    name: Deploy to production
+    needs: [backend, frontend]
+    if: github.event_name == 'push' && vars.DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    permissions:
+      contents: read
+      packages: write
+    env:
+      REGISTRY: ghcr.io/fedotiuk-dm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build + push the backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: backend
+          file: backend/Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/codillas-backend:${{ github.sha }}
+            ${{ env.REGISTRY }}/codillas-backend:latest
+      # Build context is the repo root: the frontend image generates its client from backend/openapi.
+      - name: Build + push the frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: frontend/Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/codillas-frontend:${{ github.sha }}
+            ${{ env.REGISTRY }}/codillas-frontend:latest
+      # The server keeps its own compose file + .env (docs/operations/deployment.md).
+      - name: Roll out on the server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            cd /opt/codillas
+            export TAG=${{ github.sha }}
+            docker compose pull
+            docker compose up -d --remove-orphans
+      - name: Smoke test
+        run: curl -fsS --retry 10 --retry-delay 6 --retry-all-errors "${{ vars.BACKEND_URL }}/actuator/health"
