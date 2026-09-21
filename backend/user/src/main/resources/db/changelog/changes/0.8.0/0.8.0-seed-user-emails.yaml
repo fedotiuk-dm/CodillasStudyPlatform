@@ -1,0 +1,19 @@
+# Demo seed extras — runs ONLY under the `seed` Liquibase context (dev stack sets it).
+databaseChangeLog:
+  - changeSet:
+      id: 0.8.0-seed-user-emails
+      author: codillas
+      context: seed
+      comment: Demo profile emails (mirror the Keycloak realm export; dev only)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - sqlCheck:
+                expectedResult: 0
+                sql: SELECT count(*) FROM user_profiles WHERE email IS NULL AND display_name IN ('Ada Admin', 'Tom Teacher', 'Sam Student')
+      changes:
+        - sqlFile:
+            path: 0.8.0-seed-user-emails.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false

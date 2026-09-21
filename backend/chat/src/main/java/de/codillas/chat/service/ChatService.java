@@ -26,6 +26,9 @@ public interface ChatService {
   /** Ensure the group's channel exists and the student is a member (fed by StudentEnrolled). */
   void onStudentEnrolled(UUID groupId, UUID userId);
 
+  /** Open the group channel and seat its teacher in it. */
+  void onGroupCreated(UUID groupId, UUID teacherId);
+
   /** Drop the group's chat room with its members and messages (fed by GroupDeleted). */
   void onGroupDeleted(UUID groupId);
 }

@@ -26,6 +26,7 @@ import type { AttemptResponse } from "@/lib/api/assessment/model";
 import { useHasAnyRole } from "@/lib/auth";
 import { Role } from "@/lib/constants";
 import { AttemptWizard } from "./attempt-wizard";
+import { AttemptsDialog } from "./attempts-dialog";
 import { ManageQuestionsDialog } from "./manage-questions-dialog";
 import { TestWizard } from "./test-wizard";
 
@@ -35,6 +36,7 @@ export function AssessmentView() {
   const canManage = useHasAnyRole([Role.ADMIN, Role.TEACHER]);
   const [createOpen, setCreateOpen] = useState(false);
   const [manageTestId, setManageTestId] = useState<string | null>(null);
+  const [attemptsTest, setAttemptsTest] = useState<{ id: string; title: string } | null>(null);
   const [takeTest, setTakeTest] = useState<{
     id: string;
     title: string;
@@ -124,6 +126,11 @@ export function AssessmentView() {
                           </Button>
                         </>
                       )}
+                      {canManage && test.status === "PUBLISHED" && (
+                        <Button variant="outline" size="sm" onClick={() => setAttemptsTest(test)}>
+                          {t("attempts")}
+                        </Button>
+                      )}
                       {!canManage && test.status === "PUBLISHED" && (
                         <Button
                           size="sm"
@@ -149,6 +156,15 @@ export function AssessmentView() {
           testId={manageTestId}
           open={!!manageTestId}
           onOpenChange={(o) => !o && setManageTestId(null)}
+        />
+      )}
+
+      {attemptsTest && (
+        <AttemptsDialog
+          testId={attemptsTest.id}
+          testTitle={attemptsTest.title}
+          open={!!attemptsTest}
+          onOpenChange={(o) => !o && setAttemptsTest(null)}
         />
       )}
 

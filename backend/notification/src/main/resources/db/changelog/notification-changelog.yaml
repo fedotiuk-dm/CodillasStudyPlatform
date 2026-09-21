@@ -35,3 +35,7 @@ databaseChangeLog:
   - include:
       file: changes/0.7.0/0.7.0-add-notification-checks.yaml
       relativeToChangelogFile: true
+  # 0.8.0 — demo recipient emails (context: seed)
+  - include:
+      file: changes/0.8.0/0.8.0-seed-recipient-emails.yaml
+      relativeToChangelogFile: true

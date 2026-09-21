@@ -144,7 +144,11 @@ public class AttemptServiceImpl implements AttemptService {
     stateMachine.transitionTo(
         attempt, grader.allGraded(answers) ? AttemptStatus.GRADED : AttemptStatus.SUBMITTED);
     repository.save(attempt);
-    int maxPoints = questionsById.values().stream().mapToInt(Question::getPoints).sum();
+    publishCompleted(attempt, questionsById.values().stream().mapToInt(Question::getPoints).sum());
+    return mapper.toResponse(attempt, mapper.toAnswerResponses(answers));
+  }
+
+  private void publishCompleted(Attempt attempt, int maxPoints) {
     events.publishEvent(
         new AttemptCompleted(
             attempt.getId(),
@@ -153,7 +157,6 @@ public class AttemptServiceImpl implements AttemptService {
             attempt.getScore(),
             maxPoints,
             null)); // groupId resolved by gradebook from its membership read model
-    return mapper.toResponse(attempt, mapper.toAnswerResponses(answers));
   }
 
   /** When the time limit has elapsed, auto-finalize and reject further edits. */
@@ -191,7 +194,24 @@ public class AttemptServiceImpl implements AttemptService {
       stateMachine.transitionTo(attempt, AttemptStatus.GRADED);
     }
     repository.save(attempt);
+    // Re-emit so the gradebook picks up the manually graded score (it keeps the best per test).
+    int maxPoints =
+        questionRepository.findByTestId(attempt.getTestId(), QuestionRepository.BY_ORDER).stream()
+            .mapToInt(Question::getPoints)
+            .sum();
+    publishCompleted(attempt, maxPoints);
     return mapper.toAnswerResponse(answer);
+  }
+
+  @Override
+  public List<AttemptResponse> listTestAttempts(UUID testId) {
+    return repository.findByTestId(testId, AttemptRepository.BY_STUDENT_THEN_NUMBER).stream()
+        .map(
+            attempt ->
+                mapper.toResponse(
+                    attempt,
+                    mapper.toAnswerResponses(answerRepository.findByAttemptId(attempt.getId()))))
+        .toList();
   }
 
   @Override

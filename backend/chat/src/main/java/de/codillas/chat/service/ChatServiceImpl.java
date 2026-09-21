@@ -108,11 +108,16 @@ public class ChatServiceImpl implements ChatService {
   }
 
   /**
-   * Notify every other member of the room about a posted message (any room type) so it surfaces in
-   * their in-app notification bell — the sender is excluded. Real-time STOMP delivery still happens
-   * separately via {@code broadcastMessage}.
+   * Notify the other member of a DIRECT room about a posted message so it surfaces in their bell.
+   * Group and assignment-thread rooms rely on real-time STOMP delivery only — a notification (and
+   * email) per message per member would drown the roster.
    */
   private void notifyRecipients(UUID roomId, UUID senderId) {
+    boolean direct =
+        roomRepository.findById(roomId).map(r -> r.getType() == ChatRoomType.DIRECT).orElse(false);
+    if (!direct) {
+      return;
+    }
     memberRepository.findByRoomId(roomId).stream()
         .map(ChatRoomMember::getUserId)
         .filter(userId -> !userId.equals(senderId))
@@ -124,11 +129,19 @@ public class ChatServiceImpl implements ChatService {
   @Override
   @Transactional
   public void onStudentEnrolled(UUID groupId, UUID userId) {
-    ChatRoom room =
-        roomRepository
-            .findByTypeAndReferenceId(ChatRoomType.GROUP, groupId)
-            .orElseGet(() -> roomRepository.save(mapper.toGroupRoom(groupId)));
-    addMember(room.getId(), userId);
+    addMember(groupRoom(groupId).getId(), userId);
+  }
+
+  @Override
+  @Transactional
+  public void onGroupCreated(UUID groupId, UUID teacherId) {
+    addMember(groupRoom(groupId).getId(), teacherId);
+  }
+
+  private ChatRoom groupRoom(UUID groupId) {
+    return roomRepository
+        .findByTypeAndReferenceId(ChatRoomType.GROUP, groupId)
+        .orElseGet(() -> roomRepository.save(mapper.toGroupRoom(groupId)));
   }
 
   @Override

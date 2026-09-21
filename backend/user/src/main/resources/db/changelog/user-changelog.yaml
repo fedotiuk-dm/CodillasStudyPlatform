@@ -17,3 +17,7 @@ databaseChangeLog:
   - include:
       file: changes/0.3.0/0.3.0-add-user-lock-version.yaml
       relativeToChangelogFile: true
+  # 0.8.0 — demo profile emails (context: seed)
+  - include:
+      file: changes/0.8.0/0.8.0-seed-user-emails.yaml
+      relativeToChangelogFile: true

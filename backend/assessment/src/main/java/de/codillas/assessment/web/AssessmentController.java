@@ -1,5 +1,6 @@
 package de.codillas.assessment.web;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Pageable;
@@ -89,6 +90,12 @@ public class AssessmentController implements AssessmentApi {
   @RequiresAuthenticated
   public ResponseEntity<AttemptResponse> getAttempt(UUID attemptId) {
     return ResponseEntity.ok(attemptService.getAttempt(attemptId));
+  }
+
+  @Override
+  @RequiresTeacher
+  public ResponseEntity<List<AttemptResponse>> listTestAttempts(UUID testId) {
+    return ResponseEntity.ok(attemptService.listTestAttempts(testId));
   }
 
   @Override

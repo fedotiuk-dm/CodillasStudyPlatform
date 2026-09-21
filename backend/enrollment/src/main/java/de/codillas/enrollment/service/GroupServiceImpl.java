@@ -20,6 +20,7 @@ import de.codillas.enrollment.mapper.GroupMapper;
 import de.codillas.shared.event.CourseArchived;
 import de.codillas.shared.event.CourseDeleted;
 import de.codillas.shared.event.GroupArchived;
+import de.codillas.shared.event.GroupCreated;
 import de.codillas.shared.event.GroupDeleted;
 import de.codillas.shared.event.GroupResumed;
 import de.codillas.shared.exception.ConflictException;
@@ -53,7 +54,9 @@ public class GroupServiceImpl implements GroupService {
     if (!published) {
       throw new ConflictException("A group can only be created for a PUBLISHED course");
     }
-    return mapper.toResponse(repository.save(mapper.toEntity(request)));
+    Group saved = repository.save(mapper.toEntity(request));
+    events.publishEvent(new GroupCreated(saved.getId(), saved.getTeacherId()));
+    return mapper.toResponse(saved);
   }
 
   @Override

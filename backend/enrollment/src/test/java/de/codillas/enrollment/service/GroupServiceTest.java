@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +27,7 @@ import de.codillas.enrollment.domain.model.Group;
 import de.codillas.enrollment.domain.repository.CourseStatusViewRepository;
 import de.codillas.enrollment.domain.repository.GroupRepository;
 import de.codillas.enrollment.mapper.GroupMapper;
+import de.codillas.shared.event.GroupCreated;
 import de.codillas.shared.exception.ConflictException;
 
 import org.junit.jupiter.api.DisplayName;
@@ -42,6 +44,7 @@ class GroupServiceTest {
   @Mock private GroupRepository repository;
   @Mock private CourseStatusViewRepository courseStatusRepository;
   @Mock private GroupMapper mapper;
+  @Mock private ApplicationEventPublisher events;
   @Mock private GroupStateMachine stateMachine;
   @InjectMocks private GroupServiceImpl service;
 
@@ -54,11 +57,12 @@ class GroupServiceTest {
   void createGroup_publishedCourse_mapsPersistsAndReturns() {
     UUID courseId = UUID.randomUUID();
     CreateGroupRequest request = requestForCourse(courseId);
+    UUID teacherId = UUID.randomUUID();
     Group toSave = Group.builder().name("Cohort A").build();
-    Group saved = Group.builder().name("Cohort A").build();
+    Group saved =
+        Group.builder().id(UUID.randomUUID()).name("Cohort A").teacherId(teacherId).build();
     GroupResponse response =
-        new GroupResponse(
-            UUID.randomUUID(), "Cohort A", courseId, UUID.randomUUID(), GroupStatus.DRAFT);
+        new GroupResponse(saved.getId(), "Cohort A", courseId, teacherId, GroupStatus.DRAFT);
 
     when(courseStatusRepository.findById(courseId))
         .thenReturn(Optional.of(new CourseStatusView(courseId, "PUBLISHED")));
@@ -68,6 +72,7 @@ class GroupServiceTest {
 
     assertThat(service.createGroup(request)).isSameAs(response);
     verify(repository).save(toSave);
+    verify(events).publishEvent(new GroupCreated(saved.getId(), teacherId));
   }
 
   @Test

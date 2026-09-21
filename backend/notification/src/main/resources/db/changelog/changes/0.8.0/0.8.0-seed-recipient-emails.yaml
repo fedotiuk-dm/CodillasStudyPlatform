@@ -1,0 +1,19 @@
+# Demo seed extras — runs ONLY under the `seed` Liquibase context (dev stack sets it).
+databaseChangeLog:
+  - changeSet:
+      id: 0.8.0-seed-recipient-emails
+      author: codillas
+      context: seed
+      comment: Demo recipient emails for the mail channel (dev only)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - sqlCheck:
+                expectedResult: 3
+                sql: SELECT count(*) FROM recipient_email WHERE email IN ('admin@codillas.dev', 'teacher@codillas.dev', 'student@codillas.dev')
+      changes:
+        - sqlFile:
+            path: 0.8.0-seed-recipient-emails.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false

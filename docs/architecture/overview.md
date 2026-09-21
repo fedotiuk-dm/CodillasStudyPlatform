@@ -163,6 +163,7 @@ The glue. Publishers don't know their consumers.
 
 | Event                 | Published by | Consumed by                                                |
 |-----------------------|--------------|------------------------------------------------------------|
+| `GroupCreated`        | enrollment   | chat (open the group channel + seat the teacher)          |
 | `StudentEnrolled`     | enrollment   | chat (add to channel), gradebook (init progress), notification + announcement (rosters) |
 | `AssignmentPublished` | homework     | notification                                               |
 | `AssignmentDueSoon`   | homework     | notification (deadline reminders)                          |

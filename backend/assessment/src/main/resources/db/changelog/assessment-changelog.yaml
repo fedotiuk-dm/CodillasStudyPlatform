@@ -47,3 +47,7 @@ databaseChangeLog:
   - include:
       file: changes/0.7.0/0.7.0-add-assessment-checks.yaml
       relativeToChangelogFile: true
+  # 0.8.0 — demo test window (context: seed)
+  - include:
+      file: changes/0.8.0/0.8.0-seed-assessment-window.yaml
+      relativeToChangelogFile: true

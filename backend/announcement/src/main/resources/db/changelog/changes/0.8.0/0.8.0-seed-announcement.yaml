@@ -1,0 +1,19 @@
+# Demo seed extras — runs ONLY under the `seed` Liquibase context (dev stack sets it).
+databaseChangeLog:
+  - changeSet:
+      id: 0.8.0-seed-announcement
+      author: codillas
+      context: seed
+      comment: Demo announcement roster + welcome post for Java Cohort A (dev only)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - sqlCheck:
+                expectedResult: 1
+                sql: SELECT count(*) FROM announcements WHERE title = 'Welcome to Java Cohort A'
+      changes:
+        - sqlFile:
+            path: 0.8.0-seed-announcement.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false

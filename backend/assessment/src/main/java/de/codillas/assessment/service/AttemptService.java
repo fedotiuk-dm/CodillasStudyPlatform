@@ -1,5 +1,6 @@
 package de.codillas.assessment.service;
 
+import java.util.List;
 import java.util.UUID;
 
 import de.codillas.assessment.api.dto.AnswerResponse;
@@ -18,4 +19,7 @@ public interface AttemptService {
   AnswerResponse gradeAnswer(UUID attemptId, UUID answerId, GradeAnswerRequest request);
 
   AttemptResponse getAttempt(UUID attemptId);
+
+  /** Every attempt at a test with its answers — the staff grading view. */
+  List<AttemptResponse> listTestAttempts(UUID testId);
 }

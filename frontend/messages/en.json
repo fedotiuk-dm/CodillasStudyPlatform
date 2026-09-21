@@ -166,7 +166,9 @@
     "uploading": "Uploading…",
     "fileTooLarge": "File is too large (max 25 MB).",
     "fileUnsupportedType": "Unsupported file type.",
-    "fileUploadFailed": "Upload failed. Please try again."
+    "fileUploadFailed": "Upload failed. Please try again.",
+    "download": "Download",
+    "downloadFailed": "Could not download the file."
   },
   "myCourses": {
     "title": "My courses",
@@ -577,7 +579,10 @@
       "SUBMITTED": "Submitted",
       "GRADED": "Graded"
     },
-    "studentDescription": "Auto-graded tests for your courses."
+    "studentDescription": "Auto-graded tests for your courses.",
+    "attempts": "Attempts",
+    "attemptsDescription": "Students' attempts. Text and code answers are graded manually.",
+    "noAttempts": "No attempts yet."
   },
   "admin": {
     "title": "Admin overview",

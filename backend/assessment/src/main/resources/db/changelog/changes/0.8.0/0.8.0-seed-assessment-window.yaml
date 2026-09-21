@@ -1,0 +1,19 @@
+# Demo seed extras — runs ONLY under the `seed` Liquibase context (dev stack sets it).
+databaseChangeLog:
+  - changeSet:
+      id: 0.8.0-seed-assessment-window
+      author: codillas
+      context: seed
+      comment: Reopen the demo configured test window relative to seeding time (dev only)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - sqlCheck:
+                expectedResult: 0
+                sql: SELECT count(*) FROM tests WHERE title = 'Java Control Test' AND available_until < now()
+      changes:
+        - sqlFile:
+            path: 0.8.0-seed-assessment-window.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false

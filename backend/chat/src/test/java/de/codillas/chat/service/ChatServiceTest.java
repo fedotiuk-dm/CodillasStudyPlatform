@@ -64,6 +64,8 @@ class ChatServiceTest {
     when(mapper.toMessage(roomId, senderId, "hi")).thenReturn(message);
     when(messageRepository.save(message)).thenReturn(message);
     when(mapper.toMessageResponse(message)).thenReturn(dto);
+    when(roomRepository.findById(roomId))
+        .thenReturn(Optional.of(ChatRoom.builder().id(roomId).type(ChatRoomType.DIRECT).build()));
     when(memberRepository.findByRoomId(roomId))
         .thenReturn(
             List.of(
@@ -75,6 +77,52 @@ class ChatServiceTest {
     verify(events).publishEvent(new MessagePosted(roomId, messageId, senderId));
     verify(events).publishEvent(new DirectMessagePosted(roomId, otherId, senderId));
     verify(events, never()).publishEvent(new DirectMessagePosted(roomId, senderId, senderId));
+  }
+
+  @Test
+  @DisplayName("posting in a GROUP room broadcasts only — no per-member notifications")
+  void postMessage_groupRoom_doesNotNotify() {
+    UUID roomId = UUID.randomUUID();
+    UUID senderId = UUID.randomUUID();
+    ChatMessage message =
+        ChatMessage.builder().id(UUID.randomUUID()).roomId(roomId).senderId(senderId).build();
+    ChatMessageResponse dto = mock(ChatMessageResponse.class);
+    when(memberRepository.existsByRoomIdAndUserId(roomId, senderId)).thenReturn(true);
+    when(mapper.toMessage(roomId, senderId, "hi")).thenReturn(message);
+    when(messageRepository.save(message)).thenReturn(message);
+    when(mapper.toMessageResponse(message)).thenReturn(dto);
+    when(roomRepository.findById(roomId))
+        .thenReturn(Optional.of(ChatRoom.builder().id(roomId).type(ChatRoomType.GROUP).build()));
+
+    service.postMessage(senderId, roomId, "hi");
+
+    verify(broadcast).broadcastMessage(roomId, dto);
+    verify(events, never()).publishEvent(any(DirectMessagePosted.class));
+    verify(memberRepository, never()).findByRoomId(roomId);
+  }
+
+  @Test
+  @DisplayName("onGroupCreated opens the group room and seats the teacher")
+  void onGroupCreated_createsRoomAndAddsTeacher() {
+    UUID groupId = UUID.randomUUID();
+    UUID teacherId = UUID.randomUUID();
+    ChatRoom room =
+        ChatRoom.builder()
+            .id(UUID.randomUUID())
+            .type(ChatRoomType.GROUP)
+            .referenceId(groupId)
+            .build();
+    when(roomRepository.findByTypeAndReferenceId(ChatRoomType.GROUP, groupId))
+        .thenReturn(Optional.empty());
+    when(mapper.toGroupRoom(groupId)).thenReturn(room);
+    when(roomRepository.save(room)).thenReturn(room);
+    when(memberRepository.existsByRoomIdAndUserId(room.getId(), teacherId)).thenReturn(false);
+    when(mapper.toMember(room.getId(), teacherId)).thenReturn(new ChatRoomMember());
+
+    service.onGroupCreated(groupId, teacherId);
+
+    verify(roomRepository).save(room);
+    verify(memberRepository).save(any(ChatRoomMember.class));
   }
 
   @Test

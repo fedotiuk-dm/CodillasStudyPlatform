@@ -155,6 +155,33 @@ paths:
         "409":
           $ref: "common.yaml#/components/responses/Conflict"
   /api/tests/{testId}/attempts:
+    get:
+      tags:
+        - assessment
+      operationId: listTestAttempts
+      summary: Every student's attempts at a test, with answers, for manual grading (staff)
+      parameters:
+        - name: testId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Attempts, by student then attempt number
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "assessment-schemas.yaml#/components/schemas/AttemptResponse"
+        "401":
+          $ref: "common.yaml#/components/responses/Unauthorized"
+        "403":
+          $ref: "common.yaml#/components/responses/Forbidden"
+        "404":
+          $ref: "common.yaml#/components/responses/NotFound"
     post:
       tags:
         - assessment

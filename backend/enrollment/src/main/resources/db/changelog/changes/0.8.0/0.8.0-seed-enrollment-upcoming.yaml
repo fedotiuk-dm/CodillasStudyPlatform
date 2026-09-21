@@ -1,0 +1,19 @@
+# Demo seed extras — runs ONLY under the `seed` Liquibase context (dev stack sets it).
+databaseChangeLog:
+  - changeSet:
+      id: 0.8.0-seed-enrollment-upcoming
+      author: codillas
+      context: seed
+      comment: Demo upcoming lesson so the dashboard has a next lesson (dev only)
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - sqlCheck:
+                expectedResult: 1
+                sql: SELECT count(*) FROM scheduled_lessons WHERE title = 'Lesson 3 — Methods'
+      changes:
+        - sqlFile:
+            path: 0.8.0-seed-enrollment-upcoming.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: false

@@ -16,7 +16,9 @@ import java.util.UUID;
 
 import org.springframework.context.ApplicationEventPublisher;
 
+import de.codillas.assessment.api.dto.AnswerResponse;
 import de.codillas.assessment.api.dto.AttemptResponse;
+import de.codillas.assessment.api.dto.GradeAnswerRequest;
 import de.codillas.assessment.api.dto.SaveAnswerRequest;
 import de.codillas.assessment.domain.AttemptGrader;
 import de.codillas.assessment.domain.AttemptStateMachine;
@@ -372,5 +374,54 @@ class AttemptServiceTest {
 
     assertThatExceptionOfType(de.codillas.shared.exception.NotFoundException.class)
         .isThrownBy(() -> service.getAttempt(attemptId));
+  }
+
+  @Test
+  @DisplayName("listTestAttempts returns every attempt at the test with its answers")
+  void listTestAttempts_mapsEachAttemptWithAnswers() {
+    UUID testId = UUID.randomUUID();
+    Attempt attempt = Attempt.builder().id(UUID.randomUUID()).testId(testId).build();
+    Answer answer = Answer.builder().attemptId(attempt.getId()).build();
+    AttemptResponse dto = mock(AttemptResponse.class);
+    when(repository.findByTestId(testId, AttemptRepository.BY_STUDENT_THEN_NUMBER))
+        .thenReturn(List.of(attempt));
+    when(answerRepository.findByAttemptId(attempt.getId())).thenReturn(List.of(answer));
+    when(mapper.toAnswerResponses(List.of(answer))).thenReturn(List.of());
+    when(mapper.toResponse(attempt, List.of())).thenReturn(dto);
+
+    assertThat(service.listTestAttempts(testId)).containsExactly(dto);
+  }
+
+  @Test
+  @DisplayName(
+      "gradeAnswer that grades the last pending answer finishes the attempt and re-emits AttemptCompleted")
+  void gradeAnswer_lastAnswer_gradesAndPublishes() {
+    UUID testId = UUID.randomUUID();
+    UUID studentId = UUID.randomUUID();
+    Attempt attempt =
+        Attempt.builder()
+            .id(UUID.randomUUID())
+            .testId(testId)
+            .studentId(studentId)
+            .status(AttemptStatus.SUBMITTED)
+            .build();
+    Answer answer = Answer.builder().id(UUID.randomUUID()).attemptId(attempt.getId()).build();
+    GradeAnswerRequest request = new GradeAnswerRequest(3);
+    when(currentUser.isStaff()).thenReturn(true);
+    when(repository.findById(attempt.getId())).thenReturn(Optional.of(attempt));
+    when(answerRepository.findById(answer.getId())).thenReturn(Optional.of(answer));
+    when(answerRepository.findByAttemptId(attempt.getId())).thenReturn(List.of(answer));
+    when(grader.totalScore(List.of(answer))).thenReturn(3);
+    when(grader.allGraded(List.of(answer))).thenReturn(true);
+    when(questionRepository.findByTestId(testId, QuestionRepository.BY_ORDER))
+        .thenReturn(List.of(Question.builder().points(5).build()));
+    when(mapper.toAnswerResponse(answer)).thenReturn(mock(AnswerResponse.class));
+
+    service.gradeAnswer(attempt.getId(), answer.getId(), request);
+
+    assertThat(answer.getAwardedPoints()).isEqualTo(3);
+    verify(stateMachine).transitionTo(attempt, AttemptStatus.GRADED);
+    verify(events)
+        .publishEvent(new AttemptCompleted(attempt.getId(), testId, studentId, 3, 5, null));
   }
 }

@@ -6,3 +6,7 @@ databaseChangeLog:
   - include:
       file: changes/0.1.0/0.1.0-create-announcement-memberships.yaml
       relativeToChangelogFile: true
+  # 0.8.0 — demo roster + welcome announcement (context: seed)
+  - include:
+      file: changes/0.8.0/0.8.0-seed-announcement.yaml
+      relativeToChangelogFile: true

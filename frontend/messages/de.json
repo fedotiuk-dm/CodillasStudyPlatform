@@ -166,7 +166,9 @@
     "uploading": "Wird hochgeladen…",
     "fileTooLarge": "Die Datei ist zu groß (max. 25 MB).",
     "fileUnsupportedType": "Nicht unterstützter Dateityp.",
-    "fileUploadFailed": "Hochladen fehlgeschlagen. Bitte erneut versuchen."
+    "fileUploadFailed": "Hochladen fehlgeschlagen. Bitte erneut versuchen.",
+    "download": "Herunterladen",
+    "downloadFailed": "Datei konnte nicht heruntergeladen werden."
   },
   "myCourses": {
     "title": "Meine Kurse",
@@ -577,7 +579,10 @@
       "SUBMITTED": "Eingereicht",
       "GRADED": "Bewertet"
     },
-    "studentDescription": "Automatisch bewertete Tests für Ihre Kurse."
+    "studentDescription": "Automatisch bewertete Tests für Ihre Kurse.",
+    "attempts": "Versuche",
+    "attemptsDescription": "Versuche der Studierenden. Text- und Code-Antworten werden manuell bewertet.",
+    "noAttempts": "Noch keine Versuche."
   },
   "admin": {
     "title": "Admin-Übersicht",
