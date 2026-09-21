@@ -59,14 +59,12 @@
       "TEACHER": "Lehrkraft",
       "STUDENT": "Student"
     },
-    "announcements": "Ankündigungen"
+    "announcements": "Ankündigungen",
+    "myGroups": "Meine Gruppen",
+    "catalog": "Kurskatalog"
   },
   "dashboard": {
-    "eyebrow": "Ihr Lernbereich",
     "welcome": "Willkommen, {name}",
-    "learner": "Lernende",
-    "studentIntro": "Behalten Sie Unterricht, Aufgaben und Fortschritt an einem Ort im Blick.",
-    "staffIntro": "Organisieren Sie das Lernen, prüfen Sie Arbeiten und bleiben Sie mit Gruppen verbunden.",
     "overview": "Auf einen Blick",
     "myCourses": "Meine Kurse",
     "upcomingLessons": "Geplante Lektionen",
@@ -82,16 +80,33 @@
     "quickActions": "Schnellzugriff",
     "reviewHomework": "Hausaufgaben prüfen",
     "manageGroups": "Gruppen verwalten",
-    "openSchedule": "Zeitplan öffnen",
     "openHomework": "Hausaufgaben öffnen",
     "openTests": "Tests öffnen",
     "openChat": "Chat öffnen",
-    "schoolOverview": "Schulübersicht",
     "courses": "Kurse",
     "people": "Personen",
     "latestAnnouncements": "Neueste Ankündigungen",
     "fromYourGroups": "Aus deinen Gruppen",
-    "allAnnouncements": "Alle Ankündigungen"
+    "allAnnouncements": "Alle Ankündigungen",
+    "eyebrow": {
+      "ADMIN": "Schulverwaltung",
+      "TEACHER": "Ihr Lehrbereich",
+      "STUDENT": "Ihr Lernbereich"
+    },
+    "intro": {
+      "ADMIN": "Kurse, Gruppen, Einschreibungen und Nutzer — die gesamte Schulverwaltung an einem Ort.",
+      "TEACHER": "Ihre Gruppen, Hausaufgabenkorrektur, Tests und Ankündigungen an einem Ort.",
+      "STUDENT": "Behalten Sie Unterricht, Aufgaben und Fortschritt an einem Ort im Blick."
+    },
+    "welcomeAnonymous": "Willkommen",
+    "myGroups": "Meine Gruppen",
+    "announcements": "Ankündigungen",
+    "noUpcomingHintStaff": "Ein Administrator plant den Unterricht für Ihre Gruppen unter „Gruppen“.",
+    "fromAllGroups": "Aus allen Gruppen",
+    "manageCourses": "Kurse verwalten",
+    "openPeople": "Personen",
+    "manageTests": "Tests verwalten",
+    "postAnnouncement": "Ankündigung verfassen"
   },
   "course": {
     "course": "Kurs",
@@ -164,6 +179,11 @@
       "DRAFT": "Entwurf",
       "RUNNING": "Laufend",
       "ARCHIVED": "Archiviert"
+    },
+    "teaching": {
+      "title": "Meine Gruppen",
+      "description": "Gruppen, die Sie unterrichten.",
+      "empty": "Ihnen ist noch keine Gruppe zugewiesen. Gruppen erstellt und zuweist ein Administrator."
     }
   },
   "schedule": {
@@ -176,7 +196,9 @@
     "agendaView": "Agenda",
     "monthView": "Monat",
     "noLessonsThatDay": "An diesem Tag gibt es keinen Unterricht.",
-    "pickDay": "Tag auswählen"
+    "pickDay": "Tag auswählen",
+    "staffDescription": "Unterricht in den Gruppen, die Sie unterrichten.",
+    "staffEmpty": "In Ihren Gruppen ist noch kein Unterricht geplant. Ein Administrator plant ihn unter „Gruppen“."
   },
   "courses": {
     "title": "Kurse",
@@ -202,7 +224,8 @@
     "delete": "Löschen",
     "cancel": "Abbrechen",
     "confirmDeleteTitle": "Kurs löschen?",
-    "confirmDelete": "Dies löscht den Kurs und alle seine Abschnitte, Lektionen und Materialien. Dies kann nicht rückgängig gemacht werden."
+    "confirmDelete": "Dies löscht den Kurs und alle seine Abschnitte, Lektionen und Materialien. Dies kann nicht rückgängig gemacht werden.",
+    "staffDescription": "Der Kurskatalog der Schule. Lehrkräfte bearbeiten Inhalte, ein Administrator verwaltet den Status."
   },
   "groups": {
     "title": "Gruppen",
@@ -253,7 +276,9 @@
     "cancel": "Abbrechen",
     "confirmDeleteTitle": "Gruppe löschen?",
     "confirmDelete": "Dies löscht die Gruppe mit ihren Mitgliedern, dem Zeitplan und der Anwesenheit. Dies kann nicht rückgängig gemacht werden.",
-    "manageReadOnlyDescription": "Diese Gruppe ist archiviert — schreibgeschützt."
+    "manageReadOnlyDescription": "Diese Gruppe ist archiviert — schreibgeschützt.",
+    "teacherDescription": "Gruppen der Schule. Ein Administrator erstellt, startet und füllt Gruppen; Sie erfassen die Anwesenheit in Ihren.",
+    "manageTeacherDescription": "Mitglieder und Unterricht der Gruppe. Erfassen Sie die Anwesenheit; Einschreibung und Planung übernimmt ein Administrator."
   },
   "homework": {
     "title": "Hausaufgaben",
@@ -274,7 +299,7 @@
     "descriptionLabel": "Beschreibung",
     "descriptionPlaceholder": "Anweisungen…",
     "manageDescription": "Abgaben der Schüler prüfen und bewerten.",
-    "studentDescription": "Deine Abgaben für diese Aufgabe.",
+    "studentDescription": "Aufgaben Ihrer Gruppen und Ihre Abgaben.",
     "noSubmissions": "Noch keine Abgaben.",
     "updated": "Aktualisiert",
     "submitted": "Abgegeben",
@@ -323,11 +348,12 @@
       "IN_REVIEW": "In Prüfung",
       "GRADED": "Bewertet",
       "RETURNED": "Zurückgegeben"
-    }
+    },
+    "mySubmissions": "Meine Abgabe"
   },
   "files": {
     "title": "Dateien",
-    "description": "Dateien im Objektspeicher hochladen und verwalten.",
+    "description": "Von Ihnen hochgeladene Dateien.",
     "uploading": "Wird hochgeladen…",
     "upload": "Hochladen",
     "name": "Name",
@@ -344,7 +370,7 @@
   },
   "people": {
     "title": "Personen",
-    "description": "Lokale Profile aller im System.",
+    "description": "Alle Nutzer der Plattform.",
     "searchPlaceholder": "Nach Namen suchen…",
     "empty": "Keine Profile gefunden.",
     "name": "Name",
@@ -387,7 +413,7 @@
   },
   "chat": {
     "title": "Chat",
-    "description": "Echtzeit-Messaging über WebSocket.",
+    "description": "Gruppennachrichten und private Räume.",
     "newRoom": "Neuer Raum",
     "noRooms": "Noch keine Räume.",
     "selectRoom": "Wähle einen Raum, um zu chatten.",
@@ -424,7 +450,10 @@
     "unpin": "Lösen",
     "deleted": "Ankündigung gelöscht",
     "deleteTitle": "Diese Ankündigung löschen?",
-    "deleteDescription": "Gruppenmitglieder sehen sie nicht mehr. Das kann nicht rückgängig gemacht werden."
+    "deleteDescription": "Gruppenmitglieder sehen sie nicht mehr. Das kann nicht rückgängig gemacht werden.",
+    "staffDescription": "Ankündigungen für Gruppen. Wählen Sie eine Gruppe, um eine neue zu veröffentlichen.",
+    "allGroupsStaff": "Alle Gruppen",
+    "pickGroupFirst": "Zuerst eine Gruppe wählen"
   },
   "notifications": {
     "title": "Benachrichtigungen",
@@ -547,14 +576,14 @@
       "IN_PROGRESS": "In Bearbeitung",
       "SUBMITTED": "Eingereicht",
       "GRADED": "Bewertet"
-    }
+    },
+    "studentDescription": "Automatisch bewertete Tests für Ihre Kurse."
   },
   "admin": {
     "title": "Admin-Übersicht",
     "description": "Plattform-Kennzahlen und Schnellzugriffe.",
     "courses": "Kurse",
     "groups": "Gruppen",
-    "people": "Personen",
-    "forbidden": "Nur für Administratoren."
+    "people": "Personen"
   }
 }

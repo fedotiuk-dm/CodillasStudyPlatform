@@ -59,14 +59,12 @@
       "TEACHER": "Teacher",
       "STUDENT": "Student"
     },
-    "announcements": "Announcements"
+    "announcements": "Announcements",
+    "myGroups": "My groups",
+    "catalog": "Course catalogue"
   },
   "dashboard": {
-    "eyebrow": "Your learning workspace",
     "welcome": "Welcome, {name}",
-    "learner": "learner",
-    "studentIntro": "Keep track of lessons, assignments and progress in one place.",
-    "staffIntro": "Manage learning, review work and stay connected with your groups.",
     "overview": "At a glance",
     "myCourses": "My courses",
     "upcomingLessons": "Scheduled lessons",
@@ -82,16 +80,33 @@
     "quickActions": "Quick actions",
     "reviewHomework": "Review homework",
     "manageGroups": "Manage groups",
-    "openSchedule": "Open schedule",
     "openHomework": "Open homework",
     "openTests": "Open tests",
     "openChat": "Open chat",
-    "schoolOverview": "School overview",
     "courses": "Courses",
     "people": "People",
     "latestAnnouncements": "Latest announcements",
     "fromYourGroups": "From your groups",
-    "allAnnouncements": "All announcements"
+    "allAnnouncements": "All announcements",
+    "eyebrow": {
+      "ADMIN": "School management",
+      "TEACHER": "Your teaching workspace",
+      "STUDENT": "Your learning workspace"
+    },
+    "intro": {
+      "ADMIN": "Courses, groups, enrollment and users — all school management lives here.",
+      "TEACHER": "Your groups, homework review, tests and announcements in one place.",
+      "STUDENT": "Keep track of lessons, assignments and progress in one place."
+    },
+    "welcomeAnonymous": "Welcome",
+    "myGroups": "My groups",
+    "announcements": "Announcements",
+    "noUpcomingHintStaff": "An administrator schedules lessons for your groups under Groups.",
+    "fromAllGroups": "From all groups",
+    "manageCourses": "Manage courses",
+    "openPeople": "People",
+    "manageTests": "Manage tests",
+    "postAnnouncement": "Post an announcement"
   },
   "course": {
     "course": "Course",
@@ -164,6 +179,11 @@
       "DRAFT": "Draft",
       "RUNNING": "Running",
       "ARCHIVED": "Archived"
+    },
+    "teaching": {
+      "title": "My groups",
+      "description": "Groups you teach.",
+      "empty": "No groups assigned to you yet. An administrator creates and assigns groups."
     }
   },
   "schedule": {
@@ -176,7 +196,9 @@
     "agendaView": "Agenda",
     "monthView": "Month",
     "noLessonsThatDay": "No lessons on this day.",
-    "pickDay": "Pick a day"
+    "pickDay": "Pick a day",
+    "staffDescription": "Lessons in the groups you teach.",
+    "staffEmpty": "No lessons scheduled in your groups yet. An administrator schedules them under Groups."
   },
   "courses": {
     "title": "Courses",
@@ -202,7 +224,8 @@
     "delete": "Delete",
     "cancel": "Cancel",
     "confirmDeleteTitle": "Delete course?",
-    "confirmDelete": "This deletes the course and all its sections, lessons and materials. This cannot be undone."
+    "confirmDelete": "This deletes the course and all its sections, lessons and materials. This cannot be undone.",
+    "staffDescription": "The school's course catalogue. Teachers edit content, an administrator manages status."
   },
   "groups": {
     "title": "Groups",
@@ -253,7 +276,9 @@
     "cancel": "Cancel",
     "confirmDeleteTitle": "Delete group?",
     "confirmDelete": "This deletes the group with its members, schedule and attendance. This cannot be undone.",
-    "manageReadOnlyDescription": "This group is archived — read-only."
+    "manageReadOnlyDescription": "This group is archived — read-only.",
+    "teacherDescription": "School groups. An administrator creates, starts and fills groups; you mark attendance in yours.",
+    "manageTeacherDescription": "Group members and lessons. Mark attendance; enrollment and scheduling are done by an administrator."
   },
   "homework": {
     "title": "Homework",
@@ -274,7 +299,7 @@
     "descriptionLabel": "Description",
     "descriptionPlaceholder": "Instructions…",
     "manageDescription": "Review and grade student submissions.",
-    "studentDescription": "Your submissions for this task.",
+    "studentDescription": "Assignments in your groups and your submissions.",
     "noSubmissions": "No submissions yet.",
     "updated": "Updated",
     "submitted": "Submitted",
@@ -323,11 +348,12 @@
       "IN_REVIEW": "In review",
       "GRADED": "Graded",
       "RETURNED": "Returned"
-    }
+    },
+    "mySubmissions": "My work"
   },
   "files": {
     "title": "Files",
-    "description": "Upload and manage files stored in object storage.",
+    "description": "Files you have uploaded.",
     "uploading": "Uploading…",
     "upload": "Upload",
     "name": "Name",
@@ -344,7 +370,7 @@
   },
   "people": {
     "title": "People",
-    "description": "Local profiles of everyone in the system.",
+    "description": "Everyone on the platform.",
     "searchPlaceholder": "Search by name…",
     "empty": "No profiles found.",
     "name": "Name",
@@ -387,7 +413,7 @@
   },
   "chat": {
     "title": "Chat",
-    "description": "Real-time messaging over WebSocket.",
+    "description": "Group messages and private rooms.",
     "newRoom": "New room",
     "noRooms": "No rooms yet.",
     "selectRoom": "Select a room to start chatting.",
@@ -424,7 +450,10 @@
     "unpin": "Unpin",
     "deleted": "Announcement deleted",
     "deleteTitle": "Delete this announcement?",
-    "deleteDescription": "Group members will no longer see it. This cannot be undone."
+    "deleteDescription": "Group members will no longer see it. This cannot be undone.",
+    "staffDescription": "Announcements for groups. Pick a group to post a new one.",
+    "allGroupsStaff": "All groups",
+    "pickGroupFirst": "Pick a group first"
   },
   "notifications": {
     "title": "Notifications",
@@ -547,14 +576,14 @@
       "IN_PROGRESS": "In progress",
       "SUBMITTED": "Submitted",
       "GRADED": "Graded"
-    }
+    },
+    "studentDescription": "Auto-graded tests for your courses."
   },
   "admin": {
     "title": "Admin overview",
     "description": "Platform totals and quick links.",
     "courses": "Courses",
     "groups": "Groups",
-    "people": "People",
-    "forbidden": "Admins only."
+    "people": "People"
   }
 }

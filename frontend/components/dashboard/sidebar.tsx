@@ -14,8 +14,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Link, usePathname } from "@/i18n/navigation";
-import { useKeycloak } from "@/lib/auth";
-import { Role } from "@/lib/constants";
+import { useKeycloak, usePrimaryRole } from "@/lib/auth";
 import { useNavGroups } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
@@ -73,12 +72,8 @@ function NavigationContent({ onNavigate }: { onNavigate?: () => void }) {
 
 function SidebarFooter() {
   const t = useTranslations("nav");
-  const { name, roles } = useKeycloak();
-  const role = roles.includes(Role.ADMIN)
-    ? Role.ADMIN
-    : roles.includes(Role.TEACHER)
-      ? Role.TEACHER
-      : Role.STUDENT;
+  const { name } = useKeycloak();
+  const role = usePrimaryRole();
 
   return (
     <div className="m-3 rounded-xl border border-sidebar-border bg-background/55 p-3">

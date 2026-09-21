@@ -15,7 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useKeycloak } from "@/lib/auth";
+import { useKeycloak, usePrimaryRole } from "@/lib/auth";
 
 function initials(name: string | undefined): string {
   if (!name) return "?";
@@ -29,7 +29,9 @@ function initials(name: string | undefined): string {
 export function UserMenu() {
   const tc = useTranslations("common");
   const tp = useTranslations("profile");
-  const { name, email, roles, logout } = useKeycloak();
+  const tn = useTranslations("nav");
+  const { name, email, logout } = useKeycloak();
+  const role = usePrimaryRole();
   const [editOpen, setEditOpen] = useState(false);
 
   return (
@@ -48,7 +50,7 @@ export function UserMenu() {
             <div className="flex flex-col">
               <span className="truncate text-sm font-medium">{name ?? "—"}</span>
               <span className="text-muted-foreground truncate text-xs">
-                {email ?? roles.join(", ")}
+                {email ?? tn(`roles.${role}`)}
               </span>
             </div>
           </DropdownMenuLabel>

@@ -16,7 +16,7 @@ import {
   Users,
 } from "lucide-react";
 
-import { useRoles } from "@/lib/auth";
+import { usePrimaryRole } from "@/lib/auth";
 import { Role } from "@/lib/constants";
 
 export interface NavItem {
@@ -24,7 +24,7 @@ export interface NavItem {
   key: string;
   href: string;
   icon: LucideIcon;
-  /** Roles allowed to see the item; empty means any authenticated user. */
+  /** Primary roles (the highest role held) that see the item; empty means everyone. */
   roles: readonly Role[];
   group: NavGroupKey;
 }
@@ -33,22 +33,32 @@ export type NavGroupKey = "learning" | "communication" | "management";
 
 export const NAV_GROUPS: readonly NavGroupKey[] = ["learning", "communication", "management"];
 
+const STAFF = [Role.ADMIN, Role.TEACHER] as const;
+
 // Single source of truth for the app sidebar. Hrefs are locale-relative (the i18n <Link> adds the
-// /{locale} prefix). Labels live in messages/*.json under `nav.<key>`.
+// /{locale} prefix). Labels live in messages/*.json under `nav.<key>`. The same route may appear
+// twice under different keys so each role gets its own label/section (my-courses, courses).
 export const NAV_ITEMS: readonly NavItem[] = [
+  { key: "dashboard", href: "/dashboard", icon: LayoutDashboard, roles: [], group: "learning" },
   {
-    key: "dashboard",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-    roles: [],
+    key: "myCourses",
+    href: "/dashboard/my-courses",
+    icon: Library,
+    roles: [Role.STUDENT],
     group: "learning",
   },
-  { key: "myCourses", href: "/dashboard/my-courses", icon: Library, roles: [], group: "learning" },
+  {
+    key: "myGroups",
+    href: "/dashboard/my-courses",
+    icon: Library,
+    roles: [Role.TEACHER],
+    group: "learning",
+  },
   {
     key: "schedule",
     href: "/dashboard/schedule",
     icon: CalendarClock,
-    roles: [],
+    roles: [Role.STUDENT, Role.TEACHER],
     group: "learning",
   },
   {
@@ -67,6 +77,13 @@ export const NAV_ITEMS: readonly NavItem[] = [
     group: "learning",
   },
   {
+    key: "catalog",
+    href: "/dashboard/courses",
+    icon: BookOpen,
+    roles: [Role.STUDENT],
+    group: "learning",
+  },
+  {
     key: "announcements",
     href: "/dashboard/announcements",
     icon: Megaphone,
@@ -82,15 +99,9 @@ export const NAV_ITEMS: readonly NavItem[] = [
     group: "communication",
   },
   { key: "files", href: "/dashboard/files", icon: FolderOpen, roles: [], group: "communication" },
-  { key: "courses", href: "/dashboard/courses", icon: BookOpen, roles: [], group: "management" },
-  {
-    key: "groups",
-    href: "/dashboard/groups",
-    icon: Users,
-    roles: [Role.ADMIN, Role.TEACHER],
-    group: "management",
-  },
-  { key: "people", href: "/dashboard/people", icon: Contact, roles: [], group: "management" },
+  { key: "courses", href: "/dashboard/courses", icon: BookOpen, roles: STAFF, group: "management" },
+  { key: "groups", href: "/dashboard/groups", icon: Users, roles: STAFF, group: "management" },
+  { key: "people", href: "/dashboard/people", icon: Contact, roles: STAFF, group: "management" },
   {
     key: "admin",
     href: "/dashboard/admin",
@@ -100,12 +111,10 @@ export const NAV_ITEMS: readonly NavItem[] = [
   },
 ] as const;
 
-/** The nav items the current user may see, filtered by their realm roles. */
+/** The nav items the current user may see, by their primary (highest) role. */
 export function useNavItems(): readonly NavItem[] {
-  const roles = useRoles();
-  return NAV_ITEMS.filter(
-    (item) => item.roles.length === 0 || item.roles.some((role) => roles.includes(role)),
-  );
+  const role = usePrimaryRole();
+  return NAV_ITEMS.filter((item) => item.roles.length === 0 || item.roles.includes(role));
 }
 
 export function useNavGroups(): readonly { key: NavGroupKey; items: readonly NavItem[] }[] {

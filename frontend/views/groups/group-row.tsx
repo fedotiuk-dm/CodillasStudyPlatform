@@ -4,6 +4,8 @@ import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import { TableCell, TableRow } from "@/components/ui/table";
 import type { GroupResponse } from "@/lib/api/enrollment/model";
+import { useHasRole } from "@/lib/auth";
+import { Role } from "@/lib/constants";
 
 import { GroupRowActions } from "./group-row-actions";
 
@@ -20,6 +22,7 @@ export function GroupRow({
   onManage: () => void;
 }) {
   const t = useTranslations("groups");
+  const isAdmin = useHasRole(Role.ADMIN);
 
   return (
     <TableRow>
@@ -35,7 +38,7 @@ export function GroupRow({
             <Button variant="outline" size="sm" onClick={onManage}>
               {t("manage")}
             </Button>
-            <GroupRowActions group={group} />
+            {isAdmin && <GroupRowActions group={group} />}
           </div>
         )}
       </TableCell>

@@ -9,22 +9,28 @@ import { StatusBadge } from "@/components/shared/status-badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import { useListMyGroups } from "@/lib/api/enrollment/enrollment/enrollment";
+import { useHasRole } from "@/lib/auth";
+import { Role } from "@/lib/constants";
 
 export function MyCoursesView() {
   const t = useTranslations("myCourses");
   const locale = useLocale();
+  const isStaff = useHasRole(Role.TEACHER);
   const { data, isLoading, isError, refetch } = useListMyGroups();
   const groups = data ?? [];
 
   return (
     <>
-      <PageHeader title={t("title")} description={t("description")} />
+      <PageHeader
+        title={t(isStaff ? "teaching.title" : "title")}
+        description={t(isStaff ? "teaching.description" : "description")}
+      />
 
       <DataState
         isLoading={isLoading}
         isError={isError}
         isEmpty={groups.length === 0}
-        emptyMessage={t("empty")}
+        emptyMessage={t(isStaff ? "teaching.empty" : "empty")}
         variant="cards"
         onRetry={refetch}
       >

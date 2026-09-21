@@ -12,12 +12,15 @@ import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useListMyGroups, useListMySchedule } from "@/lib/api/enrollment/enrollment/enrollment";
+import { useHasRole } from "@/lib/auth";
+import { Role } from "@/lib/constants";
 import { downloadIcs } from "@/lib/ics";
 import { safeHref } from "@/lib/utils";
 
 export function ScheduleView() {
   const t = useTranslations("schedule");
   const locale = useLocale();
+  const isStaff = useHasRole(Role.TEACHER);
   const { data: lessons, isLoading, isError, refetch } = useListMySchedule();
   const { data: groups } = useListMyGroups();
   const [selectedDay, setSelectedDay] = useState<Date | undefined>(new Date());
@@ -59,7 +62,7 @@ export function ScheduleView() {
     <>
       <PageHeader
         title={t("title")}
-        description={t("description")}
+        description={t(isStaff ? "staffDescription" : "description")}
         action={
           agenda.length > 0 ? (
             <Button variant="outline" onClick={exportIcs}>
@@ -74,7 +77,7 @@ export function ScheduleView() {
         isLoading={isLoading}
         isError={isError}
         isEmpty={agenda.length === 0}
-        emptyMessage={t("empty")}
+        emptyMessage={t(isStaff ? "staffEmpty" : "empty")}
         onRetry={refetch}
       >
         <Tabs defaultValue="agenda">

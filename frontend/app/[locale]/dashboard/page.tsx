@@ -6,6 +6,7 @@ import {
   BookOpen,
   CalendarDays,
   Clock3,
+  Contact,
   GraduationCap,
   Megaphone,
   MessageSquare,
@@ -26,21 +27,14 @@ import {
 } from "@/lib/api/enrollment/enrollment/enrollment";
 import { useListMyNotifications } from "@/lib/api/notification/notification/notification";
 import { useListProfiles } from "@/lib/api/user/user/user";
-import { useKeycloak } from "@/lib/auth";
+import { useKeycloak, usePrimaryRole } from "@/lib/auth";
 import { Role } from "@/lib/constants";
 import { safeHref } from "@/lib/utils";
 
-function MetricCard({
-  icon: Icon,
-  label,
-  value,
-  href,
-}: {
-  icon: typeof BookOpen;
-  label: string;
-  value: number | undefined;
-  href: string;
-}) {
+type Metric = { icon: typeof BookOpen; label: string; value: number | undefined; href: string };
+type Action = { icon: typeof BookOpen; label: string; href: string };
+
+function MetricCard({ icon: Icon, label, value, href }: Metric) {
   return (
     <Link href={href} className="group">
       <Card className="h-full gap-4 py-5 transition-all hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-md">
@@ -62,17 +56,18 @@ function MetricCard({
 export default function DashboardPage() {
   const t = useTranslations("dashboard");
   const locale = useLocale();
-  const { name, roles } = useKeycloak();
-  const isAdmin = roles.includes(Role.ADMIN);
-  const isTeacher = roles.includes(Role.TEACHER);
-  const canManage = isAdmin || isTeacher;
+  const { name } = useKeycloak();
+  const role = usePrimaryRole();
+  const isAdmin = role === Role.ADMIN;
+  const isStudent = role === Role.STUDENT;
 
-  const { data: myGroups } = useListMyGroups();
-  const { data: schedule } = useListMySchedule();
+  // Admins neither belong to nor teach groups, so their "my" feeds are empty by definition.
+  const { data: myGroups } = useListMyGroups({ query: { enabled: !isAdmin } });
+  const { data: schedule } = useListMySchedule({ query: { enabled: !isAdmin } });
   const { data: announcements } = useListMyAnnouncements({ size: 3 });
   const { data: notifications } = useListMyNotifications({ size: 5 });
-  const { data: rooms } = useListMyRooms();
-  const { data: groups } = useListGroups(undefined, { query: { enabled: canManage } });
+  const { data: rooms } = useListMyRooms({ query: { enabled: !isAdmin } });
+  const { data: groups } = useListGroups(undefined, { query: { enabled: isAdmin } });
   const { data: courses } = useListCourses(undefined, { query: { enabled: isAdmin } });
   const { data: profiles } = useListProfiles(undefined, { query: { enabled: isAdmin } });
 
@@ -88,18 +83,90 @@ export default function DashboardPage() {
       )
     : undefined;
 
+  const metrics: Metric[] = isAdmin
+    ? [
+        {
+          icon: BookOpen,
+          label: t("courses"),
+          value: courses?.totalElements,
+          href: "/dashboard/courses",
+        },
+        {
+          icon: Users,
+          label: t("groups"),
+          value: groups?.totalElements,
+          href: "/dashboard/groups",
+        },
+        {
+          icon: Contact,
+          label: t("people"),
+          value: profiles?.totalElements,
+          href: "/dashboard/people",
+        },
+        {
+          icon: Megaphone,
+          label: t("announcements"),
+          value: announcements?.totalElements,
+          href: "/dashboard/announcements",
+        },
+      ]
+    : [
+        {
+          icon: GraduationCap,
+          label: t(isStudent ? "myCourses" : "myGroups"),
+          value: myGroups?.length,
+          href: "/dashboard/my-courses",
+        },
+        {
+          icon: CalendarDays,
+          label: t("upcomingLessons"),
+          value: upcomingLessons?.length,
+          href: "/dashboard/schedule",
+        },
+        {
+          icon: Bell,
+          label: t("unreadNotifications"),
+          value: notifications?.unread,
+          href: "/dashboard/notifications",
+        },
+        {
+          icon: MessageSquare,
+          label: t("messages"),
+          value: rooms?.length,
+          href: "/dashboard/chat",
+        },
+      ];
+
+  const actions: Action[] = {
+    [Role.ADMIN]: [
+      { href: "/dashboard/courses", label: t("manageCourses"), icon: BookOpen },
+      { href: "/dashboard/groups", label: t("manageGroups"), icon: Users },
+      { href: "/dashboard/people", label: t("openPeople"), icon: Contact },
+    ],
+    [Role.TEACHER]: [
+      { href: "/dashboard/homework", label: t("reviewHomework"), icon: BookOpen },
+      { href: "/dashboard/tests", label: t("manageTests"), icon: GraduationCap },
+      { href: "/dashboard/announcements", label: t("postAnnouncement"), icon: Megaphone },
+    ],
+    [Role.STUDENT]: [
+      { href: "/dashboard/homework", label: t("openHomework"), icon: BookOpen },
+      { href: "/dashboard/tests", label: t("openTests"), icon: GraduationCap },
+      { href: "/dashboard/chat", label: t("openChat"), icon: MessageSquare },
+    ],
+  }[role];
+
   return (
     <div className="grid gap-6">
       <section className="relative overflow-hidden rounded-2xl border border-primary/15 bg-gradient-to-br from-primary via-primary to-info px-5 py-7 text-primary-foreground shadow-lg shadow-primary/10 sm:px-8 sm:py-9">
         <div className="absolute -top-20 -right-16 size-64 rounded-full border border-white/15 bg-white/10" />
         <div className="absolute -right-4 -bottom-24 size-48 rounded-full border border-white/10" />
         <div className="relative max-w-2xl">
-          <p className="font-medium text-sm text-white/75">{t("eyebrow")}</p>
+          <p className="font-medium text-sm text-white/75">{t(`eyebrow.${role}`)}</p>
           <h1 className="mt-2 text-balance font-semibold text-3xl tracking-tight sm:text-4xl">
-            {t("welcome", { name: name?.split(" ")[0] ?? t("learner") })}
+            {name ? t("welcome", { name: name.split(" ")[0] }) : t("welcomeAnonymous")}
           </h1>
           <p className="mt-3 max-w-xl text-pretty text-sm text-white/80 sm:text-base">
-            {canManage ? t("staffIntro") : t("studentIntro")}
+            {t(`intro.${role}`)}
           </p>
         </div>
       </section>
@@ -109,103 +176,66 @@ export default function DashboardPage() {
           <h2 className="font-semibold text-lg tracking-tight">{t("overview")}</h2>
         </div>
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <MetricCard
-            icon={GraduationCap}
-            label={t("myCourses")}
-            value={myGroups?.length}
-            href="/dashboard/my-courses"
-          />
-          <MetricCard
-            icon={CalendarDays}
-            label={t("upcomingLessons")}
-            value={upcomingLessons?.length}
-            href="/dashboard/schedule"
-          />
-          <MetricCard
-            icon={Bell}
-            label={t("unreadNotifications")}
-            value={notifications?.unread}
-            href="/dashboard/notifications"
-          />
-          {canManage ? (
-            <MetricCard
-              icon={Users}
-              label={t("groups")}
-              value={groups?.totalElements}
-              href="/dashboard/groups"
-            />
-          ) : (
-            <MetricCard
-              icon={MessageSquare}
-              label={t("messages")}
-              value={rooms?.length}
-              href="/dashboard/chat"
-            />
-          )}
+          {metrics.map((metric) => (
+            <MetricCard key={metric.href} {...metric} />
+          ))}
         </div>
       </section>
 
       <section className="grid gap-4 xl:grid-cols-[minmax(0,1.35fr)_minmax(20rem,0.65fr)]">
-        <Card>
-          <CardHeader className="flex-row items-center justify-between gap-4">
-            <div>
-              <p className="text-muted-foreground text-xs uppercase tracking-[0.14em]">
-                {t("nextUp")}
-              </p>
-              <CardTitle className="mt-1.5 text-lg">{t("nextLesson")}</CardTitle>
-            </div>
-            <span className="grid size-10 place-items-center rounded-xl bg-info/10 text-info">
-              <Clock3 className="size-5" />
-            </span>
-          </CardHeader>
-          <CardContent>
-            {upcomingLesson ? (
-              <div className="flex flex-col gap-4 rounded-xl border bg-muted/20 p-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="font-semibold">{upcomingLesson.title}</p>
+        {!isAdmin && (
+          <Card>
+            <CardHeader className="flex-row items-center justify-between gap-4">
+              <div>
+                <p className="text-muted-foreground text-xs uppercase tracking-[0.14em]">
+                  {t("nextUp")}
+                </p>
+                <CardTitle className="mt-1.5 text-lg">{t("nextLesson")}</CardTitle>
+              </div>
+              <span className="grid size-10 place-items-center rounded-xl bg-info/10 text-info">
+                <Clock3 className="size-5" />
+              </span>
+            </CardHeader>
+            <CardContent>
+              {upcomingLesson ? (
+                <div className="flex flex-col gap-4 rounded-xl border bg-muted/20 p-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="font-semibold">{upcomingLesson.title}</p>
+                    <p className="mt-1 text-muted-foreground text-sm">
+                      {dateTime} {upcomingGroup ? `· ${upcomingGroup.name}` : ""}
+                    </p>
+                  </div>
+                  {meetHref ? (
+                    <Button asChild>
+                      <a href={meetHref} target="_blank" rel="noreferrer">
+                        {t("joinLesson")}
+                        <ArrowRight className="size-4" />
+                      </a>
+                    </Button>
+                  ) : (
+                    <Button asChild variant="outline">
+                      <Link href="/dashboard/schedule">{t("viewSchedule")}</Link>
+                    </Button>
+                  )}
+                </div>
+              ) : (
+                <div className="rounded-xl border border-dashed bg-muted/20 p-6 text-center">
+                  <p className="font-medium">{t("noUpcoming")}</p>
                   <p className="mt-1 text-muted-foreground text-sm">
-                    {dateTime} {upcomingGroup ? `· ${upcomingGroup.name}` : ""}
+                    {t(isStudent ? "noUpcomingHint" : "noUpcomingHintStaff")}
                   </p>
                 </div>
-                {meetHref ? (
-                  <Button asChild>
-                    <a href={meetHref} target="_blank" rel="noreferrer">
-                      {t("joinLesson")}
-                      <ArrowRight className="size-4" />
-                    </a>
-                  </Button>
-                ) : (
-                  <Button asChild variant="outline">
-                    <Link href="/dashboard/schedule">{t("viewSchedule")}</Link>
-                  </Button>
-                )}
-              </div>
-            ) : (
-              <div className="rounded-xl border border-dashed bg-muted/20 p-6 text-center">
-                <p className="font-medium">{t("noUpcoming")}</p>
-                <p className="mt-1 text-muted-foreground text-sm">{t("noUpcomingHint")}</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
-        <Card>
+        <Card className={isAdmin ? "xl:col-span-2" : undefined}>
           <CardHeader>
             <CardTitle className="text-lg">{t("quickActions")}</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-2">
-            {(canManage
-              ? [
-                  { href: "/dashboard/homework", label: t("reviewHomework"), icon: BookOpen },
-                  { href: "/dashboard/groups", label: t("manageGroups"), icon: Users },
-                  { href: "/dashboard/schedule", label: t("openSchedule"), icon: CalendarDays },
-                ]
-              : [
-                  { href: "/dashboard/homework", label: t("openHomework"), icon: BookOpen },
-                  { href: "/dashboard/tests", label: t("openTests"), icon: GraduationCap },
-                  { href: "/dashboard/chat", label: t("openChat"), icon: MessageSquare },
-                ]
-            ).map((action) => (
+            {actions.map((action) => (
               <Button key={action.href} asChild variant="ghost" className="h-11 justify-start px-3">
                 <Link href={action.href}>
                   <action.icon className="size-4 text-primary" />
@@ -223,7 +253,7 @@ export default function DashboardPage() {
           <CardHeader className="flex-row items-center justify-between gap-4">
             <div>
               <p className="text-muted-foreground text-xs uppercase tracking-[0.14em]">
-                {t("fromYourGroups")}
+                {t(isStudent ? "fromYourGroups" : "fromAllGroups")}
               </p>
               <CardTitle className="mt-1.5 text-lg">{t("latestAnnouncements")}</CardTitle>
             </div>
@@ -252,32 +282,6 @@ export default function DashboardPage() {
             </Button>
           </CardContent>
         </Card>
-      )}
-
-      {isAdmin && (
-        <section>
-          <h2 className="mb-3 font-semibold text-lg tracking-tight">{t("schoolOverview")}</h2>
-          <div className="grid gap-3 sm:grid-cols-3">
-            <MetricCard
-              icon={BookOpen}
-              label={t("courses")}
-              value={courses?.totalElements}
-              href="/dashboard/courses"
-            />
-            <MetricCard
-              icon={Users}
-              label={t("groups")}
-              value={groups?.totalElements}
-              href="/dashboard/groups"
-            />
-            <MetricCard
-              icon={GraduationCap}
-              label={t("people")}
-              value={profiles?.totalElements}
-              href="/dashboard/people"
-            />
-          </div>
-        </section>
       )}
     </div>
   );

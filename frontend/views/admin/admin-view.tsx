@@ -8,19 +8,12 @@ import { Link } from "@/i18n/navigation";
 import { useListCourses } from "@/lib/api/course/course/course";
 import { useListGroups } from "@/lib/api/enrollment/enrollment/enrollment";
 import { useListProfiles } from "@/lib/api/user/user/user";
-import { useHasRole } from "@/lib/auth";
-import { Role } from "@/lib/constants";
 
 export function AdminView() {
   const t = useTranslations("admin");
-  const isAdmin = useHasRole(Role.ADMIN);
   const courses = useListCourses();
   const groups = useListGroups();
   const people = useListProfiles();
-
-  if (!isAdmin) {
-    return <PageHeader title={t("title")} description={t("forbidden")} />;
-  }
 
   const stats = [
     { label: t("courses"), value: courses.data?.totalElements, href: "/dashboard/courses" },

@@ -2,6 +2,7 @@
 
 import { createContext, type ReactNode, use, useEffect, useRef, useSyncExternalStore } from "react";
 import { toast } from "sonner";
+import { Role } from "@/lib/constants";
 import { keycloak, keycloakInitOptions } from "./keycloak-config";
 
 type AuthStatus = "loading" | "authenticated" | "unauthenticated";
@@ -190,6 +191,14 @@ function effectiveRoles(held: string[]): Set<string> {
 
 export function useHasRole(role: string): boolean {
   return effectiveRoles(useRoles()).has(role);
+}
+
+/** The highest role the user holds. Keycloak grants STUDENT to everyone, so "is a student" means this === STUDENT. */
+export function usePrimaryRole(): Role {
+  const roles = useRoles();
+  if (roles.includes(Role.ADMIN)) return Role.ADMIN;
+  if (roles.includes(Role.TEACHER)) return Role.TEACHER;
+  return Role.STUDENT;
 }
 
 export function useHasAnyRole(requiredRoles: string[]): boolean {

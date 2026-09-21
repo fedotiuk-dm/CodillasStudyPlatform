@@ -18,7 +18,7 @@ import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components
 import { useListCourses } from "@/lib/api/course/course/course";
 import { useListGroups } from "@/lib/api/enrollment/enrollment/enrollment";
 import { type GroupResponse, GroupStatus } from "@/lib/api/enrollment/model";
-import { useHasAnyRole } from "@/lib/auth";
+import { useHasAnyRole, useHasRole } from "@/lib/auth";
 import { Role } from "@/lib/constants";
 
 import { CreateGroupDialog } from "./create-group-dialog";
@@ -30,6 +30,7 @@ const ALL = "ALL";
 export function GroupsView() {
   const t = useTranslations("groups");
   const canManage = useHasAnyRole([Role.ADMIN, Role.TEACHER]);
+  const isAdmin = useHasRole(Role.ADMIN);
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<string>(ALL);
   const [detail, setDetail] = useState<GroupResponse | null>(null);
@@ -46,9 +47,9 @@ export function GroupsView() {
     <>
       <PageHeader
         title={t("title")}
-        description={t("description")}
+        description={t(isAdmin ? "description" : "teacherDescription")}
         action={
-          canManage ? <Button onClick={() => setOpen(true)}>{t("newGroup")}</Button> : undefined
+          isAdmin ? <Button onClick={() => setOpen(true)}>{t("newGroup")}</Button> : undefined
         }
       />
 

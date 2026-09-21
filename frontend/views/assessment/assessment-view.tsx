@@ -72,7 +72,7 @@ export function AssessmentView() {
     <>
       <PageHeader
         title={t("title")}
-        description={t("description")}
+        description={t(canManage ? "description" : "studentDescription")}
         action={
           canManage ? (
             <Button onClick={() => setCreateOpen(true)}>{t("newTest")}</Button>
@@ -124,7 +124,7 @@ export function AssessmentView() {
                           </Button>
                         </>
                       )}
-                      {test.status === "PUBLISHED" && (
+                      {!canManage && test.status === "PUBLISHED" && (
                         <Button
                           size="sm"
                           disabled={startAttempt.isPending}

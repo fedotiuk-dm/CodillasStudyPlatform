@@ -52,10 +52,16 @@ export function AnnouncementsView() {
     <>
       <PageHeader
         title={t("title")}
-        description={t("description")}
+        description={t(isStaff ? "staffDescription" : "description")}
         action={
-          isStaff && groupId !== ALL ? (
-            <Button onClick={() => setOpen(true)}>{t("newAnnouncement")}</Button>
+          isStaff ? (
+            <Button
+              disabled={groupId === ALL}
+              title={groupId === ALL ? t("pickGroupFirst") : undefined}
+              onClick={() => setOpen(true)}
+            >
+              {t("newAnnouncement")}
+            </Button>
           ) : undefined
         }
       />
@@ -66,7 +72,7 @@ export function AnnouncementsView() {
             <SelectValue placeholder={t("selectGroup")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={ALL}>{t("allGroups")}</SelectItem>
+            <SelectItem value={ALL}>{t(isStaff ? "allGroupsStaff" : "allGroups")}</SelectItem>
             {groups.map((g) => (
               <SelectItem key={g.id} value={g.id}>
                 {g.name}

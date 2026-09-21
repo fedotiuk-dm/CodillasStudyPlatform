@@ -28,6 +28,7 @@ const ALL = "ALL";
 export function CoursesView() {
   const t = useTranslations("courses");
   const canManage = useHasRole(Role.ADMIN);
+  const isStaff = useHasRole(Role.TEACHER);
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<string>(ALL);
 
@@ -40,7 +41,7 @@ export function CoursesView() {
     <>
       <PageHeader
         title={t("title")}
-        description={t("description")}
+        description={t(isStaff ? "staffDescription" : "description")}
         action={
           canManage ? <Button onClick={() => setOpen(true)}>{t("newCourse")}</Button> : undefined
         }
@@ -48,7 +49,7 @@ export function CoursesView() {
 
       <Card>
         <CardContent className="space-y-4 pt-6">
-          {canManage && (
+          {isStaff && (
             <Select value={status} onValueChange={setStatus}>
               <SelectTrigger className="w-48">
                 <SelectValue />

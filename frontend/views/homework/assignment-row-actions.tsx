@@ -30,7 +30,7 @@ export function AssignmentRowActions({
   return (
     <div className="flex flex-wrap justify-end gap-2">
       <Button variant="outline" size="sm" onClick={() => setSubsOpen(true)}>
-        {t("submissions")}
+        {t(canManage ? "submissions" : "mySubmissions")}
       </Button>
 
       {canManage && assignment.status === AssignmentStatus.DRAFT && (

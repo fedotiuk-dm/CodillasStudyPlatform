@@ -17,6 +17,7 @@ import {
 } from "@/lib/api/homework/homework/homework";
 import type { RubricResponse, SubmissionResponse } from "@/lib/api/homework/model";
 import { SubmissionStatus } from "@/lib/api/homework/model";
+import { useProfileNames } from "@/lib/hooks/use-profile-names";
 
 import { GradeForm } from "./grade-form";
 
@@ -35,6 +36,7 @@ export function SubmissionRow({
   const submit = useSubmitSubmission();
   const review = useReviewSubmission();
   const ret = useReturnSubmission();
+  const nameOf = useProfileNames();
 
   const [editing, setEditing] = useState(false);
   const [content, setContent] = useState(s.content ?? "");
@@ -46,7 +48,8 @@ export function SubmissionRow({
 
   return (
     <div className="grid gap-2 rounded-md border p-3 text-sm">
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
+        {canManage && <span className="font-medium">{nameOf(s.studentId)}</span>}
         <StatusBadge status={s.status} label={t(`submissionStatus.${s.status}`)} />
         {s.late && <Badge variant="destructive">{t("late")}</Badge>}
         <span className="text-muted-foreground">v{s.version}</span>

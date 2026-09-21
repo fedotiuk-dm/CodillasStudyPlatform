@@ -30,6 +30,8 @@ import {
   GroupStatus,
   type ScheduledLessonResponse,
 } from "@/lib/api/enrollment/model";
+import { useHasRole } from "@/lib/auth";
+import { Role } from "@/lib/constants";
 import { useProfileNames } from "@/lib/hooks/use-profile-names";
 
 export function GroupDetailDialog({
@@ -43,14 +45,20 @@ export function GroupDetailDialog({
 }) {
   const t = useTranslations("groups");
   const groupId = group.id;
-  const readOnly = group.status === GroupStatus.ARCHIVED;
+  const archived = group.status === GroupStatus.ARCHIVED;
+  const isAdmin = useHasRole(Role.ADMIN);
+  const readOnly = archived || !isAdmin;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>{group.name}</DialogTitle>
           <DialogDescription>
-            {readOnly ? t("manageReadOnlyDescription") : t("manageDescription")}
+            {archived
+              ? t("manageReadOnlyDescription")
+              : isAdmin
+                ? t("manageDescription")
+                : t("manageTeacherDescription")}
           </DialogDescription>
         </DialogHeader>
         <Tabs defaultValue="members">
@@ -62,7 +70,12 @@ export function GroupDetailDialog({
             <MembersTab groupId={groupId} open={open} readOnly={readOnly} />
           </TabsContent>
           <TabsContent value="lessons">
-            <LessonsTab groupId={groupId} open={open} readOnly={readOnly} />
+            <LessonsTab
+              groupId={groupId}
+              open={open}
+              readOnly={readOnly}
+              attendanceReadOnly={archived}
+            />
           </TabsContent>
         </Tabs>
       </DialogContent>
@@ -135,10 +148,12 @@ function LessonsTab({
   groupId,
   open,
   readOnly,
+  attendanceReadOnly,
 }: {
   groupId: string;
   open: boolean;
   readOnly: boolean;
+  attendanceReadOnly: boolean;
 }) {
   const t = useTranslations("groups");
   const { data } = useListScheduledLessons(groupId, { query: { enabled: open } });
@@ -174,7 +189,7 @@ function LessonsTab({
     <div className="grid gap-3 pt-3">
       {lessons.length === 0 && <p className="text-muted-foreground text-sm">{t("noLessons")}</p>}
       {lessons.map((l) => (
-        <LessonRow key={l.id} groupId={groupId} lesson={l} readOnly={readOnly} />
+        <LessonRow key={l.id} groupId={groupId} lesson={l} readOnly={attendanceReadOnly} />
       ))}
       {!readOnly && (
         <>

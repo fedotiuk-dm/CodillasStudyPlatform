@@ -6,5 +6,6 @@ export {
   useHasAnyRole,
   useHasRole,
   useKeycloak,
+  usePrimaryRole,
   useRoles,
 } from "./keycloak-context";

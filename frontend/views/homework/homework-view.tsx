@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useListGroups } from "@/lib/api/enrollment/enrollment/enrollment";
+import { useListGroups, useListMyGroups } from "@/lib/api/enrollment/enrollment/enrollment";
 import { useListAssignments } from "@/lib/api/homework/homework/homework";
 import { useHasAnyRole } from "@/lib/auth";
 import { Role } from "@/lib/constants";
@@ -25,10 +25,11 @@ import { CreateAssignmentDialog } from "./create-assignment-dialog";
 
 export function HomeworkView() {
   const t = useTranslations("homework");
-  const { data: groupsData } = useListGroups();
-  const groups = groupsData?.content ?? [];
-  const [groupId, setGroupId] = useState("");
   const canManage = useHasAnyRole([Role.ADMIN, Role.TEACHER]);
+  const { data: allGroups } = useListGroups(undefined, { query: { enabled: canManage } });
+  const { data: myGroups } = useListMyGroups({ query: { enabled: !canManage } });
+  const groups = canManage ? (allGroups?.content ?? []) : (myGroups ?? []);
+  const [groupId, setGroupId] = useState("");
   const [open, setOpen] = useState(false);
 
   const { data, isLoading, isError, refetch } = useListAssignments(
@@ -41,7 +42,7 @@ export function HomeworkView() {
     <>
       <PageHeader
         title={t("title")}
-        description={t("description")}
+        description={t(canManage ? "description" : "studentDescription")}
         action={
           canManage && groupId ? (
             <Button onClick={() => setOpen(true)}>{t("newAssignment")}</Button>
