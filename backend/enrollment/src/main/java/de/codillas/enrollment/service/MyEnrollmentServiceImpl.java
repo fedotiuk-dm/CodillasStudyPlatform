@@ -3,12 +3,14 @@ package de.codillas.enrollment.service;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import de.codillas.enrollment.api.dto.GroupResponse;
 import de.codillas.enrollment.api.dto.ScheduledLessonResponse;
+import de.codillas.enrollment.domain.model.Group;
 import de.codillas.enrollment.domain.model.GroupStatus;
 import de.codillas.enrollment.domain.model.Membership;
 import de.codillas.enrollment.domain.repository.GroupRepository;
@@ -21,7 +23,7 @@ import de.codillas.shared.security.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/** Current-user-scoped views: the groups I belong to and my lesson schedule (past + upcoming). */
+/** Current-user-scoped views: the groups I belong to or teach, and their lesson schedule. */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -59,8 +61,10 @@ public class MyEnrollmentServiceImpl implements MyEnrollmentService {
   }
 
   private List<UUID> myGroupIds() {
-    return membershipRepository.findByUserId(currentUser.id()).stream()
-        .map(Membership::getGroupId)
+    UUID userId = currentUser.id();
+    return Stream.concat(
+            membershipRepository.findByUserId(userId).stream().map(Membership::getGroupId),
+            groupRepository.findByTeacherId(userId).stream().map(Group::getId))
         .distinct()
         .toList();
   }

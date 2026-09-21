@@ -20,6 +20,7 @@ import de.codillas.homework.domain.repository.AssignmentRepository;
 import de.codillas.homework.mapper.AssignmentMapper;
 import de.codillas.shared.event.AssignmentPublished;
 import de.codillas.shared.exception.NotFoundException;
+import de.codillas.shared.security.CurrentUser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,6 +34,7 @@ public class AssignmentServiceImpl implements AssignmentService {
   private final AssignmentMapper mapper;
   private final AssignmentStateMachine stateMachine;
   private final ApplicationEventPublisher events;
+  private final CurrentUser currentUser;
 
   @Override
   @Transactional
@@ -52,7 +54,10 @@ public class AssignmentServiceImpl implements AssignmentService {
 
   @Override
   public AssignmentListResponse listAssignments(UUID groupId, Pageable pageable) {
-    return mapper.toListResponse(repository.findByGroupId(groupId, pageable));
+    return mapper.toListResponse(
+        currentUser.isStaff()
+            ? repository.findByGroupId(groupId, pageable)
+            : repository.findByGroupIdAndStatus(groupId, AssignmentStatus.PUBLISHED, pageable));
   }
 
   /**

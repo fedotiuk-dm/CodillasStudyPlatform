@@ -23,6 +23,8 @@ public interface AssignmentRepository extends JpaRepository<Assignment, UUID> {
 
   Page<Assignment> findByGroupId(UUID groupId, Pageable pageable);
 
+  Page<Assignment> findByGroupIdAndStatus(UUID groupId, AssignmentStatus status, Pageable pageable);
+
   List<Assignment> findByGroupId(UUID groupId);
 
   void deleteByGroupId(UUID groupId);

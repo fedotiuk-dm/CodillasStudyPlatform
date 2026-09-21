@@ -283,4 +283,19 @@ class TestServiceTest {
                 QuestionResponse::getId,
                 q -> q.getOptions().stream().map(OptionResponse::getId).toList()));
   }
+
+  @Test
+  @DisplayName("listTests hides drafts from students")
+  void listTests_studentSeesPublishedOnly() {
+    org.springframework.data.domain.Pageable pageable =
+        org.springframework.data.domain.Pageable.unpaged();
+    de.codillas.assessment.api.dto.TestListResponse dto =
+        mock(de.codillas.assessment.api.dto.TestListResponse.class);
+    when(currentUser.isStaff()).thenReturn(false);
+    when(repository.findByStatus(TestStatus.PUBLISHED, pageable))
+        .thenReturn(org.springframework.data.domain.Page.empty());
+    when(mapper.toListResponse(org.springframework.data.domain.Page.empty())).thenReturn(dto);
+
+    assertThat(service.listTests(null, pageable)).isSameAs(dto);
+  }
 }

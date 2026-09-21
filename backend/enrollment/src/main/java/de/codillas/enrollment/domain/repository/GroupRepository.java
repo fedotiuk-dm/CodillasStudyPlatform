@@ -22,6 +22,8 @@ public interface GroupRepository extends JpaRepository<Group, UUID> {
 
   List<Group> findByCourseId(UUID courseId);
 
+  List<Group> findByTeacherId(UUID teacherId);
+
   Page<Group> findByStatus(GroupStatus status, Pageable pageable);
 
   List<Group> findByIdInAndStatusIn(

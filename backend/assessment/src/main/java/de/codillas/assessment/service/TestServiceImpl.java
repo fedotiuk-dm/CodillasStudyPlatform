@@ -104,10 +104,16 @@ public class TestServiceImpl implements TestService {
 
   @Override
   public TestListResponse listTests(UUID lessonId, Pageable pageable) {
+    if (currentUser.isStaff()) {
+      return mapper.toListResponse(
+          lessonId == null
+              ? repository.findAll(pageable)
+              : repository.findByLessonId(lessonId, pageable));
+    }
     return mapper.toListResponse(
         lessonId == null
-            ? repository.findAll(pageable)
-            : repository.findByLessonId(lessonId, pageable));
+            ? repository.findByStatus(TestStatus.PUBLISHED, pageable)
+            : repository.findByLessonIdAndStatus(lessonId, TestStatus.PUBLISHED, pageable));
   }
 
   private TestResponse toTestResponse(Test test, UUID shuffleSeed) {

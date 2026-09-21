@@ -2,6 +2,7 @@ package de.codillas.homework.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -20,6 +21,7 @@ import de.codillas.homework.domain.model.AssignmentStatus;
 import de.codillas.homework.domain.repository.AssignmentRepository;
 import de.codillas.homework.mapper.AssignmentMapper;
 import de.codillas.shared.event.AssignmentPublished;
+import de.codillas.shared.security.CurrentUser;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,6 +38,7 @@ class AssignmentServiceTest {
   @Mock private AssignmentMapper mapper;
   @Mock private AssignmentStateMachine stateMachine;
   @Mock private ApplicationEventPublisher events;
+  @Mock private CurrentUser currentUser;
   @InjectMocks private AssignmentServiceImpl service;
 
   @Test
@@ -71,15 +74,31 @@ class AssignmentServiceTest {
   }
 
   @Test
-  @DisplayName("listAssignments maps the page for the group")
+  @DisplayName("listAssignments maps every assignment of the group for staff")
   void listAssignments_mapsPage() {
     UUID groupId = UUID.randomUUID();
     Pageable pageable = Pageable.unpaged();
     AssignmentListResponse dto = mock(AssignmentListResponse.class);
+    when(currentUser.isStaff()).thenReturn(true);
     when(repository.findByGroupId(groupId, pageable))
         .thenReturn(org.springframework.data.domain.Page.empty());
     when(mapper.toListResponse(org.springframework.data.domain.Page.empty())).thenReturn(dto);
 
     assertThat(service.listAssignments(groupId, pageable)).isSameAs(dto);
+  }
+
+  @Test
+  @DisplayName("listAssignments hides drafts from students")
+  void listAssignments_studentSeesPublishedOnly() {
+    UUID groupId = UUID.randomUUID();
+    Pageable pageable = Pageable.unpaged();
+    AssignmentListResponse dto = mock(AssignmentListResponse.class);
+    when(currentUser.isStaff()).thenReturn(false);
+    when(repository.findByGroupIdAndStatus(groupId, AssignmentStatus.PUBLISHED, pageable))
+        .thenReturn(org.springframework.data.domain.Page.empty());
+    when(mapper.toListResponse(org.springframework.data.domain.Page.empty())).thenReturn(dto);
+
+    assertThat(service.listAssignments(groupId, pageable)).isSameAs(dto);
+    verify(repository, never()).findByGroupId(groupId, pageable);
   }
 }
