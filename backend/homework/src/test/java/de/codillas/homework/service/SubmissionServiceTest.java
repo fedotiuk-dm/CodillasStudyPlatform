@@ -287,11 +287,12 @@ class SubmissionServiceTest {
   }
 
   @Test
-  @DisplayName("listSubmissions maps the assignment's submissions ordered by student and version")
+  @DisplayName("listSubmissions gives staff every submission, ordered by student and version")
   void listSubmissions_mapsList() {
     UUID assignmentId = UUID.randomUUID();
     List<Submission> submissions = List.of(Submission.builder().version(1).build());
     List<SubmissionResponse> dtos = List.of(mock(SubmissionResponse.class));
+    when(currentUser.isStaff()).thenReturn(true);
     when(repository.findByAssignmentId(eq(assignmentId), any(Sort.class))).thenReturn(submissions);
     when(mapper.toResponseList(submissions)).thenReturn(dtos);
 

@@ -82,7 +82,7 @@ public class HomeworkController implements HomeworkApi {
   }
 
   @Override
-  @RequiresTeacher
+  @RequiresStudent
   public ResponseEntity<List<SubmissionResponse>> listSubmissions(UUID assignmentId) {
     return ResponseEntity.ok(submissionService.listSubmissions(assignmentId));
   }

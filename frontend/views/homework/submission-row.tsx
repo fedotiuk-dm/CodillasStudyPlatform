@@ -120,8 +120,8 @@ export function SubmissionRow({
           </div>
         )}
 
-        {/* Teacher return */}
-        {canManage && s.status === SubmissionStatus.GRADED && (
+        {/* Teacher return — the state machine allows it from SUBMITTED / IN_REVIEW only */}
+        {canManage && inReview && (
           <Button
             variant="outline"
             size="sm"

@@ -1,8 +1,10 @@
 package de.codillas.integration.homework;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.UUID;
@@ -57,6 +59,38 @@ class HomeworkAuthorizationIntegrationTest extends BaseIntegrationTest {
     mockMvc
         .perform(put("/api/submissions/{id}/submit", submissionId).with(as(studentA, "STUDENT")))
         .andExpect(status().isOk());
+  }
+
+  @Test
+  @DisplayName("a student lists only their own submissions; a teacher lists everyone's")
+  void studentListsOnlyOwnSubmissions() throws Exception {
+    UUID studentA = UUID.randomUUID();
+    UUID studentB = UUID.randomUUID();
+    UUID teacher = UUID.randomUUID();
+    UUID assignmentId = createAssignment(teacher);
+
+    for (UUID student : new UUID[] {studentA, studentB}) {
+      mockMvc
+          .perform(
+              post("/api/assignments/{id}/submissions", assignmentId)
+                  .with(as(student, "STUDENT"))
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .content("{\"content\":\"answer\"}"))
+          .andExpect(status().isCreated());
+    }
+
+    mockMvc
+        .perform(
+            get("/api/assignments/{id}/submissions", assignmentId).with(as(studentA, "STUDENT")))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(1))
+        .andExpect(jsonPath("$[0].studentId").value(studentA.toString()));
+
+    mockMvc
+        .perform(
+            get("/api/assignments/{id}/submissions", assignmentId).with(as(teacher, "TEACHER")))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(2));
   }
 
   @Test

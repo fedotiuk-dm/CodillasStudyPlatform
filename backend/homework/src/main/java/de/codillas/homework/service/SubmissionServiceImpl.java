@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -114,8 +115,12 @@ public class SubmissionServiceImpl implements SubmissionService {
 
   @Override
   public List<SubmissionResponse> listSubmissions(UUID assignmentId) {
+    Sort order = SubmissionRepository.BY_STUDENT_THEN_VERSION;
+    // Staff review every submission; a student sees only their own versions.
     return mapper.toResponseList(
-        repository.findByAssignmentId(assignmentId, SubmissionRepository.BY_STUDENT_THEN_VERSION));
+        currentUser.isStaff()
+            ? repository.findByAssignmentId(assignmentId, order)
+            : repository.findByAssignmentIdAndStudentId(assignmentId, currentUser.id(), order));
   }
 
   @Override

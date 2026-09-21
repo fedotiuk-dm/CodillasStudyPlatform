@@ -189,7 +189,7 @@ paths:
       tags:
         - homework
       operationId: listSubmissions
-      summary: List an assignment's submissions (teacher view)
+      summary: List an assignment's submissions (staff see all, a student only their own)
       parameters:
         - name: assignmentId
           in: path
