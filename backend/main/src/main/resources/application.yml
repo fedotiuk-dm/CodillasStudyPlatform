@@ -137,6 +137,11 @@ homework:
 server:
   port: ${SERVER_PORT:8081}
 
+app:
+  cors:
+    # Set to the public frontend origin in hosted deployments.
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:3000}
+
 management:
   endpoints:
     web:
