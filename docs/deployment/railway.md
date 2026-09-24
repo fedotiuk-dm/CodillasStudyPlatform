@@ -24,7 +24,9 @@ Create these services in one Railway project/environment:
    `NEXT_PUBLIC_WS_URL=wss://<gateway-domain>/ws`, `NEXT_PUBLIC_KEYCLOAK_URL` to the public
    Keycloak origin, and `NEXT_PUBLIC_APP_URL` to the gateway's full HTTPS origin. Leave
    `NEXT_PUBLIC_API_URL` unset: generated paths start with `/api`, so the browser calls the gateway
-   on the same origin. Set these before deploying; Next.js embeds them at build time.
+   on the same origin. Set these before deploying; Next.js embeds them at build time. The frontend
+   Dockerfile declares the public variables as build arguments so Railway supplies them to
+   `next build`; setting runtime variables alone leaves localhost URLs in the browser bundle.
 4. **Gateway** — create a service from the `caddy:2-alpine` image. Set `PORT=8080`,
    `BACKEND_UPSTREAM` to
    `http://${{Backend.RAILWAY_PRIVATE_DOMAIN}}:8080`, and `FRONTEND_UPSTREAM` to
@@ -62,10 +64,14 @@ Create these services in one Railway project/environment:
    }
    ```
 5. **Keycloak** — run the `codillas` realm and configure the `codillas-frontend` client with the
-   gateway origin in its valid redirect URIs and web origins. Configure its backend
-   client/resource server as required by the existing realm export. The committed realm export
-   currently only allows localhost redirects, so update the Keycloak client configuration for the
-   hosted URL. Set the backend issuer URL and frontend Keycloak URL to the same public instance.
+   gateway origin in its valid redirect URIs and web origins. The committed realm export only
+   allows localhost redirects, so update the client configuration for the hosted URL. The backend
+   validates user tokens by issuer URI; it does not need the export's confidential backend client.
+   Set the backend issuer URL and frontend Keycloak URL to the same public instance.
+   For a demo matching the local stack, import the three users from the realm export and set
+   backend `SPRING_LIQUIBASE_CONTEXTS=seed` to load the demo
+   courses, groups, lessons, assignments, and related data. The default `prod` context leaves
+   those demo records out. Reset the demo users' known passwords before opening the site to others.
 6. **S3-compatible object storage** — provide endpoint, bucket, region, access key and secret via
    backend `FILES_ENDPOINT`, `FILES_BUCKET`, `FILES_REGION`, `FILES_ACCESS_KEY`, and
    `FILES_SECRET_KEY`. Use a persistent object storage service; uploaded files must not live in the

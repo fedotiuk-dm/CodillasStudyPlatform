@@ -1,6 +1,11 @@
 # Build context is the repo ROOT so the build can read backend/openapi for the Orval client.
 # Build:  docker build -f frontend/Dockerfile -t codillas-frontend .
 FROM node:24-alpine AS build
+# Railway only exposes service variables to Docker builds when they are declared as ARG.
+# Next.js embeds NEXT_PUBLIC_* values into browser bundles during `next build`.
+ARG NEXT_PUBLIC_APP_URL
+ARG NEXT_PUBLIC_KEYCLOAK_URL
+ARG NEXT_PUBLIC_WS_URL
 RUN corepack enable
 WORKDIR /app/frontend
 
