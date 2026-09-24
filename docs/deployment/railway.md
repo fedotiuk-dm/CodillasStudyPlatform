@@ -11,15 +11,17 @@ Create these services in one Railway project/environment:
    connection string in JDBC form, for example
    `jdbc:postgresql://${{Postgres.RAILWAY_PRIVATE_DOMAIN}}:5432/${{Postgres.PGDATABASE}}`;
    set `DB_USER` and `DB_PASSWORD` from the database service's internal variables.
-2. **Backend** — connect this repository. Set root directory to `/` and Dockerfile path to
-   `/backend/Dockerfile`. Railway must use the repository root as build context because the
-   Dockerfile builds the Maven reactor from `backend/`. Set `KEYCLOAK_ISSUER_URI` to
+2. **Backend** — connect this repository. In **Settings → Build**, leave Root Directory as `/`
+   and set Dockerfile Path to `/backend/Dockerfile`. Railway must use the repository root as build
+   context because the Dockerfile builds the Maven reactor from `backend/`. In **Settings → Deploy**,
+   set Healthcheck Path to `/actuator/health` and timeout to 300 seconds. Set `KEYCLOAK_ISSUER_URI` to
    `https://<keycloak-domain>/realms/codillas`, `APP_CORS_ALLOWED_ORIGINS` to the frontend's full
    HTTPS origin, and the `FILES_*` variables described below. Railway injects `PORT`; the image
-   listens on it (defaults to 8080). The config in `backend/railway.toml` checks
-   `/actuator/health`.
-3. **Frontend** — connect this repository. Set root directory to `/` and Dockerfile path to
-   `/frontend/Dockerfile`; build context must include `backend/openapi`, which the image uses to
+   listens on it (defaults to 8080). Leave **Settings → Config-as-code → Railway Config File** empty:
+   new services that have never used the legacy feature cannot opt into it.
+3. **Frontend** — create a separate service connected to this repository. In **Settings → Build**,
+   leave Root Directory as `/` and set Dockerfile Path to `/frontend/Dockerfile`; build context must
+   include `backend/openapi`, which the image uses to
    generate the API client. Set build-time `NEXT_PUBLIC_API_URL` to the backend's public origin plus
    `/api`, `NEXT_PUBLIC_WS_URL` to `wss://<backend-domain>/ws`, `NEXT_PUBLIC_KEYCLOAK_URL` to the
    public Keycloak origin, and `NEXT_PUBLIC_APP_URL` to the frontend's public origin. These values
